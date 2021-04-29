@@ -1,0 +1,36 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.ipr
+*.iml
+*.iws
+*.log
+*.cache
+*.diff
+*.patch
+*.tmp
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+.DS_Store
+.idea
+.project
+.classpath
+.settings/
+target/
+dependency-reduced-pom.xml
+pom.xml.versionsBackup
+.gradle/
+build/
+.idea/
+Thumbs.db
