@@ -1,8 +1,8 @@
 package openApi
 
 import (
-	"durl/dao/db"
 	"container/list"
+	"durl/dao/db"
 	"github.com/beego/beego/v2/server/web"
 	"sync"
 )
