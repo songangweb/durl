@@ -83,7 +83,7 @@ const (
 	ErrUnsupportedMediaType = 415001 // 不支持的返回格式
 )
 
-//  Unprocessable entity
+// ErrUnprocessableEntity Unprocessable entity
 //  @状态码: 422
 //  @状态含义: Unprocessable entity
 //  @状态原因: 客户端上传的附件无法处理, 导致请求失败!
@@ -123,7 +123,7 @@ const (
 	ERR_BACKEND_CONFIG     = 500011 // 后台数据配置错误
 )
 
-//  Service unavailable
+// ErrSvcUnavailable Service unavailable
 //  @状态码: 503
 //  @状态含义: Service unavailable
 //  @状态原因: 服务器无法处理请求, 一般用于网站维护状态!
