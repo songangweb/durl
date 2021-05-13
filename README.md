@@ -1,7 +1,7 @@
 # 欢迎使用 durl 短链服务
 
 ## 体验地址  
-# [durl.fun](durl.fun)
+# [durl.fun](https://durl.fun)
 
 #
 
