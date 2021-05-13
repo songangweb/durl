@@ -1,6 +1,5 @@
 # 欢迎使用 durl 短链服务
 
-
 ## 体验地址
 # [durl.fun](https://durl.fun)
 
@@ -23,7 +22,7 @@ durl 是一个分布式的高性能短链服务,逻辑简单,并提供了相关a
 3. run ~
 
 
-## **** 项目流程解析    建议使用durl项目时,此模块内容必看
+## 项目流程解析   详细了解durl项目时,此模块内容必看
 
 [项目详解](https://github.com/songangweb/durl/wiki/Explain)
 
@@ -33,7 +32,7 @@ durl 是一个分布式的高性能短链服务,逻辑简单,并提供了相关a
 
 ## openApi
 
-[文档地址](https://github.com/songangweb/durl/wiki/OpenApi)
+[接口文档](https://github.com/songangweb/durl/wiki/OpenApi)
 
 
 ## JetBrains操作系统许可证
