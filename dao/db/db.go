@@ -24,6 +24,7 @@ func (c Conf) InitDb() {
 	case "mysql":
 		dbType = "xorm"
 		xormDb.InitXormDb(c.Xorm)
+		CheckTable()
 	case "mongo":
 		dbType = "mongo"
 		mongoDb.InitMongoDb(c.Mongo)
@@ -31,6 +32,57 @@ func (c Conf) InitDb() {
 		defer fmt.Println(comm.MsgCheckDbType)
 		panic(comm.MsgDbTypeError + ", type: " + c.Type)
 	}
+}
+
+// 检查业务表配置
+func CheckTable() {
+	// 获取数据表信息
+	tables := make(map[string]interface{}, 3)
+	tables["durl_queue"] = xormDbStruct.QueueStruct{}
+	tables["durl_short_num"] = xormDbStruct.ShortNumStruct{}
+	tables["durl_url"] = xormDbStruct.UrlStruct{}
+
+	shortNumTable := 0
+	for k, v := range tables {
+		res, err := xormDb.Engine.IsTableExist(k)
+		if err != nil {
+			defer fmt.Println(comm.MsgCheckDbMysqlConf)
+			panic(comm.MsgDbMysqlConfError + ", err: " + fmt.Errorf("%v", err).Error())
+		}
+		if res == false {
+			fmt.Println("数据表: " + k + " 创建中...")
+			// 创建表
+			err = xormDb.Engine.Charset("utf8mb4").StoreEngine("InnoDB").CreateTable(v)
+			if err != nil {
+				defer fmt.Println(comm.MsgCheckDbMysqlConf)
+				panic(k + comm.MsgCheckDbMysqlTable + ", err: " + fmt.Errorf("%v", err).Error())
+			}
+			fmt.Println("数据表: " + k + " 创建完毕!!")
+			if k == "durl_short_num" {
+				err := xormDbStruct.InsertFirst()
+				if err != nil {
+					defer fmt.Println(comm.MsgCheckDbMysqlConf)
+					panic(k + comm.MsgCheckDbMysqlData + ", err: " + fmt.Errorf("%v", err).Error())
+				}
+				shortNumTable = 1
+			}
+		}
+		// 未创建但检查
+		if k == "durl_short_num" && shortNumTable == 0 {
+			has, err := xormDb.Engine.ID(1).Exist()
+			if err != nil {
+				panic(k + comm.MsgCheckDbMysqlConf + ", err: " + fmt.Errorf("%v", err).Error())
+			}
+			if !has {
+				err := xormDbStruct.InsertFirst()
+				if err != nil {
+					defer fmt.Println(comm.MsgCheckDbMysqlConf)
+					panic(k + comm.MsgCheckDbMysqlData + ", err: " + fmt.Errorf("%v", err).Error())
+				}
+			}
+		}
+	}
+	fmt.Println("业务数据表检查完毕!!")
 }
 
 // QueueLastId 获取任务最新一条数据的id

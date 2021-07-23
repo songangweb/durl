@@ -5,11 +5,11 @@ import (
 )
 
 type ShortNumStruct struct {
-	Id         int64
-	MaxNum     int
-	Step       int
-	Version    int `xorm:"version"`
-	UpdateTime int `xorm:"updated"`
+	Id         int64 `xorm:" int(11) pk notnull autoincr"`
+	MaxNum     int   `xorm:" int(11) notnull default(1)"`
+	Step       int   `xorm:" int(11) notnull default(1)"`
+	Version    int   `xorm:"version notnull"`
+	UpdateTime int   `xorm:"updated notnull default(0)"`
 }
 
 func (I *ShortNumStruct) TableName() string {
@@ -24,7 +24,12 @@ func ReturnShortNumPeriod() (int, int, error) {
 	if has, err := xormDb.Engine.ID(1).Get(&shortNumDetail); nil != err {
 		return 0, 0, err
 	} else if !has {
-		return 0, 0, err
+		// 插入第一条默认数据
+		err := InsertFirst()
+		if err !=nil{
+			return 0, 0, err
+		}
+		return shortNumDetail.Step, shortNumDetail.MaxNum, err
 	}
 	// 修改数据
 	shortNumDetail.MaxNum += shortNumDetail.Step
@@ -35,4 +40,14 @@ func ReturnShortNumPeriod() (int, int, error) {
 	}
 
 	return shortNumDetail.Step, shortNumDetail.MaxNum, nil
+}
+
+// 插入第一条默认数据
+func InsertFirst() error {
+	var shortNumDetail ShortNumStruct
+	shortNumDetail.Id = 1
+	shortNumDetail.MaxNum = 100
+	shortNumDetail.Step = 1
+	_, err := xormDb.Engine.Insert(shortNumDetail)
+	return err
 }
