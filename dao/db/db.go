@@ -89,13 +89,13 @@ func CheckMysqlTable() {
 }
 
 // 检查Mongo表配置
-func CheckMongoTable()  {
+func CheckMongoTable() {
 
 	// 获取数据表信息
 	m := mongoDbStruct.ShortNumStruct{}
 	filter := bson.D{}
-	err :=mongoDb.Engine.Collection("durl_short_num").FindOne(context.Background(), filter).Decode(&m)
-	if err !=nil{
+	err := mongoDb.Engine.Collection("durl_short_num").FindOne(context.Background(), filter).Decode(&m)
+	if err != nil {
 		err = mongoDbStruct.InsertFirst()
 		if err != nil {
 			panic(comm.MsgCheckDbMysqlData + ", err: " + fmt.Errorf("%v", err).Error())

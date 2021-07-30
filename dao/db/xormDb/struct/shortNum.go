@@ -26,7 +26,7 @@ func ReturnShortNumPeriod() (int, int, error) {
 	} else if !has {
 		// 插入第一条默认数据
 		err := InsertFirst()
-		if err !=nil{
+		if err != nil {
 			return 0, 0, err
 		}
 		return shortNumDetail.Step, shortNumDetail.MaxNum, err

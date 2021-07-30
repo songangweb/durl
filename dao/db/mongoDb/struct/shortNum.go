@@ -49,7 +49,7 @@ func ReturnShortNumPeriod() (int, int, error) {
 }
 
 // 插入第一条默认数据
-func InsertFirst() error  {
+func InsertFirst() error {
 	shortNumDetail := ShortNumStruct{
 		Id:         primitive.ObjectID{},
 		MaxNum:     100,
