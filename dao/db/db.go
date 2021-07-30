@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"durl/comm"
 	"durl/dao/db/mongoDb"
 	mongoDbStruct "durl/dao/db/mongoDb/struct"
@@ -8,6 +9,7 @@ import (
 	"durl/dao/db/xormDb/struct"
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Conf struct {
@@ -24,18 +26,19 @@ func (c Conf) InitDb() {
 	case "mysql":
 		dbType = "xorm"
 		xormDb.InitXormDb(c.Xorm)
-		CheckTable()
+		CheckMysqlTable()
 	case "mongo":
 		dbType = "mongo"
 		mongoDb.InitMongoDb(c.Mongo)
+		CheckMongoTable()
 	default:
 		defer fmt.Println(comm.MsgCheckDbType)
 		panic(comm.MsgDbTypeError + ", type: " + c.Type)
 	}
 }
 
-// 检查业务表配置
-func CheckTable() {
+// 检查Mysql表配置
+func CheckMysqlTable() {
 	// 获取数据表信息
 	tables := make(map[string]interface{}, 3)
 	tables["durl_queue"] = xormDbStruct.QueueStruct{}
@@ -81,6 +84,23 @@ func CheckTable() {
 				}
 			}
 		}
+	}
+	fmt.Println("业务数据表检查完毕!!")
+}
+
+// 检查Mongo表配置
+func CheckMongoTable()  {
+
+	// 获取数据表信息
+	m := mongoDbStruct.ShortNumStruct{}
+	filter := bson.D{}
+	err :=mongoDb.Engine.Collection("durl_short_num").FindOne(context.Background(), filter).Decode(&m)
+	if err !=nil{
+		err = mongoDbStruct.InsertFirst()
+		if err != nil {
+			panic(comm.MsgCheckDbMysqlData + ", err: " + fmt.Errorf("%v", err).Error())
+		}
+		fmt.Println("数据表: durl_short_num 初始化数据完毕!!")
 	}
 	fmt.Println("业务数据表检查完毕!!")
 }

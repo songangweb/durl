@@ -6,7 +6,7 @@ import (
 
 type ShortNumStruct struct {
 	Id         int64 `xorm:" int(11) pk notnull autoincr"`
-	MaxNum     int   `xorm:" int(11) notnull default(1)"`
+	MaxNum     int   `xorm:" int(11) notnull default(100)"`
 	Step       int   `xorm:" int(11) notnull default(1)"`
 	Version    int   `xorm:"version notnull"`
 	UpdateTime int   `xorm:"updated notnull default(0)"`
