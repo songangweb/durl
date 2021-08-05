@@ -45,34 +45,15 @@ func CheckMysqlTable() {
 	tables["durl_short_num"] = xormDbStruct.ShortNumStruct{}
 	tables["durl_url"] = xormDbStruct.UrlStruct{}
 
-	shortNumTable := 0
 	for k, v := range tables {
-		res, err := xormDb.Engine.IsTableExist(k)
+		err := xormDb.Engine.Charset("utf8mb4").StoreEngine("InnoDB").Sync2(v)
 		if err != nil {
 			defer fmt.Println(comm.MsgCheckDbMysqlConf)
-			panic(comm.MsgDbMysqlConfError + ", err: " + fmt.Errorf("%v", err).Error())
+			panic(k + comm.MsgCheckDbMysqlTable + ", err: " + fmt.Errorf("%v", err).Error())
 		}
-		if res == false {
-			fmt.Println("数据表: " + k + " 创建中...")
-			// 创建表
-			err = xormDb.Engine.Charset("utf8mb4").StoreEngine("InnoDB").CreateTable(v)
-			if err != nil {
-				defer fmt.Println(comm.MsgCheckDbMysqlConf)
-				panic(k + comm.MsgCheckDbMysqlTable + ", err: " + fmt.Errorf("%v", err).Error())
-			}
-			fmt.Println("数据表: " + k + " 创建完毕!!")
-			if k == "durl_short_num" {
-				err := xormDbStruct.InsertFirst()
-				if err != nil {
-					defer fmt.Println(comm.MsgCheckDbMysqlConf)
-					panic(k + comm.MsgCheckDbMysqlData + ", err: " + fmt.Errorf("%v", err).Error())
-				}
-				shortNumTable = 1
-			}
-		}
-		// 未创建但检查
-		if k == "durl_short_num" && shortNumTable == 0 {
-			has, err := xormDb.Engine.ID(1).Exist()
+		fmt.Println("数据表: " + k + " 同步完毕!!")
+		if k == "durl_short_num" {
+			has, err := xormDb.Engine.ID(1).Exist(&xormDbStruct.ShortNumStruct{})
 			if err != nil {
 				panic(k + comm.MsgCheckDbMysqlConf + ", err: " + fmt.Errorf("%v", err).Error())
 			}
