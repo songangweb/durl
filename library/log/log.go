@@ -15,6 +15,7 @@ func (c Conf) InitLog() {
 	// 初始化
 	logs.GetLogger()
 	err := logs.SetLogger(logs.AdapterMultiFile, c.Conf)
+
 	if err != nil {
 		defer fmt.Println(comm.MsgCheckLogConf)
 		panic(comm.MsgLogConfIsError + ", err: " + fmt.Errorf("%v", err).Error())

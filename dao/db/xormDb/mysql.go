@@ -48,5 +48,4 @@ func InitMysql(m MysqlConf) {
 
 	Engine.SetMaxOpenConns(m.SetMaxOpen)
 	Engine.SetMaxIdleConns(m.SetMaxIdle)
-
 }

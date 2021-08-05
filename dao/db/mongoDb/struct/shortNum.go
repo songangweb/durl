@@ -6,6 +6,7 @@ import (
 	"durl/tool"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 )
 
 type ShortNumStruct struct {
@@ -45,4 +46,17 @@ func ReturnShortNumPeriod() (int, int, error) {
 	}
 
 	return shortNumDetail.Step, shortNumDetail.MaxNum, nil
+}
+
+// 插入第一条默认数据
+func InsertFirst() error {
+	shortNumDetail := ShortNumStruct{
+		Id:         primitive.ObjectID{},
+		MaxNum:     100,
+		Step:       1,
+		Version:    1,
+		UpdateTime: time.Now().Unix(),
+	}
+	_, err := mongoDb.Engine.Collection(shortNumDetail.TableName()).InsertOne(context.Background(), shortNumDetail)
+	return err
 }

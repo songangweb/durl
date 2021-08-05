@@ -5,11 +5,11 @@ import (
 )
 
 type QueueStruct struct {
-	Id         int64
-	ShortNum   int
-	IsDel      int
-	CreateTime int `xorm:"created"`
-	UpdateTime int `xorm:"updated"`
+	Id         int64 `xorm:"int(11) pk notnull autoincr"`
+	ShortNum   int   `xorm:"int(11) notnull"`
+	IsDel      int   `xorm:"tinyint(1) notnull default(0)"`
+	CreateTime int   `xorm:"created notnull default(0) "`
+	UpdateTime int   `xorm:"updated notnull default(0)"`
 }
 
 func (I *QueueStruct) TableName() string {
@@ -36,4 +36,8 @@ func GetQueueListById(id interface{}) ([]*QueueStruct, error) {
 	pEveryOne := make([]*QueueStruct, 0)
 	err := xormDb.Engine.Where("id > ? and is_del = ?", id, 0).Find(&pEveryOne)
 	return pEveryOne, err
+}
+
+func check() {
+
 }

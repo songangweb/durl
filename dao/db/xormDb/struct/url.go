@@ -7,14 +7,14 @@ import (
 )
 
 type UrlStruct struct {
-	Id             int
-	ShortNum       int
-	FullUrl        string
-	ExpirationTime int64
-	IsDel          int
-	IsFrozen       int
-	CreateTime     int64 `xorm:"created"`
-	UpdateTime     int64 `xorm:"updated"`
+	Id             int64  `xorm:" pk notnull autoincr"`
+	ShortNum       int    `xorm:" int(11) notnull index(sn) default(0)"`
+	FullUrl        string `xorm:" varchar(255) notnull default('')"`
+	ExpirationTime int64  `xorm:" int(11) notnull default(0)"`
+	IsDel          int    `xorm:"tinyint(1) notnull default(0)"`
+	IsFrozen       int    `xorm:"tinyint(1) notnull default(0)"`
+	CreateTime     int    `xorm:"created notnull default(0)"`
+	UpdateTime     int    `xorm:"updated notnull default(0)"`
 }
 
 func (I *UrlStruct) TableName() string {

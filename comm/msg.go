@@ -11,8 +11,10 @@ const (
 	MsgDbTypeError = "数据库类型错误"
 	MsgCheckDbType = "请检查数据库类型"
 
-	MsgDbMysqlConfError = "mysql数据库配置错误"
-	MsgCheckDbMysqlConf = "请检查mysql数据库配置是否正确!!"
+	MsgDbMysqlConfError  = "mysql数据库配置错误"
+	MsgCheckDbMysqlConf  = "请检查mysql数据库配置是否正确!!"
+	MsgCheckDbMysqlTable = "数据表创建失败!!"
+	MsgCheckDbMysqlData  = "初始化数据创建失败!!"
 
 	MsgDbMongoConfError = "mongo数据库配置错误"
 	MsgCheckDbMongoConf = "请检查mongo数据库配置是否正确!!"
