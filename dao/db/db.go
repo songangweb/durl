@@ -37,7 +37,7 @@ func (c Conf) InitDb() {
 	}
 }
 
-// 检查Mysql表配置
+// CheckMysqlTable 检查Mysql表配置
 func CheckMysqlTable() {
 	// 获取数据表信息
 	tables := make(map[string]interface{}, 3)
