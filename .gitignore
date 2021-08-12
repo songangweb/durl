@@ -27,10 +27,8 @@
 .project
 .classpath
 .settings/
-target/
 dependency-reduced-pom.xml
 pom.xml.versionsBackup
 .gradle/
-build/
 .idea/
 Thumbs.db

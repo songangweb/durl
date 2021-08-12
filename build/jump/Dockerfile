@@ -4,14 +4,14 @@ FROM  registry.cn-beijing.aliyuncs.com/durl/golang:alpine as builder
 
 WORKDIR /durl
 
-ADD go.mod .
-ADD go.sum .
+ADD ../../go.mod .
+ADD ../../go.sum .
 
 RUN export GO111MODULE=on \
     && export GOPROXY=https://goproxy.cn \
     && go mod download
 
-COPY ./ ./
+COPY ../.. ./
 
 RUN go build .
 
