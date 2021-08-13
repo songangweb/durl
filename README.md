@@ -18,7 +18,14 @@ durl 是一个分布式的高性能短链服务,逻辑简单,部署方便.
 
 生成二维码的原始链接,当原始链接过长时,生成的二维码过于复杂,导致一些像素较低的手机无法扫描.
 
-### durl的三个模块:
+## 特征:
+1. [beego](https://github.com/beego/beego) 为项目web框架.
+2. 使用了 [xorm](https://github.com/xormplus/xorm) 来实现持久数据存储, 项目已测试 mysql 与 mongo.
+3. 使用了 [mcache](https://github.com/songangweb/mcache) 来实现内存缓存.
+4. 因使用内存缓存作为缓存池,实际使用中,项目本身的性能瓶颈更多体现在数据库自身.(单机qps轻松上w)
+5. 项目内存消耗大多为缓存内存所用容量,可通过配置文件进行内存大小限制.
+
+## durl的三个模块:
 
 portal: 首页可以通过页面进行短链生成.公司内部或者公司外部可以通过页面生成短链接.
 
@@ -30,13 +37,6 @@ jump: 只服务短链跳转.作为专门的跳转服务.
 
 因为这个项目的结构原因,整个项目三个模块之间没有耦合,可以随意增加pod数量,来提高系统性能.
 一般来说openApi可以部署为只内网访问,jump作为专门的跳转服务,如果有需要页面服务就部署portal.
-
-## 特征:
-1. [beego](https://github.com/beego/beego) 为项目web框架.
-2. 使用了 [xorm](https://github.com/xormplus/xorm) 来实现持久数据存储, 项目已测试 mysql 与 mongo.
-3. 使用了 [mcache](https://github.com/songangweb/mcache) 来实现内存缓存.
-4. 因使用内存缓存作为缓存池,实际使用中,项目本身的性能瓶颈更多体现在数据库自身.
-5. 项目内存消耗大多为缓存内存所用容量,可通过配置文件进行内存大小限制.
 
 
 ## 如何使用
