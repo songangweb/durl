@@ -5,12 +5,8 @@ import (
 	"github.com/beego/beego/v2/server/web"
 )
 
-type Conf struct {
-	OpenApi bool
-}
-
 // RouterHandler 路由跳转
-func (c Conf) RouterHandler() {
+func RouterHandler() {
 
 	// openApi初始化
 	controllers.InitCon()

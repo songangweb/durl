@@ -16,7 +16,6 @@ func Init() {
 }
 
 type Conf struct {
-	Router      routers.Conf
 	Db          db.Conf
 	Log         log.Conf
 }
@@ -55,6 +54,6 @@ func initApp(c *Conf) {
 	c.Db.InitDb()
 
 	// 初始化路由组
-	c.Router.RouterHandler()
+	routers.RouterHandler()
 
 }

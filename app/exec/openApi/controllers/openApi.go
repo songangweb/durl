@@ -4,24 +4,10 @@ import (
 	comm "durl/app/share/comm"
 	"durl/app/share/dao/db"
 	"durl/app/share/tool"
-	"github.com/beego/beego/v2/core/config"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/core/validation"
 )
 
-// Index 首页入口
-func (c *Controller) Index() {
-	// xsrf 值
-	c.Data["xsrf_token"] = c.XSRFToken()
-
-	// 百度统计key
-	sConf, _ := config.String("Statistical_Baidu")
-	if sConf != "" {
-		c.Data["Statistical_Baidu_Key"] = sConf
-	}
-
-	c.TplName = "index.html"
-}
 
 type GetXsrfTokenResp struct {
 	Code  int    `json:"code"`

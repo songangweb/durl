@@ -2,7 +2,7 @@ package appInit
 
 import (
 	"durl/app/exec/jump/controllers"
-	"durl/app/exec/portal/routers"
+	"durl/app/exec/jump/routers"
 	"durl/app/share/dao/db"
 	"durl/app/share/log"
 	"github.com/beego/beego/v2/core/config"
@@ -17,7 +17,6 @@ func Init() {
 }
 
 type Conf struct {
-	Router      routers.Conf
 	Db          db.Conf
 	Log         log.Conf
 	MemoryCache controllers.UrlConf
@@ -29,9 +28,6 @@ func initConf() (AppConf *Conf) {
 
 	// 获取环境
 	runmode, _ := config.String("runmode")
-
-	// openApi
-	AppConf.Router.OpenApi, _ = config.Bool(runmode + "::Router_OpenApi")
 
 	// db
 	AppConf.Db.Type, _ = config.String(runmode + "::Db_Type")
@@ -64,7 +60,7 @@ func initApp(c *Conf) {
 	c.Db.InitDb()
 
 	// 初始化路由组
-	c.Router.RouterHandler()
+	routers.RouterHandler()
 
 	// jump初始化
 	c.MemoryCache.InitJump()

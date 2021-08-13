@@ -28,9 +28,9 @@ func GetFullUrlByShortNum(shortNum int) (*UrlStruct, error) {
 		Where(" short_num = ? and is_del = ? and (expiration_time > ? or expiration_time = ?)",
 			shortNum, 0, tool.TimeNowUnix(), 0).Get(urlDetail)
 	if nil != err {
-		return urlDetail, err
+		return nil, err
 	} else if !has {
-		return urlDetail, nil
+		return nil, nil
 	}
 	return urlDetail, nil
 }

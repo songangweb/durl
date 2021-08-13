@@ -323,6 +323,7 @@ func GetFullUrlByshortNum(shortNum int) *getFullUrlByShortNumReq {
 			One.ShortNum = Detail.ShortNum
 			One.FullUrl = Detail.FullUrl
 			One.ExpirationTime = Detail.ExpirationTime
+			return &One
 		}
 	} else {
 		Detail, err := mongoDbStruct.GetFullUrlByShortNum(shortNum)
@@ -333,7 +334,9 @@ func GetFullUrlByshortNum(shortNum int) *getFullUrlByShortNumReq {
 			One.ShortNum = Detail.ShortNum
 			One.FullUrl = Detail.FullUrl
 			One.ExpirationTime = Detail.ExpirationTime
+			return &One
 		}
 	}
-	return &One
+
+	return nil
 }

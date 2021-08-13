@@ -37,7 +37,7 @@ func (c *Controller) Jump() {
 	return
 }
 
-// 返回404页面,并加入缓存
+// 返回404页面,并加入缓存(60秒)
 func reStatusNotFoundAndCache(c *Controller, shortKey string) {
 	BedUrlCache.Add(shortKey, "", (tool.TimeNowUnix()+600)*1000)
 	c.Abort("404")
