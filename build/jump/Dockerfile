@@ -1,39 +1,14 @@
-# 编译镜像
-#FROM golang:alpine as builder
-FROM  registry.cn-beijing.aliyuncs.com/durl/golang:alpine as builder
+FROM golang:alpine as builder
 
-WORKDIR /durl
+WORKDIR /go/src/durl-jump
 
-ADD ../../go.mod .
-ADD ../../go.sum .
+COPY ./ ./
 
-RUN export GO111MODULE=on \
-    && export GOPROXY=https://goproxy.cn \
-    && go mod download
+RUN cd app/exec/jump \
+    && go build .
 
-COPY ../.. ./
+EXPOSE 8082
+CMD ["./jump"]
 
-RUN go build .
-
-# 运行镜像
-#FROM alpine
-#FROM registry.cn-beijing.aliyuncs.com/durl/alpine:latest
-
-#FROM golang:alpine
-#FROM  registry.cn-beijing.aliyuncs.com/durl/golang:alpine
-
-#LABEL maintainer="durl" version="1.0"
-
-#WORKDIR /code
-
-#COPY --from=builder /durl/conf    ./conf
-#COPY --from=builder /durl/views   ./views
-#COPY --from=builder /durl/controllers   ./controllers
-#COPY --from=builder /durl/durl    ./
-
-EXPOSE 8080
-
-#CMD ["/code/durl"]
-
-CMD ["/durl/durl"]
-
+## 在根目录执行
+## docker build -f build/jump/Dockerfile . -t durl-jump:v1
