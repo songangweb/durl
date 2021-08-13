@@ -8,12 +8,11 @@ import (
 	"net/http"
 )
 
-type Conf struct {
-	OpenApi bool
-}
-
 // RouterHandler 路由跳转
-func (c Conf) RouterHandler() {
+func RouterHandler() {
+
+	// 初始化短链池
+	controllers.InitCon()
 
 	// 首页
 	web.Router("/", &controllers.Controller{}, "get:Index")
@@ -22,8 +21,6 @@ func (c Conf) RouterHandler() {
 	// 获取xsrfToken
 	web.Router("/xsrf-token", &controllers.Controller{}, "get:GetXsrfToken")
 
-	// 初始化短链池
-	controllers.InitCon()
 	// 设置短链
 	web.Router("/url", &controllers.Controller{}, "post:SetShortUrl")
 
