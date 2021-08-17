@@ -16,7 +16,6 @@ func RouterHandler() {
 
 	// 首页
 	web.Router("/", &controllers.Controller{}, "get:Index")
-	//web.Router("/index", &controllers.Controller{}, "get:Index")
 
 	// 获取xsrfToken
 	web.Router("/xsrf-token", &controllers.Controller{}, "get:GetXsrfToken")
