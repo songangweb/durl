@@ -9,12 +9,12 @@ import (
 type UrlStruct struct {
 	Id             int    `xorm:" int pk notnull autoincr"`
 	ShortNum       int    `xorm:" int notnull index"`
-	FullUrl        string `xorm:" varchar notnull default('')"`
+	FullUrl        string `xorm:" varchar(2048) default('') notnull"`
 	ExpirationTime int    `xorm:" int notnull default(0)"`
-	IsDel          int8   `xorm:" tinyint notnull default(0)"`
-	IsFrozen       int8   `xorm:" tinyint notnull default(0)"`
-	CreateTime     int    `xorm:" created notnull default(0)"`
-	UpdateTime     int    `xorm:" updated notnull default(0)"`
+	IsDel          int8   `xorm:" tinyint default(0) notnull"`
+	IsFrozen       int8   `xorm:" tinyint default(0) notnull"`
+	CreateTime     int    `xorm:" created default(0) notnull"`
+	UpdateTime     int    `xorm:" updated default(0) notnull"`
 }
 
 func (I *UrlStruct) TableName() string {
