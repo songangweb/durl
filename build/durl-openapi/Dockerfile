@@ -5,7 +5,7 @@ WORKDIR /go/src/durl-openapi
 
 COPY ./ ./
 
-RUN cd app/exec/durl-openapi \
+RUN cd app/exec/openapi \
     && bee pack
 
 # 运行镜像
