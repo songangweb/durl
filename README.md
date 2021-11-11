@@ -29,14 +29,14 @@ durl 是一个分布式的高性能短链服务,逻辑简单,部署方便.
 
 portal: 首页可以通过页面进行短链生成.公司内部或者公司外部可以通过页面生成短链接.
 
-openApi: 对内开放api,增删改查.
+openapi: 对内开放api,增删改查.
 
 jump: 只服务短链跳转.作为专门的跳转服务.
 
 这样分为三个模块的原因,是因为根据需要进行部署,需要那个就部署那个.
 
 因为这个项目的结构原因,整个项目三个模块之间没有耦合,可以随意增加pod数量,来提高系统性能.
-一般来说openApi可以部署为只内网访问,jump作为专门的跳转服务,如果有需要页面服务就部署portal.
+一般来说openapi可以部署为只内网访问,jump作为专门的跳转服务,如果有需要页面服务就部署portal.
 
 
 ## 如何使用
@@ -56,7 +56,7 @@ jump: 只服务短链跳转.作为专门的跳转服务.
 
 [comment]: <> ([配置文件详解]&#40;https://github.com/songangweb/durl/wiki/Explain&#41;)
 
-## openApi
+## openapi
 
 [接口文档](https://github.com/songangweb/durl/wiki/OpenApi)
 

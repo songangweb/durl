@@ -1,7 +1,7 @@
 package main
 
 import (
-	"durl/app/exec/openApi/appInit"
+	"durl/app/exec/openapi/appInit"
 	"github.com/beego/beego/v2/server/web"
 )
 

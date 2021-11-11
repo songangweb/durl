@@ -1,5 +1,5 @@
 # 编译镜像
-FROM registry.cn-beijing.aliyuncs.com/songang-durl/durl-build:v1 as builder
+FROM songangweb/durl-build:v1.0.0 as builder
 
 WORKDIR /go/src/durl-jump
 
@@ -9,7 +9,7 @@ RUN cd app/exec/jump \
     && bee pack
 
 # 运行镜像
-FROM registry.cn-beijing.aliyuncs.com/songang-durl/durl-run:v1 as run
+FROM songangweb/durl-run:v1.0.0 as run
 
 LABEL description="durl-jump"
 
@@ -28,4 +28,4 @@ EXPOSE 8082
 CMD ["./jump"]
 
 # 在根目录执行
-# docker build -f build/jump/Dockerfile . -t durl-jump:v1
+# docker build -f build/durl-jump/Dockerfile . -t durl-jump:v1.0.0

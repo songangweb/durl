@@ -1,14 +1,14 @@
 package routers
 
 import (
-	"durl/app/exec/openApi/controllers"
+	"durl/app/exec/openapi/controllers"
 	"github.com/beego/beego/v2/server/web"
 )
 
 // RouterHandler 路由跳转
 func RouterHandler() {
 
-	// openApi初始化
+	// openapi初始化
 	controllers.InitCon()
 
 	// 获取xsrfToken

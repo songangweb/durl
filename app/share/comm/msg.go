@@ -29,7 +29,7 @@ const (
 	MsgInitializeCacheError = "初始化内存缓存数据池错误"
 )
 
-// openApi相关提示
+// openapi相关提示
 const (
 	MsgOk           = "请求成功"
 	MsgNotOk        = "请求失败"

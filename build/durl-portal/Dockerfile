@@ -1,5 +1,5 @@
 # 编译镜像
-FROM registry.cn-beijing.aliyuncs.com/songang-durl/durl-build:v1 as builder
+FROM songangweb/durl-build:v1.0.0 as builder
 
 WORKDIR /go/src/durl-portal
 
@@ -9,7 +9,7 @@ RUN cd app/exec/portal \
     && bee pack
 
 # 运行镜像
-FROM registry.cn-beijing.aliyuncs.com/songang-durl/durl-run:v1 as run
+FROM songangweb/durl-run:v1.0.0 as run
 
 LABEL description="durl-portal"
 
@@ -28,4 +28,4 @@ EXPOSE 8080
 CMD ["/durl/durl-portal/portal"]
 
 ## 在根目录执行
-## docker build -f build/portal/Dockerfile . -t durl-portal:v1
+## docker build -f build/durl-portal/Dockerfile . -t durl-portal:v1.0.0
