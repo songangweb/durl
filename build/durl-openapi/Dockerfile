@@ -1,15 +1,15 @@
 # 编译镜像
-FROM registry.cn-beijing.aliyuncs.com/songang-durl/durl-build:v1 as builder
+FROM songangweb/durl-build:v1.0.0 as builder
 
 WORKDIR /go/src/durl-openApi
 
 COPY ./ ./
 
-RUN cd app/exec/openApi \
+RUN cd app/exec/durl-openapi \
     && bee pack
 
 # 运行镜像
-FROM registry.cn-beijing.aliyuncs.com/songang-durl/durl-run:v1 as run
+FROM songangweb/durl-run:v1.0.0 as run
 
 LABEL description="durl-openApi"
 
@@ -21,11 +21,11 @@ WORKDIR /durl/durl-openApi
 
 COPY --from=builder /go/src/durl-openApi/app/exec/openApi/openApi.tar.gz .
 
-RUN tar -zxvf openApi.tar.gz \
-    && rm -f openApi.tar.gz
+RUN tar -zxvf durl-openapi.tar.gz \
+    && rm -f durl-openapi.tar.gz
 
 EXPOSE 8081
 CMD ["./openApi"]
 
 # 在根目录执行
-# docker build -f build/openApi/Dockerfile . -t durl-openApi:v1
+# docker build -f build/durl-openapi/Dockerfile . -t durl-openapi:v1.0.0
