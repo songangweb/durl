@@ -5,7 +5,7 @@ WORKDIR /go/src/durl-jump
 
 COPY ./ ./
 
-RUN cd app/exec/durl-jump \
+RUN cd app/exec/jump \
     && bee pack
 
 # 运行镜像
@@ -21,11 +21,11 @@ WORKDIR /durl/durl-jump
 
 COPY --from=builder /go/src/durl-jump/app/exec/jump/jump.tar.gz .
 
-RUN tar -zxvf durl-jump.tar.gz \
-    && rm -f durl-jump.tar.gz
+RUN tar -zxvf jump.tar.gz \
+    && rm -f jump.tar.gz
 
 EXPOSE 8082
 CMD ["./jump"]
 
 # 在根目录执行
-# docker build -f build/durl-jump/Dockerfile . -t durl-durl-jump:v1.0.0
+# docker build -f build/durl-jump/Dockerfile . -t durl-jump:v1.0.0

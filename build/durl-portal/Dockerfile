@@ -5,7 +5,7 @@ WORKDIR /go/src/durl-portal
 
 COPY ./ ./
 
-RUN cd app/exec/durl-portal \
+RUN cd app/exec/portal \
     && bee pack
 
 # 运行镜像
@@ -21,11 +21,11 @@ WORKDIR /durl/durl-portal
 
 COPY --from=builder /go/src/durl-portal/app/exec/portal/portal.tar.gz .
 
-RUN tar -zxvf durl-portal.tar.gz \
-    && rm -f durl-portal.tar.gz
+RUN tar -zxvf portal.tar.gz \
+    && rm -f portal.tar.gz
 
 EXPOSE 8080
 CMD ["/durl/durl-portal/portal"]
 
 ## 在根目录执行
-## docker build -f build/durl-portal/Dockerfile . -t durl-durl-portal:v1.0.0
+## docker build -f build/durl-portal/Dockerfile . -t durl-portal:v1.0.0

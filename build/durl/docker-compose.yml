@@ -9,7 +9,7 @@ services:
   durl-openapi:
     image: songangweb/durl-openapi:v1.0.0
     volumes:
-      - ./db.conf:/durl/durl-openApi/conf/db.conf
+      - ./db.conf:/durl/durl-openapi/conf/db.conf
     ports:
       - '9091:8081'
   durl-jump:
