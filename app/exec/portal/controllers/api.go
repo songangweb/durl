@@ -110,7 +110,6 @@ func (c *Controller) SetShortUrl() {
 
 	// 拼接url
 	shortKey := tool.Base62Encode(shortNum)
-	durl := c.Ctx.Request.Host + "/" + shortKey
 
 	c.Data["json"] = &setShortUrlResp{
 		Code: comm.OK,
