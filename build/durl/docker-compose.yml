@@ -1,7 +1,7 @@
 version: '2'
 services:
   durl-portal:
-    image: songangweb/durl-portal:v1.0.0
+    image: songangweb/durl-portal:v1.0.1
     volumes:
       - ./db.conf:/durl/durl-portal/conf/db.conf
     ports:
