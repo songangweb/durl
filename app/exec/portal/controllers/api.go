@@ -38,7 +38,6 @@ type setShortUrlResp struct {
 
 type setShortUrlDataResp struct {
 	Key            string `json:"key"`
-	Durl           string `json:"durl"`
 	Url            string `json:"url"`
 	ExpirationTime int    `json:"expirationTime"`
 }
@@ -119,7 +118,6 @@ func (c *Controller) SetShortUrl() {
 		Data: &setShortUrlDataResp{
 			Url:            req.Url,
 			Key:            shortKey,
-			Durl:           durl,
 			ExpirationTime: req.ExpirationTime,
 		},
 	}

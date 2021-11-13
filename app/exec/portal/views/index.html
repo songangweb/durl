@@ -281,7 +281,7 @@
             },
             success : function(successData) {
                 if(successData.code === 200) {
-                    $("#body_content4_flex_content").html(successData.data.durl);
+                    $("#body_content4_flex_content").html("durl.fun/" + successData.data.key);
                 } else {
                     $("#body_content4_flex_content").html(successData.msg);
                 }
