@@ -4,24 +4,30 @@ import (
 	comm "durl/app/share/comm"
 	"durl/app/share/dao/db"
 	"durl/app/share/tool"
+	"encoding/json"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/core/validation"
 )
 
-type GetXsrfTokenResp struct {
-	Code  int    `json:"code"`
-	Msg   string `json:"msg"`
+type getXsrfTokenData struct {
 	Token string `json:"token"`
 }
 
-// GetXsrfToken 获取token
+// 函数名称: GetXsrfToken
+// 功能: 获取XsrfToken
+// 输入参数:
+// 输出参数:
+//		token
+// 返回: 返回请求结果
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021-11-17 15:15:42 #
+
 func (c *Controller) GetXsrfToken() {
-	c.Data["json"] = &GetXsrfTokenResp{
-		Code:  comm.OK,
-		Msg:   comm.MsgOk,
+	data := &getXsrfTokenData{
 		Token: c.XSRFToken(),
 	}
-	_ = c.ServeJSON()
+	c.FormatInterfaceResp(comm.OK, comm.OK, comm.MsgOk, data)
 	return
 }
 
@@ -30,61 +36,62 @@ type setShortUrlReq struct {
 	ExpirationTime int    `form:"expirationTime"`
 }
 
-type setShortUrlResp struct {
-	Code int                  `json:"code"`
-	Msg  string               `json:"msg"`
-	Data *setShortUrlDataResp `json:"data"`
-}
-
 type setShortUrlDataResp struct {
 	Key            string `json:"key"`
 	Url            string `json:"url"`
 	ExpirationTime int    `json:"expirationTime"`
 }
 
-// 效验请求过来的参数
-func (c *Controller) setShortUrlParam(req *setShortUrlReq) bool {
+// 函数名称: setShortUrlParam
+// 功能: 效验SetShortUrl接口请求参数
+// 输入参数:
+// 输出参数:
+// 返回: 返回请求结果
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021-11-17 15:15:42 #
+
+func (c *Controller) setShortUrlParam(req *setShortUrlReq) {
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, req); err != nil {
+		logs.Info("Action setShortUrlParam, err: ", err.Error())
+		c.ErrorMessage(comm.ErrParamMiss, comm.MsgParseFormErr)
+	}
+
 	if err := c.ParseForm(req); err != nil {
 		logs.Info("Action setShortUrlParam, err: ", err.Error())
-		c.Data["json"] = &setShortUrlResp{
-			Code: comm.ErrParamMiss,
-			Msg:  comm.MsgParseFormErr,
-		}
-		return false
+		c.ErrorMessage(comm.ErrParamMiss, comm.MsgParseFormErr)
 	}
 
 	valid := validation.Validation{}
 	b, err := valid.Valid(req)
 	if err != nil {
 		logs.Info("Action setShortUrlParam, err: ", err.Error())
-		c.Data["json"] = &setShortUrlResp{
-			Code: comm.ErrParamMiss,
-			Msg:  comm.MsgParseFormErr,
-		}
-		return false
+		c.ErrorMessage(comm.ErrParamMiss, comm.MsgParseFormErr)
 	}
 	if !b {
 		for _, err := range valid.Errors {
 			logs.Info("Action setShortUrlParam, err: ", err.Key, err.Message)
 		}
-		c.Data["json"] = &setShortUrlResp{
-			Code: comm.ErrParamInvalid,
-			Msg:  comm.MsgParseFormErr,
-		}
-		return false
+		c.ErrorMessage(comm.ErrParamInvalid, comm.MsgParseFormErr)
 	}
-	return true
 }
 
-// SetShortUrl 根据 单个url 设置短链
+// 函数名称: SetShortUrl
+// 功能: 根据 单个url 设置短链
+// 输入参数:
+//		url: 原始url
+//		expirationTime: 过期时间
+// 输出参数:
+// 返回: 返回请求结果
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021-11-17 15:15:42 #
+
 func (c *Controller) SetShortUrl() {
 
 	req := setShortUrlReq{}
 	// 效验请求参数格式
-	if !c.setShortUrlParam(&req) {
-		_ = c.ServeJSON()
-		return
-	}
+	c.setShortUrlParam(&req)
 
 	// 处理url
 	req.Url = tool.DisposeUrlProto(req.Url)
@@ -100,26 +107,19 @@ func (c *Controller) SetShortUrl() {
 	err := db.InsertUrlOne(&UrlOne)
 	if err != nil {
 		logs.Error("Action SetShortUrl, err: ", err.Error())
-		c.Data["json"] = &setShortUrlResp{
-			Code: comm.ErrSysDb,
-			Msg:  comm.MsgNotOk,
-		}
-		_ = c.ServeJSON()
+		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)
 		return
 	}
 
 	// 拼接url
 	shortKey := tool.Base62Encode(shortNum)
 
-	c.Data["json"] = &setShortUrlResp{
-		Code: comm.OK,
-		Msg:  comm.MsgOk,
-		Data: &setShortUrlDataResp{
-			Url:            req.Url,
-			Key:            shortKey,
-			ExpirationTime: req.ExpirationTime,
-		},
+	data := &setShortUrlDataResp{
+		Url:            req.Url,
+		Key:            shortKey,
+		ExpirationTime: req.ExpirationTime,
 	}
-	_ = c.ServeJSON()
+
+	c.FormatInterfaceResp(comm.OK, comm.OK, comm.MsgOk, data)
 	return
 }
