@@ -271,11 +271,11 @@
         $.ajax({
             type : "POST",
             url : "/url",
-            dataType : "json",
-            data : {
+            contentType:"json/application",
+            data : JSON.stringify({
                 url : urlStr,
                 expirationTime : expiration_time
-            },
+            }),
             headers: {
                 'X-XSRFToken': xsrftoken
             },

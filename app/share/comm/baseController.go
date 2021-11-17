@@ -14,11 +14,6 @@ type BaseController struct {
 	web.Controller
 }
 
-type AddResp struct {
-	BaseResp
-	Data Id `json:"data"`
-}
-
 type InterfaceResp struct {
 	BaseResp
 	Data interface{} `json:"data"`
@@ -29,8 +24,9 @@ type BaseResp struct {
 	Message string `json:"message"` // 错误描述
 }
 
-type Id struct {
-	Id int64 `json:"id"`
+type BaseListResp struct {
+	Len  int         `json:"len"`
+	List interface{} `json:"list"`
 }
 
 type ListData struct {
@@ -41,8 +37,18 @@ type ListData struct {
 	List     []interface{} `json:"list"`
 }
 
-/* 回复应答消息 */
-func (b *BaseController) sendResponse(status int, code int, message string) {
+// 函数名称: sendResponse
+// 功能: 回复应答消息
+// 输入参数:
+//     httpCode: http状态码
+//     code: code返回值
+//     message: msg返回值
+// 输出参数:
+// 返回: 返回请求结果
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021-11-17 15:15:42 #
+func (b *BaseController) sendResponse(httpCode int, code int, message string) {
 	m := make(map[string]interface{})
 
 	m["code"] = code
@@ -51,30 +57,55 @@ func (b *BaseController) sendResponse(status int, code int, message string) {
 	str, _ := jsoniter.Marshal(m)
 
 	/* 应答 */
-	b.Ctx.ResponseWriter.WriteHeader(status)
+	b.Ctx.ResponseWriter.WriteHeader(httpCode)
 	b.Ctx.ResponseWriter.Write(str)
 
 	b.StopRun()
 }
 
-func (c *BaseController) FormatResp(httpCode, code int, message string) {
-	c.Ctx.Output.SetStatus(httpCode)
+// 函数名称: FormatResp
+// 功能: 回复应答消息
+// 输入参数:
+//     httpCode: http状态码
+//     code: code返回值
+//     message: msg返回值
+// 输出参数:
+// 返回: 返回请求结果
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021-11-17 15:15:42 #
+
+func (b *BaseController) FormatResp(httpCode, code int, message string) {
+	b.Ctx.Output.SetStatus(httpCode)
 
 	resp := BaseResp{
 		Code:    code,
 		Message: message,
 	}
-	c.Data["json"] = resp
-	c.ServeJSON()
+	b.Data["json"] = resp
+	b.ServeJSON()
 }
 
-func (c *BaseController) FormatInterfaceResp(httpCode, code int, message string, i interface{}) {
+// 函数名称: FormatInterfaceResp
+// 功能: 回复应答消息
+// 输入参数:
+//     httpCode: http状态码
+//     code: code返回值
+//     message: msg返回值
+//     i: 自定义内容data
+// 输出参数:
+// 返回: 返回请求结果
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021-11-17 15:15:42 #
+
+func (b *BaseController) FormatInterfaceResp(httpCode, code int, message string, i interface{}) {
 	curNow := time.Now()
 	defer func() {
 		logs.Info("Time used FormatInterfaceResp:", time.Now().Sub(curNow))
 	}()
 
-	c.Ctx.Output.SetStatus(httpCode)
+	b.Ctx.Output.SetStatus(httpCode)
 	resp := InterfaceResp{
 		BaseResp: BaseResp{
 			Code:    code,
@@ -83,12 +114,25 @@ func (c *BaseController) FormatInterfaceResp(httpCode, code int, message string,
 		Data: i,
 	}
 
-	c.Data["json"] = resp
-	c.ServeJSON()
+	b.Data["json"] = resp
+	b.ServeJSON()
 }
 
-func (c *BaseController) FormatInterfaceListResp(httpCode, code, len int, message string, i interface{}) {
-	c.Ctx.Output.SetStatus(httpCode)
+// 函数名称: FormatInterfaceListResp
+// 功能: 回复列表消息
+// 输入参数:
+//     httpCode: http状态码
+//     code: code返回值
+//     message: msg返回值
+//     i: 自定义内容data
+// 输出参数:
+// 返回: 返回请求结果
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021-11-17 15:15:42 #
+
+func (b *BaseController) FormatInterfaceListResp(httpCode, code, len int, message string, i interface{}) {
+	b.Ctx.Output.SetStatus(httpCode)
 
 	// 为空时转换为 []
 	if i == nil || fmt.Sprintf("%v", i) == "[]" {
@@ -106,27 +150,21 @@ func (c *BaseController) FormatInterfaceListResp(httpCode, code, len int, messag
 		},
 	}
 
-	c.Data["json"] = resp
-	c.ServeJSON()
+	b.Data["json"] = resp
+	b.ServeJSON()
 }
 
-type BaseListResp struct {
-	Len  int         `json:"len"`
-	List interface{} `json:"list"`
-}
+// 函数名称: ErrorMessage
+// 功能: 回复错误消息
+// 输入参数:
+//     code: code返回值
+//     message: msg返回值
+// 输出参数:
+// 返回: 回复错误消息
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021-11-17 15:15:42 #
 
-/* 消息回复 */
-func (b *BaseController) SendJson(status int, m map[string]interface{}) {
-	str, _ := jsoniter.Marshal(m)
-
-	/* 应答 */
-	b.Ctx.ResponseWriter.WriteHeader(status)
-	b.Ctx.ResponseWriter.Write(str)
-
-	b.StopRun()
-}
-
-/* 发送应答消息 */
 func (b *BaseController) ErrorMessage(code int, message string) {
 
 	if code >= ErrBadReq && code < ErrAuth {
