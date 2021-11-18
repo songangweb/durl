@@ -2,13 +2,14 @@ package controllers
 
 import (
 	"container/list"
+	"durl/app/share/comm"
 	"durl/app/share/dao/db"
-	"github.com/beego/beego/v2/server/web"
 	"sync"
 )
 
 type Controller struct {
-	web.Controller
+	//web.Controller
+	comm.BaseController
 }
 
 type Pool struct {
