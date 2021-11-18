@@ -335,10 +335,10 @@ type getShortUrlListReq struct {
 }
 
 type getShortUrlListResp struct {
-	Code  int                       `json:"code"`
-	Msg   string                    `json:"msg"`
+	Code  int                        `json:"code"`
+	Msg   string                     `json:"msg"`
 	Data  []*getShortUrlListDataResp `json:"data"`
-	Total int64                     `json:"total""`
+	Total int64                      `json:"total""`
 }
 
 type getShortUrlListDataResp struct {
@@ -402,20 +402,20 @@ func (c *Controller) GetShortUrlList() {
 	}
 
 	where := " is_del =? "
-	bindValue :=[]interface{}{0}
+	bindValue := []interface{}{0}
 	// key 是原url模糊搜索
 	// 拼接条件进行检索
 	if req.Url != "" {
 		where += " and full_url like ? "
-		bindValue = append(bindValue,"%"+req.Url+"%")
+		bindValue = append(bindValue, "%"+req.Url+"%")
 
 	}
-	data := db.GetShortUrlList(where, req.Page, req.Size,bindValue...)
+	data := db.GetShortUrlList(where, req.Page, req.Size, bindValue...)
 	var total int64
 	// 有数据且当page=1时计算结果总条数
 	if data != nil && req.Page == 1 {
 		// 统计结果总条数
-		total = db.GetShortUrlListTotal(where,bindValue...)
+		total = db.GetShortUrlListTotal(where, bindValue...)
 	}
 
 	var list []*getShortUrlListDataResp
