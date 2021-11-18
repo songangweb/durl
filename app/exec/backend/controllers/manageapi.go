@@ -8,6 +8,7 @@ import (
 	"github.com/beego/beego/v2/core/validation"
 )
 
+
 type GetXsrfTokenResp struct {
 	Code  int    `json:"code"`
 	Msg   string `json:"msg"`
@@ -326,116 +327,4 @@ func (c *Controller) UpdateShortUrl() {
 	}
 	_ = c.ServeJSON()
 	return
-}
-
-type getShortUrlListReq struct {
-	Url  string `form:"url"`
-	Page int    `form:"page"`
-	Size int    `form:"size"`
-}
-
-type getShortUrlListResp struct {
-	Code  int                        `json:"code"`
-	Msg   string                     `json:"msg"`
-	Data  []*getShortUrlListDataResp `json:"data"`
-	Total int64                      `json:"total""`
-}
-
-type getShortUrlListDataResp struct {
-	Id             int    `json:"id"`
-	ShortNum       int    `json:"shor_url"`
-	FullUrl        string `json:"full_url"`
-	ExpirationTime int    `json:"expiration_time"`
-	IsFrozen       int8   `json:"is_frozen"`
-	CreateTime     int    `json:"create_time"`
-}
-
-// 效验请求过来的参数
-func (c *Controller) getShortUrlListParam(req *getShortUrlListReq) bool {
-	if err := c.ParseForm(req); err != nil {
-		logs.Info("Action getShortUrlListParam, err: ", err.Error())
-		c.Data["json"] = &getShortUrlListResp{
-			Code: comm.ErrParamMiss,
-			Msg:  comm.MsgParseFormErr,
-		}
-		return false
-	}
-
-	valid := validation.Validation{}
-	b, err := valid.Valid(req)
-	if err != nil {
-		logs.Info("Action getShortUrlListParam, err: ", err.Error())
-		c.Data["json"] = &getShortUrlListResp{
-			Code: comm.ErrParamMiss,
-			Msg:  comm.MsgParseFormErr,
-		}
-		return false
-	}
-	if !b {
-		for _, err := range valid.Errors {
-			logs.Info("Action getShortUrlListResp, err: ", err.Key, err.Message)
-		}
-		c.Data["json"] = &getShortUrlListResp{
-			Code: comm.ErrParamInvalid,
-			Msg:  comm.MsgParseFormErr,
-		}
-		return false
-	}
-	return true
-}
-
-// 获取url 列表数据
-func (c *Controller) GetShortUrlList() {
-	req := getShortUrlListReq{}
-	// 效验请求参数格式
-	if !c.getShortUrlListParam(&req) {
-		_ = c.ServeJSON()
-		return
-	}
-	// page 需要给默认值
-	if req.Page == 0 {
-		req.Page = 1
-	}
-	// size 需要默认值且不可大于500
-	if req.Size == 0 || req.Size > 500 {
-		req.Size = 20
-	}
-
-	where := " is_del =? "
-	bindValue := []interface{}{0}
-	// key 是原url模糊搜索
-	// 拼接条件进行检索
-	if req.Url != "" {
-		where += " and full_url like ? "
-		bindValue = append(bindValue, "%"+req.Url+"%")
-
-	}
-	data := db.GetShortUrlList(where, req.Page, req.Size, bindValue...)
-	var total int64
-	// 有数据且当page=1时计算结果总条数
-	if data != nil && req.Page == 1 {
-		// 统计结果总条数
-		total = db.GetShortUrlListTotal(where, bindValue...)
-	}
-
-	var list []*getShortUrlListDataResp
-	for _, queueStruct := range data {
-		var One getShortUrlListDataResp
-		One.Id = queueStruct.Id
-		One.ShortNum = queueStruct.ShortNum
-		One.FullUrl = queueStruct.FullUrl
-		One.ExpirationTime = queueStruct.ExpirationTime
-		One.IsFrozen = queueStruct.IsFrozen
-		One.CreateTime = queueStruct.CreateTime
-		list = append(list, &One)
-	}
-	c.Data["json"] = &getShortUrlListResp{
-		Code:  comm.OK,
-		Msg:   comm.MsgOk,
-		Data:  list,
-		Total: total,
-	}
-	_ = c.ServeJSON()
-	return
-
 }
