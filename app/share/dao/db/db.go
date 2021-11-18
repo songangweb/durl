@@ -5,7 +5,6 @@ import (
 	_ "durl/app/share/comm"
 	comm "durl/app/share/comm"
 	"durl/app/share/dao/db/mongoDb"
-
 	"durl/app/share/dao/db/xormDb"
 
 	mongoDbStruct "durl/app/share/dao/db/mongoDb/struct"
@@ -339,4 +338,79 @@ func GetFullUrlByshortNum(shortNum int) *getFullUrlByShortNumReq {
 	}
 
 	return nil
+}
+
+// url列表结构体
+type GetShortUrlListRes struct {
+	Id             int
+	ShortNum       int
+	FullUrl        string
+	ExpirationTime int
+	IsFrozen       int8
+	CreateTime     int
+}
+
+// 查询url列表数据
+func GetShortUrlList(where string, page, size int,bindValue ...interface{}) []*GetShortUrlListRes {
+
+	var returnList []*GetShortUrlListRes
+
+	if dbType == "xorm" {
+		list, err := xormDbStruct.GetShortUrlList(where, page, size,bindValue...)
+		if err != nil {
+			logs.Error("Action xormDbStruct.GetShortUrlList, err: ", err.Error())
+		} else {
+			for _, queueStruct := range list {
+				var One GetShortUrlListRes
+				One.Id = queueStruct.Id
+				One.ShortNum = queueStruct.ShortNum
+				One.FullUrl = queueStruct.FullUrl
+				One.ExpirationTime = queueStruct.ExpirationTime
+				One.IsFrozen = queueStruct.IsFrozen
+				One.CreateTime = queueStruct.CreateTime
+				returnList = append(returnList, &One)
+			}
+		}
+	} else {
+		//list, err := mongoDbStruct.GetCacheUrlAllByLimit(limit)
+		//if err != nil {
+		//	logs.Error("Action mongoDbStruct.GetCacheUrlAllByLimit err :", err.Error())
+		//} else {
+		//	for _, queueStruct := range list {
+		//		var One GetCacheUrlAllByLimitRe
+		//		One.ShortNum = queueStruct.ShortNum
+		//		One.FullUrl = queueStruct.FullUrl
+		//		One.ExpirationTime = queueStruct.ExpirationTime
+		//		returnList = append(returnList, &One)
+		//	}
+		//}
+	}
+
+	return returnList
+}
+
+// 查询url列表数据条数
+func GetShortUrlListTotal(where string,bindValue ...interface{}) int64 {
+	var total int64
+	if dbType == "xorm" {
+		total, err := xormDbStruct.GetShortUrlListTotal(where,bindValue...)
+		if err != nil {
+			logs.Error("Action xormDbStruct.GetCacheUrlAllByLimit, err: ", err.Error())
+		}
+		return total
+	} else {
+		//list, err := mongoDbStruct.GetCacheUrlAllByLimit(limit)
+		//if err != nil {
+		//	logs.Error("Action mongoDbStruct.GetCacheUrlAllByLimit err :", err.Error())
+		//} else {
+		//	for _, queueStruct := range list {
+		//		var One GetCacheUrlAllByLimitRe
+		//		One.ShortNum = queueStruct.ShortNum
+		//		One.FullUrl = queueStruct.FullUrl
+		//		One.ExpirationTime = queueStruct.ExpirationTime
+		//		returnList = append(returnList, &One)
+		//	}
+		//}
+	}
+	return total
 }

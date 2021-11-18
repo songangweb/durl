@@ -3,6 +3,7 @@ package xormDbStruct
 import (
 	"durl/app/share/dao/db/xormDb"
 	"durl/app/share/tool"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -135,4 +136,25 @@ func UpdateUrlByShortNum(shortNum int, data *map[string]interface{}) (bool, erro
 	}
 
 	return true, nil
+}
+
+// GetShortUrlList 查询出符合条件url列表信息
+func GetShortUrlList(where string, page, size int,bindValue ...interface{}) ([]UrlStruct, error) {
+	urlList := make([]UrlStruct, 0)
+	err := xormDb.Engine.
+		Select("id,short_num,full_url,expiration_time,is_frozen,create_time").
+		Where(where,bindValue...).
+		Limit(size, (page-1)*size).
+		Find(&urlList)
+	return urlList, err
+}
+
+// GetShortUrlListTotal 查询出符合条件url列表信息条数
+func GetShortUrlListTotal(where string,bindValue ...interface{}) (int64, error) {
+	urlCount := new(UrlStruct)
+	total, err := xormDb.Engine.
+		Where(where,bindValue...).
+		Count(urlCount)
+	fmt.Printf("%+v", total)
+	return total, err
 }

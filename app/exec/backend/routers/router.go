@@ -8,7 +8,7 @@ import (
 // RouterHandler 路由跳转
 func RouterHandler() {
 
-	// openApi初始化
+	// backendapi初始化
 	controllers.InitCon()
 
 	// 获取xsrfToken
@@ -22,5 +22,8 @@ func RouterHandler() {
 
 	// 删除短链
 	web.Router("/url", &controllers.Controller{}, "delete:DelShortKey")
+
+	// 短链列表
+	web.Router("/url/list", &controllers.Controller{}, "get:GetShortUrlList")
 
 }
