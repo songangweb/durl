@@ -271,17 +271,17 @@
         $.ajax({
             type : "POST",
             url : "/url",
-            dataType : "json",
-            data : {
+            contentType:"json/application",
+            data : JSON.stringify({
                 url : urlStr,
                 expirationTime : expiration_time
-            },
+            }),
             headers: {
                 'X-XSRFToken': xsrftoken
             },
             success : function(successData) {
                 if(successData.code === 200) {
-                    $("#body_content4_flex_content").html(successData.data.durl);
+                    $("#body_content4_flex_content").html("durl.fun/" + successData.data.key);
                 } else {
                     $("#body_content4_flex_content").html(successData.msg);
                 }
