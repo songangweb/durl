@@ -5,9 +5,8 @@ import (
 	_ "durl/app/share/comm"
 	comm "durl/app/share/comm"
 	"durl/app/share/dao/db/mongoDb"
-	"durl/app/share/dao/db/xormDb"
-
 	mongoDbStruct "durl/app/share/dao/db/mongoDb/struct"
+	"durl/app/share/dao/db/xormDb"
 	xormDbStruct "durl/app/share/dao/db/xormDb/struct"
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
@@ -342,7 +341,7 @@ func GetFullUrlByshortNum(shortNum int) *getFullUrlByShortNumReq {
 
 // url列表结构体
 type GetShortUrlListRes struct {
-	Id             int
+	Id             interface{}
 	ShortNum       int
 	FullUrl        string
 	ExpirationTime int
@@ -350,13 +349,26 @@ type GetShortUrlListRes struct {
 	CreateTime     int
 }
 
-// 查询url列表数据
-func GetShortUrlList(where string, page, size int,bindValue ...interface{}) []*GetShortUrlListRes {
+// 函数名称: GetShortUrlList
+// 功能: 查询url列表数据
+// 输入参数:
+//     where：sql搜索条件
+//     page：页码
+//     size：每页展示条数
+//	   bindValue：sql绑定参数
+// 输出参数: []*GetShortUrlListRes
+// 返回: 返回结果
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/11/19 3:27 下午 #
+
+func GetShortUrlList(where map[string][]interface{}, page, size int) []*GetShortUrlListRes {
 
 	var returnList []*GetShortUrlListRes
 
 	if dbType == "xorm" {
-		list, err := xormDbStruct.GetShortUrlList(where, page, size,bindValue...)
+		whereStr,bindValue := GetWhereStr(where)
+		list, err := xormDbStruct.GetShortUrlList(page, size,whereStr,bindValue...)
 		if err != nil {
 			logs.Error("Action xormDbStruct.GetShortUrlList, err: ", err.Error())
 		} else {
@@ -372,45 +384,102 @@ func GetShortUrlList(where string, page, size int,bindValue ...interface{}) []*G
 			}
 		}
 	} else {
-		//list, err := mongoDbStruct.GetCacheUrlAllByLimit(limit)
-		//if err != nil {
-		//	logs.Error("Action mongoDbStruct.GetCacheUrlAllByLimit err :", err.Error())
-		//} else {
-		//	for _, queueStruct := range list {
-		//		var One GetCacheUrlAllByLimitRe
-		//		One.ShortNum = queueStruct.ShortNum
-		//		One.FullUrl = queueStruct.FullUrl
-		//		One.ExpirationTime = queueStruct.ExpirationTime
-		//		returnList = append(returnList, &One)
-		//	}
-		//}
+		whereStr := GetWhereStrMongo(where)
+		list, err := mongoDbStruct.GetShortUrlList(whereStr, page, size)
+		if err != nil {
+			logs.Error("Action mongoDbStruct.GetShortUrlList err :", err.Error())
+		} else {
+			for _, queueStruct := range list {
+				var One GetShortUrlListRes
+				One.Id = queueStruct.Id.Hex()
+				One.ShortNum = queueStruct.ShortNum
+				One.FullUrl = queueStruct.FullUrl
+				One.ExpirationTime = queueStruct.ExpirationTime
+				One.IsFrozen = queueStruct.IsFrozen
+				One.CreateTime = queueStruct.CreateTime
+				returnList = append(returnList, &One)
+			}
+		}
 	}
 
 	return returnList
 }
 
 // 查询url列表数据条数
-func GetShortUrlListTotal(where string,bindValue ...interface{}) int64 {
-	var total int64
+func GetShortUrlListTotal(where map[string][]interface{}) int64 {
+	//var total int64
 	if dbType == "xorm" {
-		total, err := xormDbStruct.GetShortUrlListTotal(where,bindValue...)
+		whereStr,bindValue := GetWhereStr(where)
+		total, err := xormDbStruct.GetShortUrlListTotal(whereStr,bindValue...)
 		if err != nil {
-			logs.Error("Action xormDbStruct.GetCacheUrlAllByLimit, err: ", err.Error())
+			logs.Error("Action xormDbStruct.GetShortUrlListTotal, err: ", err.Error())
 		}
 		return total
 	} else {
-		//list, err := mongoDbStruct.GetCacheUrlAllByLimit(limit)
-		//if err != nil {
-		//	logs.Error("Action mongoDbStruct.GetCacheUrlAllByLimit err :", err.Error())
-		//} else {
-		//	for _, queueStruct := range list {
-		//		var One GetCacheUrlAllByLimitRe
-		//		One.ShortNum = queueStruct.ShortNum
-		//		One.FullUrl = queueStruct.FullUrl
-		//		One.ExpirationTime = queueStruct.ExpirationTime
-		//		returnList = append(returnList, &One)
-		//	}
-		//}
+		whereStr := GetWhereStrMongo(where)
+		total, err := mongoDbStruct.GetShortUrlListCount(whereStr)
+		if err != nil {
+			logs.Error("Action mongoDbStruct.GetShortUrlListTotal err :", err.Error())
+		}
+		return total
 	}
-	return total
+	//return total
+
+}
+
+// 函数名称: GetWhereStr
+// 功能: 根据业务筛选条件构造orm的where使用
+// 输入参数:
+//     where: 业务传入的数据筛选条件
+// 输出参数:
+//	   whereStr: sql字符串
+//     bindValue: sql绑定参数
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/11/22 10:48 上午 #
+
+func GetWhereStr(where map[string][]interface{}) (whereStr string,bindValue []interface{})  {
+
+	if len(where) !=0{
+		if dbType == "xorm" {
+			// 制做业务搜索条件
+			for key,value := range where{
+				whereStr += key+" "+value[0].(string)+" ? and "
+				if value[0].(string)=="like"{
+					value[1] = "%"+value[1].(string)+"%"
+				}
+				bindValue = append(bindValue,value[1] )
+			}
+			whereStr = whereStr[:len(whereStr)-4]
+		}
+	}
+	return whereStr,bindValue
+}
+
+// 函数名称: GetWhereStrMongo
+// 功能: 根据业务筛选条件构造orm-mongo的fliter使用
+// 输入参数:
+//     where: 业务传入的数据筛选条件
+// 输出参数:
+//	   filter: bson
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/11/22 7:31 下午 #
+
+func GetWhereStrMongo(where map[string][]interface{}) (filter map[string]interface{})  {
+
+	if len(where) !=0{
+		filter = make(map[string]interface{})
+		// 制做业务搜索条件
+		for key,value := range where{
+			if value[0].(string)=="like"{
+				filter[key] = bson.M{"$regex": value[1],"$options":"i"}
+			} else {
+				filter[key] = value[1]
+			}
+		}
+	}
+	return
 }

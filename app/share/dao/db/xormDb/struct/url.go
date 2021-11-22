@@ -3,7 +3,6 @@ package xormDbStruct
 import (
 	"durl/app/share/dao/db/xormDb"
 	"durl/app/share/tool"
-	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -138,23 +137,46 @@ func UpdateUrlByShortNum(shortNum int, data *map[string]interface{}) (bool, erro
 	return true, nil
 }
 
-// GetShortUrlList 查询出符合条件url列表信息
-func GetShortUrlList(where string, page, size int,bindValue ...interface{}) ([]UrlStruct, error) {
+// 函数名称: GetShortUrlList
+// 功能: 查询出符合条件url列表信息
+// 输入参数:
+//     page: 页码
+//	   size: 每页展示条数
+//     whereStr: 附加sql条件
+//     bindValue: sql绑定参数
+// 输出参数: []UrlStruct
+// 返回: 符合条件数据
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/11/22 11:25 上午 #
+
+func GetShortUrlList( page, size int,whereStr string,bindValue...interface{}) ([]UrlStruct, error) {
 	urlList := make([]UrlStruct, 0)
 	err := xormDb.Engine.
 		Select("id,short_num,full_url,expiration_time,is_frozen,create_time").
-		Where(where,bindValue...).
+		Where(whereStr,bindValue...).
 		Limit(size, (page-1)*size).
 		Find(&urlList)
 	return urlList, err
 }
 
-// GetShortUrlListTotal 查询出符合条件url列表信息条数
-func GetShortUrlListTotal(where string,bindValue ...interface{}) (int64, error) {
+// 函数名称: GetShortUrlListTotal
+// 功能:  查询出符合条件url列表信息条数
+// 输入参数:
+//     whereStr: 附加sql条件
+//     bindValue: sql绑定参数
+// 输出参数:
+//	   结果条数
+//     error
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/11/22 11:27 上午 #
+
+func GetShortUrlListTotal(whereStr string,bindValue...interface{}) (int64, error) {
 	urlCount := new(UrlStruct)
 	total, err := xormDb.Engine.
-		Where(where,bindValue...).
+		Where(whereStr,bindValue...).
 		Count(urlCount)
-	fmt.Printf("%+v", total)
 	return total, err
 }

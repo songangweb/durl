@@ -333,12 +333,12 @@ func (b *BaseController) BaseCheckParams(req interface{}) {
 	valid := validation.Validation{}
 	c, err := valid.Valid(req)
 	if err != nil {
-		logs.Info("Action setShortUrlParam, err: ", err.Error())
+		logs.Info("Method "+method+" Controller "+controllerName+" Action "+actionName+", err: ", err.Error())
 		b.ErrorMessage(ErrParamMiss, MsgParseFormErr)
 	}
 	if !c {
 		for _, err := range valid.Errors {
-			logs.Info("Action setShortUrlParam, err: ", err.Key, err.Message)
+			logs.Info("Method "+method+" Controller "+controllerName+" Action "+actionName+", err: ", err.Key, err.Message)
 		}
 		b.ErrorMessage(ErrParamInvalid, MsgParseFormErr)
 	}

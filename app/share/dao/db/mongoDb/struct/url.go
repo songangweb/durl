@@ -15,7 +15,8 @@ type UrlStruct struct {
 	ShortNum       int                `bson:"short_num"`
 	FullUrl        string             `bson:"full_url"`
 	ExpirationTime int                `bson:"expiration_time"`
-	IsDel          int                `bson:"is_del"`
+	IsDel          int8                `bson:"is_del"`
+	IsFrozen       int8   			  `bson:"is_frozen"`
 	CreateTime     int                `bson:"create_time"`
 	UpdateTime     int                `bson:"update_time"`
 }
@@ -159,4 +160,65 @@ func UpdateUrlByShortNum(shortNum int, data *map[string]interface{}) (bool, erro
 	}
 
 	return true, nil
+}
+
+// 函数名称:
+// 功能: 查询出符合条件的url列表数据
+// 输入参数:
+//		filter: bson
+// 输出参数:
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/11/19 3:30 下午 #
+
+func GetShortUrlList(filter map[string]interface{}, page, size int) ([]*UrlStruct, error) {
+	var all []*UrlStruct
+	var err error
+
+	var U UrlStruct
+	collection, err := mongoDb.Engine.Collection(U.TableName()).Clone()
+	if collection == nil {
+		return all, err
+	}
+	findOptions := options.Find().SetLimit(int64(size)).SetSkip(int64((page-1)*size))
+	cur, err := collection.Find(context.Background(), filter, findOptions)
+	if err != nil {
+		return all, err
+	}
+	if err = cur.Err(); err != nil {
+		return all, err
+	}
+	err = cur.All(context.Background(), &all)
+	if err != nil {
+		return all, err
+	}
+	err = cur.Close(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	return all, nil
+}
+
+// 函数名称: GetShortUrlListCount
+// 功能: 统计出符合条件的url数据量
+// 输入参数:
+//     filter: bson
+// 输出参数:
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/11/22 7:33 下午 #
+
+func GetShortUrlListCount(filter map[string]interface{}) (int64,error) {
+	var U UrlStruct
+	collection, err := mongoDb.Engine.Collection(U.TableName()).Clone()
+	if collection == nil {
+		return 0, err
+	}
+	count, err := collection.CountDocuments(context.Background(), filter)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }
