@@ -3,18 +3,19 @@ package mongoDbStruct
 import (
 	"context"
 	"durl/app/share/dao/db/mongoDb"
-	"durl/app/share/tool"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type QueueStruct struct {
-	Id         primitive.ObjectID `bson:"_id"`
-	ShortNum   int                `bson:"short_num"`
-	IsDel      int                `bson:"is_del"`
-	CreateTime int64              `bson:"create_time"`
-	UpdateTime int64              `bson:"update_time"`
+	Id         primitive.ObjectID  `bson:"_id"`
+	ShortNum   int                 `bson:"short_num"`
+	IsDel      int                 `bson:"is_del"`
+	CreateTime primitive.Timestamp `bson:"create_time"`
+	//CreateTime int64              `bson:"create_time"`
+	//UpdateTime int64              `bson:"update_time"`
+	UpdateTime primitive.Timestamp `bson:"update_time"`
 }
 
 func (I *QueueStruct) TableName() string {
@@ -27,9 +28,9 @@ func InsertQueueOne(req QueueStruct) (interface{}, error) {
 	collection := mongoDb.Engine.Collection(Q.TableName())
 	Q.Id = primitive.NewObjectID()
 	Q.ShortNum = req.ShortNum
-	timeUnix := tool.TimeNowUnix()
-	Q.CreateTime = timeUnix
-	Q.UpdateTime = timeUnix
+	//timeUnix := tool.TimeNowUnix()
+	//Q.CreateTime = timeUnix
+	//Q.UpdateTime = timeUnix
 	insertResult, err := collection.InsertOne(context.Background(), Q)
 	if err != nil {
 		return "", nil
@@ -81,4 +82,26 @@ func GetQueueListById(id interface{}) ([]*QueueStruct, error) {
 	}
 
 	return all, err
+}
+
+// 函数名称: InsertQueueMany
+// 功能: 插入多条数据
+// 输入参数:
+//     queue QueueStruct{}数组
+// 输出参数:
+// 返回: 插入结果
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/12/1 1:39 下午 #
+
+func InsertQueueMany(queue []interface{}) (interface{}, error) {
+
+	Q := new(QueueStruct)
+	collection := mongoDb.Engine.Collection(Q.TableName())
+
+	_, err := collection.InsertMany(context.Background(), queue)
+	if err != nil {
+		return "", err
+	}
+	return "", nil
 }

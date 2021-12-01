@@ -63,6 +63,9 @@ github.com/fsnotify/fsnotify
 github.com/go-sql-driver/mysql
 # github.com/go-stack/stack v1.8.0
 github.com/go-stack/stack
+# github.com/go-xorm/builder v0.3.4
+## explicit
+github.com/go-xorm/builder
 # github.com/golang/protobuf v1.4.2
 github.com/golang/protobuf/proto
 github.com/golang/protobuf/ptypes
