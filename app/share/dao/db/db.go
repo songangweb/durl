@@ -19,19 +19,19 @@ type Conf struct {
 	Mongo mongoDb.Conf
 }
 
-var dbType string
+var DbType string
 
 func (c Conf) InitDb() {
 	c.Xorm.Type = c.Type
 	switch c.Type {
 	case "mysql":
-		dbType = "xorm"
+		DbType = "xorm"
 		xormDb.InitXormDb(c.Xorm)
 
 		// 检查数据库表结构是否完善,如不完善则自动创建
 		CheckMysqlTable()
 	case "mongo":
-		dbType = "mongo"
+		DbType = "mongo"
 		mongoDb.InitMongoDb(c.Mongo)
 
 		// 检查数据库表结构是否完善,如不完善则自动创建
@@ -112,7 +112,7 @@ func CheckMongoTable() {
 
 // QueueLastId 获取任务最新一条数据的id
 func QueueLastId() (id interface{}) {
-	if dbType == "xorm" {
+	if DbType == "xorm" {
 		id, _ = xormDbStruct.ReturnQueueLastId()
 	} else {
 		id, _ = mongoDbStruct.ReturnQueueLastId()
@@ -129,7 +129,7 @@ type GetQueueListByIdRe struct {
 func GetQueueListById(id interface{}) []*GetQueueListByIdRe {
 	var returnList []*GetQueueListByIdRe
 
-	if dbType == "xorm" {
+	if DbType == "xorm" {
 		list, err := xormDbStruct.GetQueueListById(id)
 		if err != nil {
 			logs.Error("Action xormDbStruct.GetQueueListById, err: ", err.Error())
@@ -169,7 +169,7 @@ func GetCacheUrlAllByLimit(limit int) []*GetCacheUrlAllByLimitRe {
 
 	var returnList []*GetCacheUrlAllByLimitRe
 
-	if dbType == "xorm" {
+	if DbType == "xorm" {
 		list, err := xormDbStruct.GetCacheUrlAllByLimit(limit)
 		if err != nil {
 			logs.Error("Action xormDbStruct.GetCacheUrlAllByLimit, err: ", err.Error())
@@ -203,7 +203,7 @@ func GetCacheUrlAllByLimit(limit int) []*GetCacheUrlAllByLimitRe {
 // ReturnShortNumPeriod 获取号码段
 func ReturnShortNumPeriod() (Step int, MaxNum int, err error) {
 
-	if dbType == "xorm" {
+	if DbType == "xorm" {
 		var i int
 		for {
 			if i >= 10 {
@@ -245,7 +245,7 @@ type InsertUrlOneReq struct {
 // InsertUrlOne 插入一条数据 url
 func InsertUrlOne(urlStructReq *InsertUrlOneReq) (err error) {
 
-	if dbType == "xorm" {
+	if DbType == "xorm" {
 		var reqOne xormDbStruct.UrlStruct
 		reqOne.ShortNum = urlStructReq.ShortNum
 		reqOne.FullUrl = urlStructReq.FullUrl
@@ -271,7 +271,7 @@ func InsertUrlOne(urlStructReq *InsertUrlOneReq) (err error) {
 // DelUrlByShortNum 通过shortNum删除数据
 func DelUrlByShortNum(shortNum int) (reBool bool, err error) {
 
-	if dbType == "xorm" {
+	if DbType == "xorm" {
 		reBool, err = xormDbStruct.DelUrlByShortNum(shortNum)
 		if err != nil {
 			logs.Error("Action xormDbStruct.DelUrlByShortNum, err: ", err.Error())
@@ -286,10 +286,40 @@ func DelUrlByShortNum(shortNum int) (reBool bool, err error) {
 	return reBool, err
 }
 
+// 函数名称: DelUrlById
+// 功能: 通过id删除url数据
+// 输入参数:
+//     id: 数据id
+//	   shortNum: 短链Key
+// 输出参数:
+//	   reBool bool
+//	   err error
+// 返回: 删除结果
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/11/24 5:13 下午 #
+
+func DelUrlById(id string, shortNum int) (reBool bool, err error) {
+
+	if DbType == "xorm" {
+		reBool, err = xormDbStruct.DelUrlById(id, shortNum)
+		if err != nil {
+			logs.Error("Action xormDbStruct.DelUrlById, err: ", err.Error())
+		}
+	} else {
+		reBool, err = mongoDbStruct.DelUrlById(id, shortNum)
+		if err != nil {
+			logs.Error("Action mongoDbStruct.DelUrlById, err: ", err.Error())
+		}
+	}
+
+	return reBool, err
+}
+
 // UpdateUrlByShortNum 插入一条数据 url
 func UpdateUrlByShortNum(shortNum int, data *map[string]interface{}) (reBool bool, err error) {
 
-	if dbType == "xorm" {
+	if DbType == "xorm" {
 		reBool, err = xormDbStruct.UpdateUrlByShortNum(shortNum, data)
 		if err != nil {
 			logs.Error("Action xormDbStruct.UpdateUrlByShortNum, err: ", err.Error())
@@ -298,6 +328,34 @@ func UpdateUrlByShortNum(shortNum int, data *map[string]interface{}) (reBool boo
 		reBool, err = mongoDbStruct.UpdateUrlByShortNum(shortNum, data)
 		if err != nil {
 			logs.Error("Action mongoDbStruct.UpdateUrlByShortNum, err: ", err.Error())
+		}
+	}
+	return reBool, err
+}
+
+// 函数名称: UpdateUrlById
+// 功能: 根据id修改url信息
+// 输入参数:
+//     id: url数据id
+//     shortNum: 短链key值
+//     data: 需要修改的信息内容
+// 输出参数:
+// 返回: 修改操作结果
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/11/25 4:53 下午 #
+
+func UpdateUrlById(id string, shortNum int, data map[string]interface{}) (reBool bool, err error) {
+
+	if DbType == "xorm" {
+		reBool, err = xormDbStruct.UpdateUrlById(id, shortNum, data)
+		if err != nil {
+			logs.Error("Action xormDbStruct.UpdateUrlById, err: ", err.Error())
+		}
+	} else {
+		reBool, err = mongoDbStruct.UpdateUrlById(id, shortNum, data)
+		if err != nil {
+			logs.Error("Action mongoDbStruct.UpdateUrlById, err: ", err.Error())
 		}
 	}
 	return reBool, err
@@ -312,7 +370,7 @@ type getFullUrlByShortNumReq struct {
 func GetFullUrlByshortNum(shortNum int) *getFullUrlByShortNumReq {
 
 	var One getFullUrlByShortNumReq
-	if dbType == "xorm" {
+	if DbType == "xorm" {
 		Detail, err := xormDbStruct.GetFullUrlByShortNum(shortNum)
 		if err != nil {
 			logs.Error("Action xormDbStruct.GetFullUrlByShortNum, err: ", err.Error())
@@ -355,7 +413,6 @@ type GetShortUrlListRes struct {
 //     where：sql搜索条件
 //     page：页码
 //     size：每页展示条数
-//	   bindValue：sql绑定参数
 // 输出参数: []*GetShortUrlListRes
 // 返回: 返回结果
 // 实现描述:
@@ -366,9 +423,8 @@ func GetShortUrlList(where map[string][]interface{}, page, size int) []*GetShort
 
 	var returnList []*GetShortUrlListRes
 
-	if dbType == "xorm" {
-		whereStr,bindValue := GetWhereStr(where)
-		list, err := xormDbStruct.GetShortUrlList(page, size,whereStr,bindValue...)
+	if DbType == "xorm" {
+		list, err := xormDbStruct.GetShortUrlList(where, page, size)
 		if err != nil {
 			logs.Error("Action xormDbStruct.GetShortUrlList, err: ", err.Error())
 		} else {
@@ -384,8 +440,7 @@ func GetShortUrlList(where map[string][]interface{}, page, size int) []*GetShort
 			}
 		}
 	} else {
-		whereStr := GetWhereStrMongo(where)
-		list, err := mongoDbStruct.GetShortUrlList(whereStr, page, size)
+		list, err := mongoDbStruct.GetShortUrlList(where, page, size)
 		if err != nil {
 			logs.Error("Action mongoDbStruct.GetShortUrlList err :", err.Error())
 		} else {
@@ -396,7 +451,7 @@ func GetShortUrlList(where map[string][]interface{}, page, size int) []*GetShort
 				One.FullUrl = queueStruct.FullUrl
 				One.ExpirationTime = queueStruct.ExpirationTime
 				One.IsFrozen = queueStruct.IsFrozen
-				One.CreateTime = queueStruct.CreateTime
+				One.CreateTime = int(queueStruct.CreateTime.T)
 				returnList = append(returnList, &One)
 			}
 		}
@@ -405,19 +460,26 @@ func GetShortUrlList(where map[string][]interface{}, page, size int) []*GetShort
 	return returnList
 }
 
-// 查询url列表数据条数
+// 函数名称: GetShortUrlListTotal
+// 功能: 查询url列表数据条数
+// 输入参数:
+//     where：业务搜索条件
+// 输出参数:
+// 返回: 结果条数
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/11/23 6:21 下午 #
+
 func GetShortUrlListTotal(where map[string][]interface{}) int64 {
 	//var total int64
-	if dbType == "xorm" {
-		whereStr,bindValue := GetWhereStr(where)
-		total, err := xormDbStruct.GetShortUrlListTotal(whereStr,bindValue...)
+	if DbType == "xorm" {
+		total, err := xormDbStruct.GetShortUrlListTotal(where)
 		if err != nil {
 			logs.Error("Action xormDbStruct.GetShortUrlListTotal, err: ", err.Error())
 		}
 		return total
 	} else {
-		whereStr := GetWhereStrMongo(where)
-		total, err := mongoDbStruct.GetShortUrlListCount(whereStr)
+		total, err := mongoDbStruct.GetShortUrlListCount(where)
 		if err != nil {
 			logs.Error("Action mongoDbStruct.GetShortUrlListTotal err :", err.Error())
 		}
@@ -427,59 +489,127 @@ func GetShortUrlListTotal(where map[string][]interface{}) int64 {
 
 }
 
-// 函数名称: GetWhereStr
-// 功能: 根据业务筛选条件构造orm的where使用
+// 函数名称: GetShortUrlInfo
+// 功能: 获取ShortUrl详情
 // 输入参数:
-//     where: 业务传入的数据筛选条件
-// 输出参数:
-//	   whereStr: sql字符串
-//     bindValue: sql绑定参数
-// 返回:
+//     where: 数据检索条件
+// 输出参数: *GetShortUrlListRes
+// 返回: 检索条件
 // 实现描述:
 // 注意事项:
-// 作者: # leon # 2021/11/22 10:48 上午 #
+// 作者: # leon # 2021/11/24 5:09 下午 #
 
-func GetWhereStr(where map[string][]interface{}) (whereStr string,bindValue []interface{})  {
+func GetShortUrlInfo(where map[string][]interface{}) *GetShortUrlListRes {
 
-	if len(where) !=0{
-		if dbType == "xorm" {
-			// 制做业务搜索条件
-			for key,value := range where{
-				whereStr += key+" "+value[0].(string)+" ? and "
-				if value[0].(string)=="like"{
-					value[1] = "%"+value[1].(string)+"%"
-				}
-				bindValue = append(bindValue,value[1] )
-			}
-			whereStr = whereStr[:len(whereStr)-4]
+	var Info GetShortUrlListRes
+	if DbType == "xorm" {
+		detail, err := xormDbStruct.GetShortUrlInfo(where)
+		if err != nil {
+			logs.Error("Action xormDbStruct.GetShortUrlInfo, err: ", err.Error())
+		}
+		if detail != nil {
+			Info.Id = detail.Id
+			Info.ShortNum = detail.ShortNum
+			Info.FullUrl = detail.FullUrl
+			Info.ExpirationTime = detail.ExpirationTime
+			Info.IsFrozen = detail.IsFrozen
+			Info.CreateTime = detail.CreateTime
+			return &Info
+		}
+	} else {
+		detail, err := mongoDbStruct.GetShortUrlInfo(where)
+		if err != nil {
+			logs.Error("Action mongoDbStruct.GetShortUrlInfo, err: ", err.Error())
+		}
+		if detail != nil {
+			Info.Id = detail.Id
+			Info.ShortNum = detail.ShortNum
+			Info.FullUrl = detail.FullUrl
+			Info.ExpirationTime = detail.ExpirationTime
+			Info.IsFrozen = detail.IsFrozen
+			Info.CreateTime = int(detail.CreateTime.T)
+			return &Info
 		}
 	}
-	return whereStr,bindValue
+
+	return nil
 }
 
-// 函数名称: GetWhereStrMongo
-// 功能: 根据业务筛选条件构造orm-mongo的fliter使用
+// 函数名称: GetAllShortUrl
+// 功能: 根据条件获取所有Url信息不带分页
 // 输入参数:
-//     where: 业务传入的数据筛选条件
+//     where 检索条件
 // 输出参数:
-//	   filter: bson
 // 返回:
 // 实现描述:
 // 注意事项:
-// 作者: # leon # 2021/11/22 7:31 下午 #
+// 作者: # leon # 2021/11/30 6:12 下午 #
 
-func GetWhereStrMongo(where map[string][]interface{}) (filter map[string]interface{})  {
+func GetAllShortUrl(where map[string][]interface{}) []*GetShortUrlListRes {
 
-	if len(where) !=0{
-		filter = make(map[string]interface{})
-		// 制做业务搜索条件
-		for key,value := range where{
-			if value[0].(string)=="like"{
-				filter[key] = bson.M{"$regex": value[1],"$options":"i"}
-			} else {
-				filter[key] = value[1]
+	var returnList []*GetShortUrlListRes
+
+	if DbType == "xorm" {
+		list, err := xormDbStruct.GetAllShortUrl(where)
+		if err != nil {
+			logs.Error("Action xormDbStruct.GetAllShortUrl, err: ", err.Error())
+		} else {
+			for _, queueStruct := range list {
+				var One GetShortUrlListRes
+				One.Id = queueStruct.Id
+				One.ShortNum = queueStruct.ShortNum
+				One.FullUrl = queueStruct.FullUrl
+				One.ExpirationTime = queueStruct.ExpirationTime
+				One.IsFrozen = queueStruct.IsFrozen
+				One.CreateTime = queueStruct.CreateTime
+				returnList = append(returnList, &One)
+			}
+		}
+	} else {
+		list, err := mongoDbStruct.GetAllShortUrl(where)
+		if err != nil {
+			logs.Error("Action mongoDbStruct.GetAllShortUrl err :", err.Error())
+		} else {
+			for _, queueStruct := range list {
+				var One GetShortUrlListRes
+				One.Id = queueStruct.Id.Hex()
+				One.ShortNum = queueStruct.ShortNum
+				One.FullUrl = queueStruct.FullUrl
+				One.ExpirationTime = queueStruct.ExpirationTime
+				One.IsFrozen = queueStruct.IsFrozen
+				One.CreateTime = int(queueStruct.CreateTime.T)
+				returnList = append(returnList, &One)
 			}
 		}
 	}
-	return
+
+	return returnList
+}
+
+// 函数名称: BatchUpdateUrlByIds
+// 功能: 根据UrlId 修改Url信息
+// 输入参数:
+//		updateWhere: 修改限制条件
+//	    insertShortNum: 涉及修改Url的短链Key值
+//		updateData: 修改内容
+// 输出参数:
+// 返回: 修改结果
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/11/30 6:19 下午 #
+
+func BatchUpdateUrlByIds(updateWhere map[string][]interface{}, insertShortNum []int, updateData map[string]interface{}) (reBool bool, err error) {
+
+	if DbType == "xorm" {
+		reBool, err = xormDbStruct.BatchUpdateUrlByIds(updateWhere, insertShortNum, updateData)
+		if err != nil {
+			logs.Error("Action xormDbStruct.BatchUpdateUrlByIds, err: ", err.Error())
+		}
+	} else {
+		reBool, err = mongoDbStruct.BatchUpdateUrlByIds(updateWhere, insertShortNum, updateData)
+		if err != nil {
+			logs.Error("Action mongoDbStruct.BatchUpdateUrlByIds, err: ", err.Error())
+		}
+	}
+	return reBool, err
 }

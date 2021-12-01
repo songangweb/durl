@@ -5,8 +5,9 @@ import (
 	"durl/app/share/dao/db"
 	"durl/app/share/tool"
 	"github.com/beego/beego/v2/core/logs"
+	"reflect"
+	"strconv"
 )
-
 
 type getXsrfTokenData struct {
 	Token string `json:"token"`
@@ -32,7 +33,7 @@ func (c *Controller) GetXsrfToken() {
 
 type setShortUrlReq struct {
 	Url            string `form:"url" valid:"Required"`
-	ExpirationTime int    `form:"expirationTime"`
+	ExpirationTime int    `form:"expirationTime" valid:"Match(/([0-9]{10}$)|([0])/);Max(9999999999)"`
 }
 
 type setShortUrlDataResp struct {
@@ -89,11 +90,7 @@ func (c *Controller) SetShortUrl() {
 	return
 }
 
-type delShortKeyReq struct {
-	Key string `form:"key" valid:"Required"`
-}
-
-// 函数名称: DelShortKey
+// 函数名称: DelShortUrl
 // 功能: 根据单个短链删除短链接
 // 输入参数:
 //     key: 短链结果
@@ -103,43 +100,37 @@ type delShortKeyReq struct {
 // 注意事项:
 // 作者: # leon # 2021/11/18 5:44 下午 #
 
-func (c *Controller) DelShortKey() {
+func (c *Controller) DelShortUrl() {
 
-	req := delShortKeyReq{}
-	// 效验请求参数格式
-	c.BaseCheckParams(&req)
+	id := c.Ctx.Input.Param(":id")
 
-	shortKey := req.Key
-
-	if !tool.DisposeShortKey(req.Key) {
-		c.ErrorMessage(comm.ErrParamInvalid,comm.MsgParseFormErr)
+	// 查询此短链
+	var where map[string][]interface{}
+	where = make(map[string][]interface{})
+	where["id"] = append(where["id"], "=", id)
+	where["is_del"] = append(where["is_del"], "=", 0)
+	urlInfo := db.GetShortUrlInfo(where)
+	if urlInfo.ShortNum == 0 {
+		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
 		return
 	}
-
-	shortNum := tool.Base62Decode(shortKey)
 
 	// 删除此短链
-	_, err := db.DelUrlByShortNum(shortNum)
+	_, err := db.DelUrlById(id, urlInfo.ShortNum)
 	if err != nil {
 		logs.Error("Action DelShortKey, err: ", err.Error())
-		c.ErrorMessage(comm.ErrSysDb,comm.MsgNotOk)
+		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)
 		return
 	}
-	c.FormatResp(comm.OK,comm.OK,comm.MsgOk)
+	c.FormatResp(comm.OK, comm.OK, comm.MsgOk)
 	return
 }
 
 type updateShortUrlReq struct {
-	Key            string `form:"key"  valid:"Required"`
-	Url            string `form:"url"`
-	IsFrozen       int    `form:"isFrozen"`
-	ExpirationTime int64  `form:"expirationTime"`
+	Url            string `form:"url" valid:"Required"`
+	IsFrozen       int    `form:"isFrozen" valid:"Range(0,1)"`
+	ExpirationTime int    `form:"expirationTime" valid:"Match(/([0-9]{10}$)|([0])/);Max(9999999999)"`
 }
-
-//type updateShortUrlResp struct {
-//	Code int    `json:"code"`
-//	Msg  string `json:"msg"`
-//}
 
 // 函数名称: UpdateShortUrl
 // 功能: 根据短链修改短链接信息
@@ -160,43 +151,35 @@ func (c *Controller) UpdateShortUrl() {
 	// 效验请求参数格式
 	c.BaseCheckParams(&req)
 
-	// 效验 key
-	shortKey := req.Key
-	if !tool.DisposeShortKey(req.Key) {
-		c.ErrorMessage(comm.ErrParamInvalid,comm.MsgParseFormErr)
+	id := c.Ctx.Input.Param(":id")
+
+	// 查询此短链
+	var where map[string][]interface{}
+	where = make(map[string][]interface{})
+	where["id"] = append(where["id"], "=", id)
+	where["is_del"] = append(where["is_del"], "=", 0)
+	urlInfo := db.GetShortUrlInfo(where)
+	if urlInfo.ShortNum == 0 {
+		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
 		return
 	}
-	shortNum := tool.Base62Decode(shortKey)
 
 	// 初始化需要更新的内容
 	updateData := make(map[string]interface{})
-
-	if req.ExpirationTime !=0 {
-		updateData["expirationTime"] = req.ExpirationTime
-	}
-
-	if req.Url !="" {
-		updateData["url"] = req.Url
-	}
-
-	updateData["isFrozen"] = req.IsFrozen
-
-	if len(updateData) == 0 {
-		c.ErrorMessage(comm.ErrParamMiss,comm.MsgParseFormErr)
-		return
-	}
+	updateData["expiration_time"] = req.ExpirationTime
+	updateData["full_url"] = req.Url
+	updateData["is_frozen"] = req.IsFrozen
 
 	// 修改此短链信息
-	_, err := db.UpdateUrlByShortNum(shortNum, &updateData)
+	_, err := db.UpdateUrlById(id, urlInfo.ShortNum, updateData)
 	if err != nil {
-		c.ErrorMessage(comm.ErrSysDb,comm.MsgNotOk)
+		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)
 		return
 	}
 
-	c.FormatResp(comm.OK,comm.OK,comm.MsgOk)
+	c.FormatResp(comm.OK, comm.OK, comm.MsgOk)
 	return
 }
-
 
 type getShortUrlListReq struct {
 	Url  string `form:"url"`
@@ -205,12 +188,12 @@ type getShortUrlListReq struct {
 }
 
 type getShortUrlListDataResp struct {
-	Id             interface{}    `json:"id"`
-	ShortNum       int    `json:"shor_url"`
-	FullUrl        string `json:"full_url"`
-	ExpirationTime int    `json:"expiration_time"`
-	IsFrozen       int8   `json:"is_frozen"`
-	CreateTime     int    `json:"create_time"`
+	Id             interface{} `json:"id"`
+	ShortNum       int         `json:"shor_url"`
+	FullUrl        string      `json:"full_url"`
+	ExpirationTime int         `json:"expiration_time"`
+	IsFrozen       int8        `json:"is_frozen"`
+	CreateTime     int         `json:"create_time"`
 }
 
 // 函数名称: GetShortUrlList
@@ -242,10 +225,10 @@ func (c *Controller) GetShortUrlList() {
 	// key 是原url模糊搜索
 	var where map[string][]interface{}
 	where = make(map[string][]interface{})
-	where["is_del"] = append(where["is_del"],"=",0)
+	where["is_del"] = append(where["is_del"], "=", 0)
 	// 拼接条件进行检索
 	if req.Url != "" {
-		where["full_url"] = append(where["full_url"], "like",req.Url)
+		where["full_url"] = append(where["full_url"], "like", req.Url)
 	}
 	data := db.GetShortUrlList(where, req.Page, req.Size)
 
@@ -267,7 +250,277 @@ func (c *Controller) GetShortUrlList() {
 		One.CreateTime = queueStruct.CreateTime
 		list = append(list, &One)
 	}
-	c.FormatInterfaceListResp(comm.OK,comm.OK,total,comm.MsgOk,list)
+	c.FormatInterfaceListResp(comm.OK, comm.OK, total, comm.MsgOk, list)
 	return
 
+}
+
+// 函数名称: GetShortUrlInfo
+// 功能: 获取url详情
+// 输入参数:
+//     id: 短链id
+// 输出参数:
+// 返回: 短链详情
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/11/26 10:59 上午 #
+
+func (c *Controller) GetShortUrlInfo() {
+
+	id := c.Ctx.Input.Param(":id")
+
+	// 查询此短链
+	var where map[string][]interface{}
+	where = make(map[string][]interface{})
+	where["id"] = append(where["id"], "=", id)
+	where["is_del"] = append(where["is_del"], "=", 0)
+	urlInfo := db.GetShortUrlInfo(where)
+	if urlInfo.ShortNum == 0 {
+		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
+		return
+	}
+	c.FormatInterfaceResp(comm.OK, comm.OK, comm.MsgOk, urlInfo)
+	return
+}
+
+// 函数名称: FrozenShortUrl
+// 功能: 冻结ShortUrl
+// 输入参数:
+//     id: 短链id
+// 输出参数:
+// 返回: 冻结操作结果
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/11/26 1:56 下午 #
+
+func (c *Controller) FrozenShortUrl() {
+
+	id := c.Ctx.Input.Param(":id")
+
+	// 查询此短链
+	var where map[string][]interface{}
+	where = make(map[string][]interface{})
+	where["id"] = append(where["id"], "=", id)
+	where["is_del"] = append(where["is_del"], "=", 0)
+	urlInfo := db.GetShortUrlInfo(where)
+	if urlInfo.ShortNum == 0 {
+		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
+		return
+	}
+
+	// 冻结/解冻ShortUrl
+	updateData := make(map[string]interface{})
+	if urlInfo.IsFrozen == 0 {
+		updateData["is_frozen"] = 1
+	} else {
+		updateData["is_frozen"] = 0
+	}
+
+	_, err := db.UpdateUrlById(id, urlInfo.ShortNum, updateData)
+	if err != nil {
+		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)
+		return
+	}
+	c.FormatResp(comm.OK, comm.OK, comm.MsgOk)
+	return
+}
+
+type BatchFrozenShortUrlReq struct {
+	Ids      []string `from:"ids" valid:"Required"`
+	IsFrozen int      `from:"isFrozen" valid:"Range(0,1)"`
+}
+
+type BatchFrozenShortUrlRes struct {
+	RequestCount int
+	UpdateCount  int
+	ErrIds       []string
+}
+
+// 函数名称: BatchFrozenShortUrl
+// 功能: 批量冻结/解冻Url
+// 输入参数:
+//		BatchFrozenShortUrlReq{}
+// 输出参数:
+// 返回: BatchFrozenShortUrlRes{}
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/11/26 2:15 下午 #
+
+func (c *Controller) BatchFrozenShortUrl() {
+
+	req := BatchFrozenShortUrlReq{}
+
+	c.BaseCheckParams(&req)
+
+	// 查询待操作Url信息
+	var where map[string][]interface{}
+	where = make(map[string][]interface{})
+	where["id"] = append(where["id"], "in", req.Ids)
+	where["is_del"] = append(where["is_del"], "=", 0)
+	data := db.GetAllShortUrl(where)
+
+	if data == nil {
+		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
+		return
+	}
+
+	var updateIds []string
+	var errIds []string
+	var insertShortNum []int
+	// 提交id数量与查询出的数据量不一致
+	// 需要以数据库数据为准筛选出差集，准备进行错误返回
+	requestCount := len(req.Ids)
+	updateCount := len(data)
+	if updateCount != requestCount {
+
+		// 将请求操作的id 提为key
+		mapData := make(map[string]interface{})
+		if vType := reflect.TypeOf(data[0].Id); vType.Name() == "int" {
+			for _, v := range data {
+				mapData[strconv.Itoa(v.Id.(int))] = v.ShortNum
+			}
+		} else {
+			for _, v := range data {
+				mapData[v.Id.(string)] = v.ShortNum
+			}
+		}
+
+		for _, v := range req.Ids {
+			if mapData[v] != nil {
+				updateIds = append(updateIds, v)
+				insertShortNum = append(insertShortNum, mapData[v].(int))
+			} else {
+				errIds = append(errIds, v)
+			}
+		}
+
+	} else {
+		updateIds = req.Ids
+		for _, vv := range data {
+			insertShortNum = append(insertShortNum, vv.ShortNum)
+		}
+	}
+
+	// 正确数据进行批量操作
+	// 批量冻结/解冻Url
+	updateData := map[string]interface{}{"is_frozen": req.IsFrozen}
+	var updateWhere map[string][]interface{}
+	updateWhere = make(map[string][]interface{})
+	updateWhere["id"] = append(updateWhere["id"], "in", updateIds)
+
+	_, err := db.BatchUpdateUrlByIds(updateWhere, insertShortNum, updateData)
+	if err != nil {
+		c.FormatInterfaceResp(comm.OK, comm.OK, comm.MsgOk, &BatchFrozenShortUrlRes{
+			RequestCount: requestCount,
+			UpdateCount:  0,
+			ErrIds:       req.Ids,
+		})
+		return
+	}
+	res := BatchFrozenShortUrlRes{
+		RequestCount: requestCount,
+		UpdateCount:  updateCount,
+		ErrIds:       errIds,
+	}
+	c.FormatInterfaceResp(comm.OK, comm.OK, comm.MsgOk, &res)
+	return
+}
+
+type BatchDelShortUrlReq struct {
+	Ids []string `from:"ids" valid:"Required"`
+}
+
+type BatchDelShortUrlRes struct {
+	RequestCount int
+	DelCount     int
+	ErrIds       []string
+}
+
+// 函数名称: BatchDelShortUrl
+// 功能: 批量删除ShortUrl
+// 输入参数:
+//     BatchDelShortUrlReq struct
+// 输出参数:
+//	   BatchDelShortUrlRes struct
+// 返回: 操作结果
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/12/1 1:41 下午 #
+
+func (c *Controller) BatchDelShortUrl() {
+
+	req := BatchDelShortUrlReq{}
+
+	c.BaseCheckParams(&req)
+
+	// 查询待操作Url信息
+	var where map[string][]interface{}
+	where = make(map[string][]interface{})
+	where["id"] = append(where["id"], "in", req.Ids)
+	where["is_del"] = append(where["is_del"], "=", 0)
+	data := db.GetAllShortUrl(where)
+	if data == nil {
+		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
+		return
+	}
+
+	var updateIds []string
+	var errIds []string
+	var insertShortNum []int
+	// 提交id数量与查询出的数据量不一致
+	// 需要以数据库数据为准筛选出差集，准备进行错误返回
+	requestCount := len(req.Ids)
+	updateCount := len(data)
+	if updateCount != requestCount {
+
+		// 将请求操作的id 提为key
+		mapData := make(map[string]interface{})
+		if vType := reflect.TypeOf(data[0].Id); vType.Name() == "int" {
+			for _, v := range data {
+				mapData[strconv.Itoa(v.Id.(int))] = v.ShortNum
+			}
+		} else {
+			for _, v := range data {
+				mapData[v.Id.(string)] = v.ShortNum
+			}
+		}
+
+		for _, v := range req.Ids {
+			if mapData[v] != nil {
+				updateIds = append(updateIds, v)
+				insertShortNum = append(insertShortNum, mapData[v].(int))
+			} else {
+				errIds = append(errIds, v)
+			}
+		}
+
+	} else {
+		updateIds = req.Ids
+		for _, vv := range data {
+			insertShortNum = append(insertShortNum, vv.ShortNum)
+		}
+	}
+
+	// 进行删除操作
+	updateData := map[string]interface{}{"is_del": 1}
+	var updateWhere map[string][]interface{}
+	updateWhere = make(map[string][]interface{})
+	updateWhere["id"] = append(updateWhere["id"], "in", updateIds)
+
+	_, err := db.BatchUpdateUrlByIds(updateWhere, insertShortNum, updateData)
+	if err != nil {
+		c.FormatInterfaceResp(comm.OK, comm.OK, comm.MsgOk, &BatchDelShortUrlRes{
+			RequestCount: requestCount,
+			DelCount:     0,
+			ErrIds:       req.Ids,
+		})
+		return
+	}
+	res := BatchDelShortUrlRes{
+		RequestCount: requestCount,
+		DelCount:     updateCount,
+		ErrIds:       errIds,
+	}
+	c.FormatInterfaceResp(comm.OK, comm.OK, comm.MsgOk, &res)
+	return
 }

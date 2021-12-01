@@ -15,14 +15,14 @@ const (
 //  @状态原因: 服务器不理解客户端的请求, 未做任何处理!
 //  @错误码
 const (
-	ErrBadReq              = 400001 // 非法请求
-	ErrParamMiss           = 400002 // 参数缺失
-	ErrParamInvalid        = 400003 // 参数非法
-	ErrHeadInvalid        = 400004 // 报头非法
-	ErrBodyInvalid        = 400005 // 报体非法
-	ErrSignDataInvalid   = 400006 // 签名数据非法
-	ErrRepeatCommit      = 400007 // 禁止重复提交
-	ErrDuplicateEntry    = 400008 // 参数冲突
+	ErrBadReq           = 400001 // 非法请求
+	ErrParamMiss        = 400002 // 参数缺失
+	ErrParamInvalid     = 400003 // 参数非法
+	ErrHeadInvalid      = 400004 // 报头非法
+	ErrBodyInvalid      = 400005 // 报体非法
+	ErrSignDataInvalid  = 400006 // 签名数据非法
+	ErrRepeatCommit     = 400007 // 禁止重复提交
+	ErrDuplicateEntry   = 400008 // 参数冲突
 	ErrParamExceedLimit = 400009 // 参数长度超出范围
 )
 
@@ -41,7 +41,7 @@ const (
 //  @状态原因: 用户通过了身份验证, 但是不具有访问资源所需的权限!
 //  @错误码
 const (
-	ErrForbidden         = 403001 // 访问受限
+	ErrForbidden       = 403001 // 访问受限
 	ErrUsrFrozen       = 403002 // 用户被冻结
 	ErrBusinessFrozen  = 403003 // 业务线被冻结
 	ErrActionForbidden = 403004 // 操作行为受限
@@ -98,7 +98,7 @@ const (
 //  @状态原因: 客户端的请求次数超过限额!
 //  @错误码
 const (
-	ErrTooManyReq        = 429001 // 请求次数超过限制
+	ErrTooManyReq    = 429001 // 请求次数超过限制
 	ErrBusReoTooMany = 429002 // 超过业务频控限制
 	ErrAppReoTooMany = 429003 // 请求次数超过限制
 )
@@ -111,16 +111,16 @@ const (
 const (
 	ErrInternalServerError = 500001 // 服务器内部错误
 	ErrTaskError           = 500002 // 任务池错误
-	ErrSysTooBusy       = 500002 // 系统繁忙
-	ErrSysRpc            = 500003 // RPC异常
+	ErrSysTooBusy          = 500002 // 系统繁忙
+	ErrSysRpc              = 500003 // RPC异常
 	ErrSysDb               = 500004 // 数据库异常
-	ErrSysMysql          = 500005 // MYSQL异常
-	ErrSysRedis          = 500006 // REDIS异常
-	ErrSysMongo          = 500007 // MONGO异常
-	ErrSysSeoExhaustion = 500008 // 序列号耗尽
-	ErrSysHttp          = 500009 // HTTP请求失败
-	ErrMakeDir           = 500010 // 创建目录失败
-	ErrBackendConfig     = 500011 // 后台数据配置错误
+	ErrSysMysql            = 500005 // MYSQL异常
+	ErrSysRedis            = 500006 // REDIS异常
+	ErrSysMongo            = 500007 // MONGO异常
+	ErrSysSeoExhaustion    = 500008 // 序列号耗尽
+	ErrSysHttp             = 500009 // HTTP请求失败
+	ErrMakeDir             = 500010 // 创建目录失败
+	ErrBackendConfig       = 500011 // 后台数据配置错误
 )
 
 // ErrSvcUnavailable Service unavailable
