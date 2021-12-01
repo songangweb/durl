@@ -316,7 +316,7 @@ func (b *BaseController) TooManyRequests(code int, message string) {
 // 作者: # leon # 2021/11/18 5:31 下午 #
 
 func (b *BaseController) BaseCheckParams(req interface{}) {
-	controllerName, actionName := b.GetControllerAndAction()
+	_, actionName := b.GetControllerAndAction()
 	method := b.Ctx.Request.Method
 	var err error
 	if method == "GET" {
@@ -324,22 +324,22 @@ func (b *BaseController) BaseCheckParams(req interface{}) {
 	} else {
 		err = json.Unmarshal(b.Ctx.Input.RequestBody, req)
 	}
-
 	if err != nil {
-		logs.Info("Method "+method+" Controller "+controllerName+" Action "+actionName+", err: ", err.Error())
+		logs.Info("BaseCheckParams() -"+" Action: "+actionName+"  err: ", err.Error())
 		b.ErrorMessage(ErrParamMiss, MsgParseFormErr)
 	}
 
 	valid := validation.Validation{}
-	c, err := valid.Valid(req)
+	ok, err := valid.Valid(req)
 	if err != nil {
-		logs.Info("Method "+method+" Controller "+controllerName+" Action "+actionName+", err: ", err.Error())
+		logs.Info("BaseCheckParams() -"+" Action: "+actionName+"  err: ", err.Error())
 		b.ErrorMessage(ErrParamMiss, MsgParseFormErr)
 	}
-	if !c {
+	if !ok {
 		for _, err := range valid.Errors {
-			logs.Info("Method "+method+" Controller "+controllerName+" Action "+actionName+", err: ", err.Key, err.Message)
+			logs.Info("BaseCheckParams() -"+" Action: "+actionName+"  err: ", err.Key, err.Message)
 		}
 		b.ErrorMessage(ErrParamInvalid, MsgParseFormErr)
 	}
+
 }

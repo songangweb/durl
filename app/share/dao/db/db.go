@@ -121,8 +121,8 @@ func QueueLastId() (id interface{}) {
 }
 
 type GetQueueListByIdRe struct {
-	Id       interface{}
-	ShortNum int
+	Id       interface{} `json:"id"`
+	ShortNum int         `json:"shortNum"`
 }
 
 // GetQueueListById 获取需要处理的任务数据列表
@@ -159,9 +159,9 @@ func GetQueueListById(id interface{}) []*GetQueueListByIdRe {
 }
 
 type GetCacheUrlAllByLimitRe struct {
-	ShortNum       int
-	FullUrl        string
-	ExpirationTime int
+	ShortNum       int    `json:"shortNum"`
+	FullUrl        string `json:"fullUrl"`
+	ExpirationTime int    `json:"expirationTime"`
 }
 
 // GetCacheUrlAllByLimit 查询出符合条件的全部url
@@ -237,9 +237,9 @@ func ReturnShortNumPeriod() (Step int, MaxNum int, err error) {
 }
 
 type InsertUrlOneReq struct {
-	ShortNum       int
-	FullUrl        string
-	ExpirationTime int
+	ShortNum       int    `json:"shortNum"`
+	FullUrl        string `json:"fullUrl"`
+	ExpirationTime int    `json:"expirationTime"`
 }
 
 // InsertUrlOne 插入一条数据 url
@@ -362,9 +362,9 @@ func UpdateUrlById(id string, shortNum int, data map[string]interface{}) (reBool
 }
 
 type getFullUrlByShortNumReq struct {
-	ShortNum       int
-	FullUrl        string
-	ExpirationTime int
+	ShortNum       int    `json:"shortNum"`
+	FullUrl        string `json:"fullUrl"`
+	ExpirationTime int    `json:"expirationTime"`
 }
 
 func GetFullUrlByshortNum(shortNum int) *getFullUrlByShortNumReq {
@@ -399,12 +399,13 @@ func GetFullUrlByshortNum(shortNum int) *getFullUrlByShortNumReq {
 
 // url列表结构体
 type GetShortUrlListRes struct {
-	Id             interface{}
-	ShortNum       int
-	FullUrl        string
-	ExpirationTime int
-	IsFrozen       int8
-	CreateTime     int
+	Id             interface{} `json:"id"`
+	ShortNum       int         `json:"shortNum"`
+	FullUrl        string      `json:"fullUrl"`
+	ExpirationTime int         `json:"expirationTime"`
+	IsFrozen       int8        `json:"isFrozen"`
+	CreateTime     int         `json:"createTime"`
+	UpdateTime     int         `json:"updateTime"`
 }
 
 // 函数名称: GetShortUrlList
@@ -436,6 +437,7 @@ func GetShortUrlList(where map[string][]interface{}, page, size int) []*GetShort
 				One.ExpirationTime = queueStruct.ExpirationTime
 				One.IsFrozen = queueStruct.IsFrozen
 				One.CreateTime = queueStruct.CreateTime
+				One.UpdateTime = queueStruct.UpdateTime
 				returnList = append(returnList, &One)
 			}
 		}
@@ -452,6 +454,7 @@ func GetShortUrlList(where map[string][]interface{}, page, size int) []*GetShort
 				One.ExpirationTime = queueStruct.ExpirationTime
 				One.IsFrozen = queueStruct.IsFrozen
 				One.CreateTime = int(queueStruct.CreateTime.T)
+				One.UpdateTime = int(queueStruct.UpdateTime.T)
 				returnList = append(returnList, &One)
 			}
 		}
@@ -514,6 +517,7 @@ func GetShortUrlInfo(where map[string][]interface{}) *GetShortUrlListRes {
 			Info.ExpirationTime = detail.ExpirationTime
 			Info.IsFrozen = detail.IsFrozen
 			Info.CreateTime = detail.CreateTime
+			Info.UpdateTime = detail.UpdateTime
 			return &Info
 		}
 	} else {
@@ -528,6 +532,7 @@ func GetShortUrlInfo(where map[string][]interface{}) *GetShortUrlListRes {
 			Info.ExpirationTime = detail.ExpirationTime
 			Info.IsFrozen = detail.IsFrozen
 			Info.CreateTime = int(detail.CreateTime.T)
+			Info.UpdateTime = int(detail.UpdateTime.T)
 			return &Info
 		}
 	}

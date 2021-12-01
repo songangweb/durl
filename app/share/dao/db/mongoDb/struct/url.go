@@ -3,7 +3,6 @@ package mongoDbStruct
 import (
 	"context"
 	"durl/app/share/dao/db/mongoDb"
-	"durl/app/share/dao/db/queryBuilder"
 	"durl/app/share/tool"
 	_ "github.com/go-sql-driver/mysql"
 	"go.mongodb.org/mongo-driver/bson"
@@ -282,7 +281,7 @@ func GetShortUrlList(where map[string][]interface{}, page, size int) ([]*UrlStru
 	var err error
 
 	var U UrlStruct
-	filter := query.GetWhereStrMongo(where)
+	filter := getWhereStrMongo(where)
 	collection, err := mongoDb.Engine.Collection(U.TableName()).Clone()
 	if collection == nil {
 		return all, err
@@ -318,7 +317,7 @@ func GetShortUrlList(where map[string][]interface{}, page, size int) ([]*UrlStru
 
 func GetShortUrlListCount(where map[string][]interface{}) (int64, error) {
 	var U UrlStruct
-	filter := query.GetWhereStrMongo(where)
+	filter := getWhereStrMongo(where)
 	collection, err := mongoDb.Engine.Collection(U.TableName()).Clone()
 	if collection == nil {
 		return 0, err
@@ -351,7 +350,7 @@ func GetShortUrlInfo(where map[string][]interface{}) (*UrlStruct, error) {
 		return nil, err
 	}
 
-	filter := query.GetWhereStrMongo(where)
+	filter := getWhereStrMongo(where)
 	err = collection.FindOne(context.Background(), filter).Decode(&urlDetail)
 	if err != nil {
 		return &urlDetail, err
@@ -375,7 +374,7 @@ func GetAllShortUrl(where map[string][]interface{}) ([]*UrlStruct, error) {
 	var err error
 
 	var U UrlStruct
-	filter := query.GetWhereStrMongo(where)
+	filter := getWhereStrMongo(where)
 	collection, err := mongoDb.Engine.Collection(U.TableName()).Clone()
 	if collection == nil {
 		return all, err
@@ -419,7 +418,7 @@ func BatchUpdateUrlByIds(updateWhere map[string][]interface{}, insertShortNum []
 	if collection == nil {
 		return false, nil
 	}
-	filter := query.GetWhereStrMongo(updateWhere)
+	filter := getWhereStrMongo(updateWhere)
 
 	err = mongoDb.Engine.Client().UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
 		err = sessionContext.StartTransaction()

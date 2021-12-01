@@ -1,7 +1,6 @@
 package xormDbStruct
 
 import (
-	"durl/app/share/dao/db/queryBuilder"
 	"durl/app/share/dao/db/xormDb"
 	"durl/app/share/tool"
 	_ "github.com/go-sql-driver/mysql"
@@ -227,9 +226,9 @@ func UpdateUrlById(id string, shortNum int, data map[string]interface{}) (bool, 
 
 func GetShortUrlList(where map[string][]interface{}, page, size int) ([]UrlStruct, error) {
 	urlList := make([]UrlStruct, 0)
-	whereStr, bindValue := query.GetWhereStr(where)
+	whereStr, bindValue := getWhereStr(where)
 	err := xormDb.Engine.
-		Select("id,short_num,full_url,expiration_time,is_frozen,create_time").
+		Select("id,short_num,full_url,expiration_time,is_frozen,create_time,update_time").
 		Where(whereStr, bindValue...).
 		Limit(size, (page-1)*size).
 		Find(&urlList)
@@ -250,7 +249,7 @@ func GetShortUrlList(where map[string][]interface{}, page, size int) ([]UrlStruc
 
 func GetShortUrlListTotal(where map[string][]interface{}) (int64, error) {
 	urlCount := new(UrlStruct)
-	whereStr, bindValue := query.GetWhereStr(where)
+	whereStr, bindValue := getWhereStr(where)
 	total, err := xormDb.Engine.
 		Where(whereStr, bindValue...).
 		Count(urlCount)
@@ -271,7 +270,7 @@ func GetShortUrlListTotal(where map[string][]interface{}) (int64, error) {
 
 func GetShortUrlInfo(where map[string][]interface{}) (*UrlStruct, error) {
 	urlDetail := new(UrlStruct)
-	whereStr, bindValue := query.GetWhereStr(where)
+	whereStr, bindValue := getWhereStr(where)
 	_, err := xormDb.Engine.
 		Where(whereStr, bindValue...).
 		Get(urlDetail)
@@ -290,7 +289,7 @@ func GetShortUrlInfo(where map[string][]interface{}) (*UrlStruct, error) {
 
 func GetAllShortUrl(where map[string][]interface{}) ([]UrlStruct, error) {
 	urlList := make([]UrlStruct, 0)
-	sql, args := query.GetWhereStr(where)
+	sql, args := getWhereStr(where)
 	err := xormDb.Engine.
 		Where(sql, args...).
 		Find(&urlList)
@@ -316,7 +315,7 @@ func BatchUpdateUrlByIds(updateWhere map[string][]interface{}, insertShortNum []
 
 	err := session.Begin()
 
-	sql, args := query.GetWhereStr(updateWhere)
+	sql, args := getWhereStr(updateWhere)
 	// 修改数据
 	_, err = session.Table(new(UrlStruct)).Where(sql, args...).Update(updateData)
 	if err != nil {
