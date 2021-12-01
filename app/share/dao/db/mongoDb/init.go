@@ -30,7 +30,7 @@ func InitMongo(m MongoConf) {
 
 	var err error
 	// 连接数据库
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(m.Uri).SetMaxPoolSize(uint64(m.SetMaxPoolSize)))
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(m.Uri).SetMaxPoolSize(uint64(m.SetMaxPoolSize)).SetRetryWrites(false))
 	if err != nil {
 		defer fmt.Println(comm2.MsgCheckDbMongoConf)
 		panic(comm2.MsgDbMongoConfError + ", err: " + fmt.Errorf("%v", err).Error())

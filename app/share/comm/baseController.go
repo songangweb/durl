@@ -1,8 +1,10 @@
 package comm
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
+	"github.com/beego/beego/v2/core/validation"
 	"net/http"
 	"time"
 
@@ -25,7 +27,7 @@ type BaseResp struct {
 }
 
 type BaseListResp struct {
-	Len  int         `json:"len"`
+	Len  int64       `json:"len"`
 	List interface{} `json:"list"`
 }
 
@@ -131,7 +133,7 @@ func (b *BaseController) FormatInterfaceResp(httpCode, code int, message string,
 // 注意事项:
 // 作者: # ang.song # 2021-11-17 15:15:42 #
 
-func (b *BaseController) FormatInterfaceListResp(httpCode, code, len int, message string, i interface{}) {
+func (b *BaseController) FormatInterfaceListResp(httpCode, code int, len int64, message string, i interface{}) {
 	b.Ctx.Output.SetStatus(httpCode)
 
 	// 为空时转换为 []
@@ -302,4 +304,42 @@ func (b *BaseController) UnprocessableEntity(code int, message string) {
 
 func (b *BaseController) TooManyRequests(code int, message string) {
 	b.sendResponse(http.StatusTooManyRequests, code, message)
+}
+
+// 函数名称: BaseCheckParams
+// 功能: 接口参数基础校验
+// 输入参数:
+// 输出参数:
+// 返回: 返回校验结果
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/11/18 5:31 下午 #
+
+func (b *BaseController) BaseCheckParams(req interface{}) {
+	controllerName, actionName := b.GetControllerAndAction()
+	method := b.Ctx.Request.Method
+	var err error
+	if method == "GET" {
+		err = b.ParseForm(req)
+	} else {
+		err = json.Unmarshal(b.Ctx.Input.RequestBody, req)
+	}
+
+	if err != nil {
+		logs.Info("Method "+method+" Controller "+controllerName+" Action "+actionName+", err: ", err.Error())
+		b.ErrorMessage(ErrParamMiss, MsgParseFormErr)
+	}
+
+	valid := validation.Validation{}
+	c, err := valid.Valid(req)
+	if err != nil {
+		logs.Info("Method "+method+" Controller "+controllerName+" Action "+actionName+", err: ", err.Error())
+		b.ErrorMessage(ErrParamMiss, MsgParseFormErr)
+	}
+	if !c {
+		for _, err := range valid.Errors {
+			logs.Info("Method "+method+" Controller "+controllerName+" Action "+actionName+", err: ", err.Key, err.Message)
+		}
+		b.ErrorMessage(ErrParamInvalid, MsgParseFormErr)
+	}
 }
