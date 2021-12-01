@@ -8,7 +8,6 @@ import (
 	"github.com/beego/beego/v2/core/validation"
 )
 
-
 type GetXsrfTokenResp struct {
 	Code  int    `json:"code"`
 	Msg   string `json:"msg"`
