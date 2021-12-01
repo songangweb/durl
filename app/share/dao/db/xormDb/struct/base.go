@@ -1,7 +1,7 @@
 package xormDbStruct
 
 import (
-	"github.com/go-xorm/builder"
+	"github.com/xormplus/builder"
 )
 
 // 函数名称: getWhereStr
