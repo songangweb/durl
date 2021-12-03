@@ -48,3 +48,26 @@ func getWhereStrMongo(where map[string][]interface{}) (filter map[string]interfa
 	}
 	return
 }
+
+// 函数名称: ids2MongoId
+// 功能: 字符串mongoIds批量转为mongoObjectIds
+// 输入参数:
+//     id 字符串mongoIds
+// 输出参数:
+//	   Mongo ObjectID []interface{}
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2021/12/3 3:09 下午 #
+
+func ids2MongoId(id interface{}) []interface{} {
+
+	var mongoId []interface{}
+	if _, ok := id.([]string); ok == true {
+		for _, v := range id.([]string) {
+			ids, _ := primitive.ObjectIDFromHex(v)
+			mongoId = append(mongoId, ids)
+		}
+	}
+	return mongoId
+}

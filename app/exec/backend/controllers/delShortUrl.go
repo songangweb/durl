@@ -21,10 +21,8 @@ func (c *Controller) DelShortUrl() {
 	id := c.Ctx.Input.Param(":id")
 
 	// 查询此短链
-	where := make(map[string][]interface{})
-	where["id"] = append(where["id"], "=", id)
-	where["is_del"] = append(where["is_del"], "=", 0)
-	urlInfo := db.GetShortUrlInfo(where)
+	fields := map[string]interface{}{"id": id}
+	urlInfo := db.GetShortUrlInfo(fields)
 	if urlInfo.ShortNum == 0 {
 		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
 		return

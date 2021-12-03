@@ -2,6 +2,7 @@ package mongoDbStruct
 
 import (
 	"context"
+	"durl/app/share/comm"
 	"durl/app/share/dao/db/mongoDb"
 	"durl/app/share/tool"
 	_ "github.com/go-sql-driver/mysql"
@@ -276,17 +277,29 @@ func UpdateUrlById(id string, shortNum int, data map[string]interface{}) (bool, 
 // 注意事项:
 // 作者: # leon # 2021/11/19 3:30 下午 #
 
-func GetShortUrlList(where map[string][]interface{}, page, size int) ([]*UrlStruct, error) {
+func GetShortUrlList(fields map[string]interface{}, page, size int) ([]*UrlStruct, error) {
 	var all []*UrlStruct
 	var err error
 
 	var U UrlStruct
-	filter := getWhereStrMongo(where)
+
 	collection, err := mongoDb.Engine.Collection(U.TableName()).Clone()
 	if collection == nil {
 		return all, err
 	}
-	findOptions := options.Find().SetLimit(int64(size)).SetSkip(int64((page - 1) * size))
+
+	filter := bson.M{"is_del": comm.FalseDel}
+	if fields["fullUrl"] != nil {
+		filter["full_url"] = bson.M{"$regex": fields["fullUrl"], "$options": "i"}
+	}
+	if fields["startTime"] != nil {
+		filter["create_time"] = bson.M{"$gte": primitive.Timestamp{T: uint32(fields["startTime"].(int))}}
+	}
+	if fields["endTime"] != nil {
+		filter["create_time"] = bson.M{"$lte": primitive.Timestamp{T: uint32(fields["endTime"].(int))}}
+	}
+
+	findOptions := options.Find().SetLimit(int64(size)).SetSkip(int64((page - 1) * size)).SetSort(bson.M{"create_time": -1})
 	cur, err := collection.Find(context.Background(), filter, findOptions)
 	if err != nil {
 		return all, err
@@ -315,13 +328,24 @@ func GetShortUrlList(where map[string][]interface{}, page, size int) ([]*UrlStru
 // 注意事项:
 // 作者: # leon # 2021/11/22 7:33 下午 #
 
-func GetShortUrlListCount(where map[string][]interface{}) (int64, error) {
+func GetShortUrlListCount(fields map[string]interface{}) (int64, error) {
 	var U UrlStruct
-	filter := getWhereStrMongo(where)
+
 	collection, err := mongoDb.Engine.Collection(U.TableName()).Clone()
 	if collection == nil {
 		return 0, err
 	}
+	filter := bson.M{"is_del": comm.FalseDel}
+	if fields["fullUrl"] != nil {
+		filter["full_url"] = bson.M{"$regex": fields["fullUrl"], "$options": "i"}
+	}
+	if fields["startTime"] != nil {
+		filter["create_time"] = bson.M{"$gte": primitive.Timestamp{T: uint32(fields["startTime"].(int))}}
+	}
+	if fields["endTime"] != nil {
+		filter["create_time"] = bson.M{"$lte": primitive.Timestamp{T: uint32(fields["endTime"].(int))}}
+	}
+
 	count, err := collection.CountDocuments(context.Background(), filter)
 	if err != nil {
 		return 0, err
@@ -341,7 +365,7 @@ func GetShortUrlListCount(where map[string][]interface{}) (int64, error) {
 // 注意事项:
 // 作者: # leon # 2021/11/24 5:11 下午 #
 
-func GetShortUrlInfo(where map[string][]interface{}) (*UrlStruct, error) {
+func GetShortUrlInfo(fields map[string]interface{}) (*UrlStruct, error) {
 
 	var urlDetail UrlStruct
 
@@ -350,7 +374,15 @@ func GetShortUrlInfo(where map[string][]interface{}) (*UrlStruct, error) {
 		return nil, err
 	}
 
-	filter := getWhereStrMongo(where)
+	filter := bson.M{"is_del": comm.FalseDel}
+	if fields["id"] != nil {
+		oid, err := primitive.ObjectIDFromHex(fields["id"].(string))
+		if err != nil {
+			return nil, err
+		}
+		filter["_id"] = oid
+	}
+
 	err = collection.FindOne(context.Background(), filter).Decode(&urlDetail)
 	if err != nil {
 		return &urlDetail, err
@@ -369,12 +401,18 @@ func GetShortUrlInfo(where map[string][]interface{}) (*UrlStruct, error) {
 // 注意事项:
 // 作者: # leon # 2021/11/30 6:13 下午 #
 
-func GetAllShortUrl(where map[string][]interface{}) ([]*UrlStruct, error) {
+func GetAllShortUrl(fields map[string]interface{}) ([]*UrlStruct, error) {
 	var all []*UrlStruct
 	var err error
 
 	var U UrlStruct
-	filter := getWhereStrMongo(where)
+	filter := bson.M{"is_del": comm.FalseDel}
+	if fields["id"] != nil {
+		// mongo id 处理
+		mongoId := ids2MongoId(fields["id"])
+		filter["_id"] = bson.M{"$in": mongoId}
+	}
+
 	collection, err := mongoDb.Engine.Collection(U.TableName()).Clone()
 	if collection == nil {
 		return all, err
@@ -409,7 +447,7 @@ func GetAllShortUrl(where map[string][]interface{}) ([]*UrlStruct, error) {
 // 注意事项:
 // 作者: # leon # 2021/11/30 6:19 下午 #
 
-func BatchUpdateUrlByIds(updateWhere map[string][]interface{}, insertShortNum []int, updateData map[string]interface{}) (bool, error) {
+func BatchUpdateUrlByIds(updateWhere map[string]interface{}, insertShortNum []int, updateData map[string]interface{}) (bool, error) {
 
 	var UrlDetail UrlStruct
 
@@ -418,7 +456,13 @@ func BatchUpdateUrlByIds(updateWhere map[string][]interface{}, insertShortNum []
 	if collection == nil {
 		return false, nil
 	}
-	filter := getWhereStrMongo(updateWhere)
+
+	filter := bson.M{"is_del": comm.FalseDel}
+	if updateWhere["id"] != nil {
+		// mongo id 处理
+		mongoId := ids2MongoId(updateWhere["id"])
+		filter["_id"] = bson.M{"$in": mongoId}
+	}
 
 	err = mongoDb.Engine.Client().UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
 		err = sessionContext.StartTransaction()

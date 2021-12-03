@@ -420,12 +420,12 @@ type GetShortUrlListRes struct {
 // 注意事项:
 // 作者: # leon # 2021/11/19 3:27 下午 #
 
-func GetShortUrlList(where map[string][]interface{}, page, size int) []*GetShortUrlListRes {
+func GetShortUrlList(fields map[string]interface{}, page, size int) []*GetShortUrlListRes {
 
 	var returnList []*GetShortUrlListRes
 
 	if DbType == "xorm" {
-		list, err := xormDbStruct.GetShortUrlList(where, page, size)
+		list, err := xormDbStruct.GetShortUrlList(fields, page, size)
 		if err != nil {
 			logs.Error("Action xormDbStruct.GetShortUrlList, err: ", err.Error())
 		} else {
@@ -442,7 +442,7 @@ func GetShortUrlList(where map[string][]interface{}, page, size int) []*GetShort
 			}
 		}
 	} else {
-		list, err := mongoDbStruct.GetShortUrlList(where, page, size)
+		list, err := mongoDbStruct.GetShortUrlList(fields, page, size)
 		if err != nil {
 			logs.Error("Action mongoDbStruct.GetShortUrlList err :", err.Error())
 		} else {
@@ -473,22 +473,21 @@ func GetShortUrlList(where map[string][]interface{}, page, size int) []*GetShort
 // 注意事项:
 // 作者: # leon # 2021/11/23 6:21 下午 #
 
-func GetShortUrlListTotal(where map[string][]interface{}) int64 {
-	//var total int64
+func GetShortUrlListTotal(fields map[string]interface{}) int64 {
+
 	if DbType == "xorm" {
-		total, err := xormDbStruct.GetShortUrlListTotal(where)
+		total, err := xormDbStruct.GetShortUrlListTotal(fields)
 		if err != nil {
 			logs.Error("Action xormDbStruct.GetShortUrlListTotal, err: ", err.Error())
 		}
 		return total
 	} else {
-		total, err := mongoDbStruct.GetShortUrlListCount(where)
+		total, err := mongoDbStruct.GetShortUrlListCount(fields)
 		if err != nil {
 			logs.Error("Action mongoDbStruct.GetShortUrlListTotal err :", err.Error())
 		}
 		return total
 	}
-	//return total
 
 }
 
@@ -502,11 +501,11 @@ func GetShortUrlListTotal(where map[string][]interface{}) int64 {
 // 注意事项:
 // 作者: # leon # 2021/11/24 5:09 下午 #
 
-func GetShortUrlInfo(where map[string][]interface{}) *GetShortUrlListRes {
+func GetShortUrlInfo(fields map[string]interface{}) *GetShortUrlListRes {
 
 	var Info GetShortUrlListRes
 	if DbType == "xorm" {
-		detail, err := xormDbStruct.GetShortUrlInfo(where)
+		detail, err := xormDbStruct.GetShortUrlInfo(fields)
 		if err != nil {
 			logs.Error("Action xormDbStruct.GetShortUrlInfo, err: ", err.Error())
 		}
@@ -521,7 +520,7 @@ func GetShortUrlInfo(where map[string][]interface{}) *GetShortUrlListRes {
 			return &Info
 		}
 	} else {
-		detail, err := mongoDbStruct.GetShortUrlInfo(where)
+		detail, err := mongoDbStruct.GetShortUrlInfo(fields)
 		if err != nil {
 			logs.Error("Action mongoDbStruct.GetShortUrlInfo, err: ", err.Error())
 		}
@@ -550,12 +549,12 @@ func GetShortUrlInfo(where map[string][]interface{}) *GetShortUrlListRes {
 // 注意事项:
 // 作者: # leon # 2021/11/30 6:12 下午 #
 
-func GetAllShortUrl(where map[string][]interface{}) []*GetShortUrlListRes {
+func GetAllShortUrl(fields map[string]interface{}) []*GetShortUrlListRes {
 
 	var returnList []*GetShortUrlListRes
 
 	if DbType == "xorm" {
-		list, err := xormDbStruct.GetAllShortUrl(where)
+		list, err := xormDbStruct.GetAllShortUrl(fields)
 		if err != nil {
 			logs.Error("Action xormDbStruct.GetAllShortUrl, err: ", err.Error())
 		} else {
@@ -571,7 +570,7 @@ func GetAllShortUrl(where map[string][]interface{}) []*GetShortUrlListRes {
 			}
 		}
 	} else {
-		list, err := mongoDbStruct.GetAllShortUrl(where)
+		list, err := mongoDbStruct.GetAllShortUrl(fields)
 		if err != nil {
 			logs.Error("Action mongoDbStruct.GetAllShortUrl err :", err.Error())
 		} else {
@@ -603,7 +602,7 @@ func GetAllShortUrl(where map[string][]interface{}) []*GetShortUrlListRes {
 // 注意事项:
 // 作者: # leon # 2021/11/30 6:19 下午 #
 
-func BatchUpdateUrlByIds(updateWhere map[string][]interface{}, insertShortNum []int, updateData map[string]interface{}) (reBool bool, err error) {
+func BatchUpdateUrlByIds(updateWhere map[string]interface{}, insertShortNum []int, updateData map[string]interface{}) (reBool bool, err error) {
 
 	if DbType == "xorm" {
 		reBool, err = xormDbStruct.BatchUpdateUrlByIds(updateWhere, insertShortNum, updateData)

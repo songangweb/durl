@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	comm "durl/app/share/comm"
+	"durl/app/share/comm"
 	"durl/app/share/dao/db"
 	"reflect"
 	"strconv"
@@ -13,8 +13,8 @@ type BatchFrozenShortUrlReq struct {
 }
 
 type BatchFrozenShortUrlRes struct {
-	RequestCount int `json:"requestCount"`
-	UpdateCount  int `json:"updateCount"`
+	RequestCount int      `json:"requestCount"`
+	UpdateCount  int      `json:"updateCount"`
 	ErrIds       []string `json:"errIds"`
 }
 
@@ -35,10 +35,8 @@ func (c *Controller) BatchFrozenShortUrl() {
 	c.BaseCheckParams(&req)
 
 	// 查询待操作Url信息
-	where := make(map[string][]interface{})
-	where["id"] = append(where["id"], "in", req.Ids)
-	where["is_del"] = append(where["is_del"], "=", 0)
-	data := db.GetAllShortUrl(where)
+	fields := map[string]interface{}{"id": req.Ids}
+	data := db.GetAllShortUrl(fields)
 
 	if data == nil {
 		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
@@ -85,9 +83,7 @@ func (c *Controller) BatchFrozenShortUrl() {
 	// 正确数据进行批量操作
 	// 批量冻结/解冻Url
 	updateData := map[string]interface{}{"is_frozen": req.IsFrozen}
-
-	updateWhere := make(map[string][]interface{})
-	updateWhere["id"] = append(updateWhere["id"], "in", updateIds)
+	updateWhere := map[string]interface{}{"id": updateIds}
 
 	_, err := db.BatchUpdateUrlByIds(updateWhere, insertShortNum, updateData)
 	if err != nil {
