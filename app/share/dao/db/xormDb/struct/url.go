@@ -1,9 +1,11 @@
 package xormDbStruct
 
 import (
+	"durl/app/share/comm"
 	"durl/app/share/dao/db/xormDb"
 	"durl/app/share/tool"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/xormplus/builder"
 )
 
 type UrlStruct struct {
@@ -224,14 +226,21 @@ func UpdateUrlById(id string, shortNum int, data map[string]interface{}) (bool, 
 // 注意事项:
 // 作者: # leon # 2021/11/22 11:25 上午 #
 
-func GetShortUrlList(where map[string][]interface{}, page, size int) ([]UrlStruct, error) {
+func GetShortUrlList(fields map[string]interface{}, page, size int) ([]UrlStruct, error) {
 	urlList := make([]UrlStruct, 0)
-	whereStr, bindValue := getWhereStr(where)
-	err := xormDb.Engine.
-		Select("id,short_num,full_url,expiration_time,is_frozen,create_time,update_time").
-		Where(whereStr, bindValue...).
-		Limit(size, (page-1)*size).
-		Find(&urlList)
+
+	q := xormDb.Engine.Where("is_del = ? ", comm.FalseDel)
+	if fields["fullUrl"] != nil {
+		q.And(builder.Like{"full_url", fields["fullUrl"].(string)})
+	}
+	if fields["startTime"] != nil {
+		q.And(builder.Gte{"create_time": fields["startTime"]})
+	}
+	if fields["endTime"] != nil {
+		q.And(builder.Lte{"create_time": fields["endTime"]})
+	}
+
+	err := q.Limit(size, (page-1)*size).Desc("create_time").Find(&urlList)
 	return urlList, err
 }
 
@@ -247,12 +256,21 @@ func GetShortUrlList(where map[string][]interface{}, page, size int) ([]UrlStruc
 // 注意事项:
 // 作者: # leon # 2021/11/22 11:27 上午 #
 
-func GetShortUrlListTotal(where map[string][]interface{}) (int64, error) {
+func GetShortUrlListTotal(fields map[string]interface{}) (int64, error) {
 	urlCount := new(UrlStruct)
-	whereStr, bindValue := getWhereStr(where)
-	total, err := xormDb.Engine.
-		Where(whereStr, bindValue...).
-		Count(urlCount)
+
+	q := xormDb.Engine.Where("is_del = ? ", comm.FalseDel)
+	if fields["fullUrl"] != nil {
+		q.And(builder.Like{"full_url", fields["fullUrl"].(string)})
+	}
+	if fields["startTime"] != nil {
+		q.And(builder.Gte{"create_time": fields["startTime"]})
+	}
+	if fields["endTime"] != nil {
+		q.And(builder.Lte{"create_time": fields["endTime"]})
+	}
+
+	total, err := q.Count(urlCount)
 	return total, err
 }
 
@@ -268,12 +286,14 @@ func GetShortUrlListTotal(where map[string][]interface{}) (int64, error) {
 // 注意事项:
 // 作者: # leon # 2021/11/24 5:10 下午 #
 
-func GetShortUrlInfo(where map[string][]interface{}) (*UrlStruct, error) {
+func GetShortUrlInfo(fields map[string]interface{}) (*UrlStruct, error) {
 	urlDetail := new(UrlStruct)
-	whereStr, bindValue := getWhereStr(where)
-	_, err := xormDb.Engine.
-		Where(whereStr, bindValue...).
-		Get(urlDetail)
+
+	q := xormDb.Engine.Where("is_del = ? ", comm.FalseDel)
+	if fields["id"] != nil {
+		q.And(builder.Eq{"id": fields["id"]})
+	}
+	_, err := q.Get(urlDetail)
 	return urlDetail, err
 }
 
@@ -287,12 +307,14 @@ func GetShortUrlInfo(where map[string][]interface{}) (*UrlStruct, error) {
 // 注意事项:
 // 作者: # leon # 2021/11/30 6:13 下午 #
 
-func GetAllShortUrl(where map[string][]interface{}) ([]UrlStruct, error) {
+func GetAllShortUrl(fields map[string]interface{}) ([]UrlStruct, error) {
 	urlList := make([]UrlStruct, 0)
-	sql, args := getWhereStr(where)
-	err := xormDb.Engine.
-		Where(sql, args...).
-		Find(&urlList)
+
+	q := xormDb.Engine.Where("is_del = ? ", comm.FalseDel)
+	if fields["id"] != nil {
+		q.And(builder.Eq{"id": fields["id"]})
+	}
+	err := q.Find(&urlList)
 	return urlList, err
 }
 
@@ -308,16 +330,19 @@ func GetAllShortUrl(where map[string][]interface{}) ([]UrlStruct, error) {
 // 注意事项:
 // 作者: # leon # 2021/11/30 6:19 下午 #
 
-func BatchUpdateUrlByIds(updateWhere map[string][]interface{}, insertShortNum []int, updateData map[string]interface{}) (bool, error) {
+func BatchUpdateUrlByIds(updateWhere map[string]interface{}, insertShortNum []int, updateData map[string]interface{}) (bool, error) {
 
 	session := xormDb.Engine.NewSession()
 	defer session.Close()
 
 	err := session.Begin()
 
-	sql, args := getWhereStr(updateWhere)
 	// 修改数据
-	_, err = session.Table(new(UrlStruct)).Where(sql, args...).Update(updateData)
+	q := session.Table(new(UrlStruct)).Where("is_del = ?", comm.FalseDel)
+	if updateWhere["id"] != nil {
+		q.And(builder.Eq{"id": updateWhere["id"]})
+	}
+	_, err = q.Update(updateData)
 	if err != nil {
 		_ = session.Rollback()
 		return false, err

@@ -12,8 +12,8 @@ type BatchDelShortUrlReq struct {
 }
 
 type BatchDelShortUrlRes struct {
-	RequestCount int `json:"requestCount"`
-	DelCount     int `json:"delCount"`
+	RequestCount int      `json:"requestCount"`
+	DelCount     int      `json:"delCount"`
 	ErrIds       []string `json:"errIds"`
 }
 
@@ -35,10 +35,8 @@ func (c *Controller) BatchDelShortUrl() {
 	c.BaseCheckParams(&req)
 
 	// 查询待操作Url信息
-	where := make(map[string][]interface{})
-	where["id"] = append(where["id"], "in", req.Ids)
-	where["is_del"] = append(where["is_del"], "=", 0)
-	data := db.GetAllShortUrl(where)
+	fields := map[string]interface{}{"id": req.Ids}
+	data := db.GetAllShortUrl(fields)
 	if data == nil {
 		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
 		return
@@ -82,10 +80,9 @@ func (c *Controller) BatchDelShortUrl() {
 	}
 
 	// 进行删除操作
-	updateData := map[string]interface{}{"is_del": 1}
-
-	updateWhere := make(map[string][]interface{})
-	updateWhere["id"] = append(updateWhere["id"], "in", updateIds)
+	updateData := map[string]interface{}{"is_del": comm.TureDel}
+	updateWhere := map[string]interface{}{"id": updateIds}
+	updateWhere["id"] = updateIds
 
 	_, err := db.BatchUpdateUrlByIds(updateWhere, insertShortNum, updateData)
 	if err != nil {

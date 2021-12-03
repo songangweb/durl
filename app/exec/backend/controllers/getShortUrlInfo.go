@@ -3,7 +3,18 @@ package controllers
 import (
 	comm "durl/app/share/comm"
 	"durl/app/share/dao/db"
+	"durl/app/share/tool"
 )
+
+type ShortUrlInfoRes struct {
+	Id             interface{} `json:"id"`
+	ShortNum       string      `json:"shortNum"`
+	FullUrl        string      `json:"fullUrl"`
+	ExpirationTime int         `json:"expirationTime"`
+	IsFrozen       int8        `json:"isFrozen"`
+	CreateTime     int         `json:"createTime"`
+	UpdateTime     int         `json:"updateTime"`
+}
 
 // 函数名称: GetShortUrlInfo
 // 功能: 获取url详情
@@ -17,14 +28,24 @@ import (
 
 func (c *Controller) GetShortUrlInfo() {
 	id := c.Ctx.Input.Param(":id")
+
 	// 查询此短链
-	where := make(map[string][]interface{})
-	where["id"] = append(where["id"], "=", id)
-	urlInfo := db.GetShortUrlInfo(where)
+	fields := map[string]interface{}{"id": id}
+	urlInfo := db.GetShortUrlInfo(fields)
 	if urlInfo.ShortNum == 0 {
 		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
 		return
 	}
-	c.FormatInterfaceResp(comm.OK, comm.OK, comm.MsgOk, urlInfo)
+	// 短链转化
+	shortNumKey := tool.Base62Encode(urlInfo.ShortNum)
+	c.FormatInterfaceResp(comm.OK, comm.OK, comm.MsgOk, ShortUrlInfoRes{
+		Id:             urlInfo.Id,
+		ShortNum:       shortNumKey,
+		FullUrl:        urlInfo.FullUrl,
+		ExpirationTime: urlInfo.ExpirationTime,
+		IsFrozen:       urlInfo.IsFrozen,
+		CreateTime:     urlInfo.CreateTime,
+		UpdateTime:     urlInfo.UpdateTime,
+	})
 	return
 }
