@@ -26,7 +26,7 @@ func (c *Controller) GetXsrfToken() {
 }
 
 type setShortUrlReq struct {
-	Url            string `form:"url" valid:"Required"`
+	Url            string `form:"shortUrl" valid:"Required"`
 	ExpirationTime int    `form:"expirationTime"`
 }
 
@@ -39,7 +39,7 @@ type setShortUrlResp struct {
 type setShortUrlDataResp struct {
 	Key            string `json:"key"`
 	Durl           string `json:"durl"`
-	Url            string `json:"url"`
+	Url            string `json:"shortUrl"`
 	ExpirationTime int    `json:"expirationTime"`
 }
 
@@ -215,7 +215,7 @@ func (c *Controller) DelShortKey() {
 
 type updateShortUrlReq struct {
 	Key            string `form:"key"  valid:"Required"`
-	Url            string `form:"url"`
+	Url            string `form:"shortUrl"`
 	IsFrozen       int    `form:"isFrozen"`
 	ExpirationTime int64  `form:"expirationTime"`
 }
@@ -290,9 +290,9 @@ func (c *Controller) UpdateShortUrl() {
 		updateData["expirationTime"] = expirationTimeInt
 	}
 
-	urlStr := c.GetString("url")
+	urlStr := c.GetString("shortUrl")
 	if urlStr != "" {
-		updateData["url"] = urlStr
+		updateData["shortUrl"] = urlStr
 	}
 
 	isFrozenInt, err := c.GetInt("isFrozen")

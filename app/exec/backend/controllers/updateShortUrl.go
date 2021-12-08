@@ -6,7 +6,7 @@ import (
 )
 
 type updateShortUrlReq struct {
-	Url            string `form:"url" valid:"Required"`
+	FullUrl            string `form:"fullUrl" valid:"Required"`
 	IsFrozen       int    `form:"isFrozen" valid:"Range(0,1)"`
 	ExpirationTime int    `form:"expirationTime" valid:"Match(/([0-9]{10}$)|([0])/);Max(9999999999)"`
 }
@@ -14,8 +14,7 @@ type updateShortUrlReq struct {
 // 函数名称: UpdateShortUrl
 // 功能: 根据短链修改短链接信息
 // 输入参数:
-//     key: 短链内容
-//	   url: 原始url
+//	   fullUrl: 原始url
 //	   isFrozen: 是否冻结
 //	   expirationTime: 过期时间
 // 输出参数:
@@ -24,7 +23,7 @@ type updateShortUrlReq struct {
 // 注意事项:
 // 作者: # leon # 2021/11/18 5:46 下午 #
 
-func (c *Controller) UpdateShortUrl() {
+func (c *BackendController) UpdateShortUrl() {
 
 	req := updateShortUrlReq{}
 	// 效验请求参数格式
@@ -43,7 +42,7 @@ func (c *Controller) UpdateShortUrl() {
 	// 初始化需要更新的内容
 	updateData := make(map[string]interface{})
 	updateData["expiration_time"] = req.ExpirationTime
-	updateData["full_url"] = req.Url
+	updateData["full_url"] = req.FullUrl
 	updateData["is_frozen"] = req.IsFrozen
 
 	// 修改此短链信息

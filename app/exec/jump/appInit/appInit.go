@@ -5,6 +5,7 @@ import (
 	"durl/app/exec/jump/routers"
 	"durl/app/share/dao/db"
 	"durl/app/share/log"
+	"fmt"
 	"github.com/beego/beego/v2/core/config"
 )
 
@@ -65,4 +66,7 @@ func initApp(c *Conf) {
 	// jump初始化
 	c.MemoryCache.InitJump()
 
+	// 布隆过滤器初始化
+	fmt.Println("布隆过滤器初始化")
+	controllers.InitBloomFilter()
 }

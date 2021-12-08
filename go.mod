@@ -9,6 +9,8 @@ require (
 	github.com/agrison/go-tablib v0.0.0-20160310143025-4930582c22ee // indirect
 	github.com/agrison/mxj v0.0.0-20160310142625-1269f8afb3b4 // indirect
 	github.com/beego/beego/v2 v2.0.1
+	github.com/bits-and-blooms/bitset v1.2.1 // indirect
+	github.com/bits-and-blooms/bloom/v3 v3.1.0
 	github.com/bndr/gotabulate v1.1.2 // indirect
 	github.com/clbanning/mxj v1.8.4 // indirect
 	github.com/fatih/structs v1.1.0 // indirect

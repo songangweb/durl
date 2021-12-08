@@ -153,7 +153,7 @@ func UpdateUrlByShortNum(shortNum int, data *map[string]interface{}) (bool, erro
 			dataVal["is_frozen"] = val
 			continue
 		}
-		if key == "url" {
+		if key == "shortUrl" {
 			dataVal["full_url"] = val
 			continue
 		}

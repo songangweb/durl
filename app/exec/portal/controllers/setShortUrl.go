@@ -10,13 +10,13 @@ import (
 )
 
 type setShortUrlReq struct {
-	Url            string `form:"url" valid:"Required"`
+	Url            string `form:"shortUrl" valid:"Required"`
 	ExpirationTime int    `form:"expirationTime"`
 }
 
 type setShortUrlDataResp struct {
 	Key            string `json:"key"`
-	Url            string `json:"url"`
+	Url            string `json:"shortUrl"`
 	ExpirationTime int    `json:"expirationTime"`
 }
 
@@ -57,7 +57,7 @@ func (c *Controller) setShortUrlParam(req *setShortUrlReq) {
 // 函数名称: SetShortUrl
 // 功能: 根据 单个url 设置短链
 // 输入参数:
-//		url: 原始url
+//		shortUrl: 原始url
 //		expirationTime: 过期时间
 // 输出参数:
 // 返回: 返回请求结果

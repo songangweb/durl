@@ -8,7 +8,7 @@ import (
 
 type ShortUrlInfoRes struct {
 	Id             interface{} `json:"id"`
-	ShortNum       string      `json:"shortNum"`
+	ShortKey       string      `json:"shortKey"`
 	FullUrl        string      `json:"fullUrl"`
 	ExpirationTime int         `json:"expirationTime"`
 	IsFrozen       int8        `json:"isFrozen"`
@@ -19,14 +19,14 @@ type ShortUrlInfoRes struct {
 // 函数名称: GetShortUrlInfo
 // 功能: 获取url详情
 // 输入参数:
-//     id: 短链id
+//     id: 数据id
 // 输出参数:
 // 返回: 短链详情
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/26 10:59 上午 #
 
-func (c *Controller) GetShortUrlInfo() {
+func (c *BackendController) GetShortUrlInfo() {
 	id := c.Ctx.Input.Param(":id")
 
 	// 查询此短链
@@ -37,10 +37,10 @@ func (c *Controller) GetShortUrlInfo() {
 		return
 	}
 	// 短链转化
-	shortNumKey := tool.Base62Encode(urlInfo.ShortNum)
+	shortKey := tool.Base62Encode(urlInfo.ShortNum)
 	c.FormatInterfaceResp(comm.OK, comm.OK, comm.MsgOk, ShortUrlInfoRes{
 		Id:             urlInfo.Id,
-		ShortNum:       shortNumKey,
+		ShortKey:       shortKey,
 		FullUrl:        urlInfo.FullUrl,
 		ExpirationTime: urlInfo.ExpirationTime,
 		IsFrozen:       urlInfo.IsFrozen,

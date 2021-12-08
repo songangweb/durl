@@ -9,14 +9,14 @@ import (
 // 函数名称: DelShortUrl
 // 功能: 根据单个短链删除短链接
 // 输入参数:
-//     key: 短链结果
+//     id: 数据id
 // 输出参数:
 // 返回: 返回请求结果
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/18 5:44 下午 #
 
-func (c *Controller) DelShortUrl() {
+func (c *BackendController) DelShortUrl() {
 
 	id := c.Ctx.Input.Param(":id")
 

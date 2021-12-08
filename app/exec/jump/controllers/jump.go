@@ -17,7 +17,6 @@ func (c *Controller) Jump() {
 		reStatusFound(c, fmt.Sprint(fullUrl))
 		return
 	}
-
 	// 判断错误url缓存是否存在, 如果存在返回404
 	if _, _, ok := BedUrlCache.Get(shortKey); ok {
 		reStatusNotFoundAndCache(c, shortKey)
@@ -45,8 +44,7 @@ func reStatusNotFoundAndCache(c *Controller, shortKey string) {
 
 // 返回跳转页面
 func reStatusFound(c *Controller, fullUrl string) {
-	c.Data["url"] = fullUrl
-
+	c.Data["shortUrl"] = fullUrl
 	// 百度统计key
 	sConf, _ := config.String("Statistical_Baidu")
 	if sConf != "" {
@@ -54,6 +52,7 @@ func reStatusFound(c *Controller, fullUrl string) {
 	}
 
 	c.TplName = "jump.html"
+	_ = c.Render()
 }
 
 // 返回跳转页面,并加入缓存

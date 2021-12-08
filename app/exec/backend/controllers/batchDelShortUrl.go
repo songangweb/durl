@@ -28,7 +28,7 @@ type BatchDelShortUrlRes struct {
 // 注意事项:
 // 作者: # leon # 2021/12/1 1:41 下午 #
 
-func (c *Controller) BatchDelShortUrl() {
+func (c *BackendController) BatchDelShortUrl() {
 
 	req := BatchDelShortUrlReq{}
 
@@ -43,7 +43,7 @@ func (c *Controller) BatchDelShortUrl() {
 	}
 
 	var updateIds []string
-	var errIds []string
+	errIds := make([]string, 0)
 	var insertShortNum []int
 	// 提交id数量与查询出的数据量不一致
 	// 需要以数据库数据为准筛选出差集，准备进行错误返回

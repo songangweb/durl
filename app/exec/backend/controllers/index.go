@@ -3,7 +3,7 @@ package controllers
 import "github.com/beego/beego/v2/core/config"
 
 // Index 首页入口
-func (c *Controller) Index() {
+func (c *BackendController) Index() {
 	// xsrf 值
 	c.Data["xsrf_token"] = c.XSRFToken()
 

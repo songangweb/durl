@@ -21,7 +21,7 @@ func RouterHandler() {
 	web.Router("/xsrf-token", &controllers.Controller{}, "get:GetXsrfToken")
 
 	// 设置短链
-	web.Router("/url", &controllers.Controller{}, "post:SetShortUrl")
+	web.Router("/shortUrl", &controllers.Controller{}, "post:SetShortUrl")
 
 	web.ErrorHandler("404", pageNotFound)
 

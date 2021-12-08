@@ -18,7 +18,7 @@ type getXsrfTokenData struct {
 // 注意事项:
 // 作者: # ang.song # 2021-11-17 15:15:42 #
 
-func (c *Controller) GetXsrfToken() {
+func (c *BackendController) GetXsrfToken() {
 	data := &getXsrfTokenData{
 		Token: c.XSRFToken(),
 	}

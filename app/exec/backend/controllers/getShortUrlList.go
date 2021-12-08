@@ -7,26 +7,27 @@ import (
 )
 
 type getShortUrlListReq struct {
-	Url       string `form:"url"`
+	Url       string `form:"shortUrl"`
 	Page      int    `form:"page" valid:"Min(1)"`
 	Size      int    `form:"size" valid:"Range(1,500)"`
-	StartTime int    `from:"StartTime" valid:"Match(/([0-9]{10}$)|([0])/);Range(0,9999999999)"`
-	EndTime   int    `from:"EndTime" valid:"Match(/([0-9]{10}$)|([0])/);Range(0,9999999999)"`
+	StartTime int    `from:"startTime" valid:"Match(/([0-9]{10}$)|([0])/);Range(0,9999999999)"`
+	EndTime   int    `from:"endTime" valid:"Match(/([0-9]{10}$)|([0])/);Range(0,9999999999)"`
 }
 
 type getShortUrlListDataResp struct {
 	Id             interface{} `json:"id"`
-	ShortNum       string      `json:"shorUrl"`
+	ShortKey       string      `json:"shortKey"`
 	FullUrl        string      `json:"fullUrl"`
 	ExpirationTime int         `json:"expirationTime"`
 	IsFrozen       int8        `json:"isFrozen"`
 	CreateTime     int         `json:"createTime"`
+	UpdateTime     int         `json:"updateTime"`
 }
 
 // 函数名称: GetShortUrlList
 // 功能: 分页获取url数据
 // 输入参数:
-//   	url: 原始url
+//   	shortUrl: 原始url
 //		page: 页码  默认0
 //		size: 每页展示条数 默认 20  最大500
 // 输出参数:
@@ -35,7 +36,7 @@ type getShortUrlListDataResp struct {
 // 注意事项:
 // 作者: # leon # 2021/11/18 6:41 下午 #
 
-func (c *Controller) GetShortUrlList() {
+func (c *BackendController) GetShortUrlList() {
 	req := getShortUrlListReq{}
 	// 效验请求参数格式
 	c.BaseCheckParams(&req)
@@ -65,11 +66,12 @@ func (c *Controller) GetShortUrlList() {
 	for _, queueStruct := range data {
 		var One getShortUrlListDataResp
 		One.Id = queueStruct.Id
-		One.ShortNum = tool.Base62Encode(queueStruct.ShortNum)
+		One.ShortKey = tool.Base62Encode(queueStruct.ShortNum)
 		One.FullUrl = queueStruct.FullUrl
 		One.ExpirationTime = queueStruct.ExpirationTime
 		One.IsFrozen = queueStruct.IsFrozen
 		One.CreateTime = queueStruct.CreateTime
+		One.UpdateTime = queueStruct.UpdateTime
 		list = append(list, &One)
 	}
 	c.FormatInterfaceListResp(comm.OK, comm.OK, total, comm.MsgOk, list)

@@ -125,6 +125,7 @@ func (b *BaseController) FormatInterfaceResp(httpCode, code int, message string,
 // 输入参数:
 //     httpCode: http状态码
 //     code: code返回值
+//     len: 数据总条数
 //     message: msg返回值
 //     i: 自定义内容data
 // 输出参数:

@@ -15,12 +15,12 @@ func RouterHandler() {
 	web.Router("/xsrf-token", &controllers.Controller{}, "get:GetXsrfToken")
 
 	// 设置短链
-	web.Router("/url", &controllers.Controller{}, "post:SetShortUrl")
+	web.Router("/shortUrl", &controllers.Controller{}, "post:SetShortUrl")
 
 	// 修改短链
-	web.Router("/url", &controllers.Controller{}, "put:UpdateShortUrl")
+	web.Router("/shortUrl", &controllers.Controller{}, "put:UpdateShortUrl")
 
 	// 删除短链
-	web.Router("/url", &controllers.Controller{}, "delete:DelShortKey")
+	web.Router("/shortUrl", &controllers.Controller{}, "delete:DelShortKey")
 
 }

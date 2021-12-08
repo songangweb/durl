@@ -7,8 +7,7 @@ import (
 	"sync"
 )
 
-type Controller struct {
-	//web.Controller
+type BackendController struct {
 	comm.BaseController
 }
 

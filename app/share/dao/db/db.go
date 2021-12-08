@@ -55,6 +55,9 @@ func CheckMysqlTable() {
 	NewUrl := xormDbStruct.UrlStruct{}
 	tables[NewUrl.TableName()] = NewUrl
 
+	NewBlacklist := xormDbStruct.BlacklistStruct{}
+	tables[NewUrl.TableName()] = NewBlacklist
+
 	for tableName, tableStruct := range tables {
 		// 判断表是否已经存在, 如果已经存在则不自动创建
 		res, err := xormDb.Engine.IsTableExist(tableName)
@@ -242,7 +245,7 @@ type InsertUrlOneReq struct {
 	ExpirationTime int    `json:"expirationTime"`
 }
 
-// InsertUrlOne 插入一条数据 url
+// InsertUrlOne 插入一条数据 shortUrl
 func InsertUrlOne(urlStructReq *InsertUrlOneReq) (err error) {
 
 	if DbType == "xorm" {
@@ -316,7 +319,7 @@ func DelUrlById(id string, shortNum int) (reBool bool, err error) {
 	return reBool, err
 }
 
-// UpdateUrlByShortNum 插入一条数据 url
+// UpdateUrlByShortNum 插入一条数据 shortUrl
 func UpdateUrlByShortNum(shortNum int, data *map[string]interface{}) (reBool bool, err error) {
 
 	if DbType == "xorm" {
@@ -615,5 +618,233 @@ func BatchUpdateUrlByIds(updateWhere map[string]interface{}, insertShortNum []in
 			logs.Error("Action mongoDbStruct.BatchUpdateUrlByIds, err: ", err.Error())
 		}
 	}
+	return reBool, err
+}
+
+
+
+
+
+type InsertBlacklistOneReq struct {
+	Ip string `json:"ip"`
+}
+
+// 函数名称: InsertBlacklistOne
+// 功能: 添加黑名单数据
+// 输入参数:
+// 返回: 检索条件
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021/12/07 5:44 下午 #
+
+func InsertBlacklistOne(urlStructReq *InsertBlacklistOneReq) (err error) {
+
+	if DbType == "xorm" {
+		var reqOne xormDbStruct.BlacklistStruct
+		reqOne.Ip = urlStructReq.Ip
+		_, err = xormDbStruct.InsertBlacklistOne(reqOne)
+		if err != nil {
+			logs.Error("Action xormDbStruct.InsertBlacklistOne, err: ", err.Error())
+		}
+	} else {
+		//var reqOne mongoDbStruct.UrlStruct
+		//reqOne.ShortNum = urlStructReq.ShortNum
+		//reqOne.FullUrl = urlStructReq.FullUrl
+		//reqOne.ExpirationTime = urlStructReq.ExpirationTime
+		//_, err = mongoDbStruct.InsertUrlOne(reqOne)
+		//if err != nil {
+		//	logs.Error("Action mongoDbStruct.InsertUrlOne, err: ", err.Error())
+		//}
+	}
+
+	return err
+}
+
+// 黑名单列表结构体
+type GetBlacklistListRes struct {
+	Id         interface{} `json:"id"`
+	Ip         string      `json:"ip"`
+	CreateTime int         `json:"createTime"`
+	UpdateTime int         `json:"updateTime"`
+}
+
+// 函数名称: GetBlacklistInfo
+// 功能: 获取黑名单详情
+// 输入参数:
+//     where: 数据检索条件
+// 输出参数: *GetBlacklistListRes
+// 返回: 检索条件
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021/12/07 5:44 下午 #
+
+func GetBlacklistInfo(fields map[string]interface{}) *GetBlacklistListRes {
+
+	var Info GetBlacklistListRes
+	if DbType == "xorm" {
+		detail, err := xormDbStruct.GetBlacklistInfo(fields)
+		if err != nil {
+			logs.Error("Action xormDbStruct.GetBlacklistInfo, err: ", err.Error())
+		}
+		if detail != nil {
+			Info.Id = detail.Id
+			Info.Ip = detail.Ip
+			Info.CreateTime = detail.CreateTime
+			Info.UpdateTime = detail.UpdateTime
+			return &Info
+		}
+	} else {
+		//detail, err := mongoDbStruct.GetShortUrlInfo(fields)
+		//if err != nil {
+		//	logs.Error("Action mongoDbStruct.GetShortUrlInfo, err: ", err.Error())
+		//}
+		//if detail != nil {
+		//	Info.Id = detail.Id
+		//	Info.ShortNum = detail.ShortNum
+		//	Info.FullUrl = detail.FullUrl
+		//	Info.ExpirationTime = detail.ExpirationTime
+		//	Info.IsFrozen = detail.IsFrozen
+		//	Info.CreateTime = int(detail.CreateTime.T)
+		//	Info.UpdateTime = int(detail.UpdateTime.T)
+		//	return &Info
+		//}
+	}
+
+	return nil
+}
+
+// 函数名称: UpdateBlacklistById
+// 功能: 根据id修改黑名单信息
+// 输入参数:
+//     id: Blacklist数据id
+// 输出参数:
+// 返回: 修改操作结果
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021/12/07 5:44 下午 #
+
+func UpdateBlacklistById(id string, data map[string]interface{}) (reBool bool, err error) {
+
+	if DbType == "xorm" {
+		reBool, err = xormDbStruct.UpdateBlacklistById(id, data)
+		if err != nil {
+			logs.Error("Action xormDbStruct.UpdateBlacklistById, err: ", err.Error())
+		}
+	} else {
+		//reBool, err = mongoDbStruct.UpdateUrlById(id, data)
+		//if err != nil {
+		//	logs.Error("Action mongoDbStruct.UpdateUrlById, err: ", err.Error())
+		//}
+	}
+	return reBool, err
+}
+
+// 函数名称: GetBlacklistList
+// 功能: 查询url列表数据
+// 输入参数:
+//     where：sql搜索条件
+//     page：页码
+//     size：每页展示条数
+// 输出参数: []*GetBlacklistListRes
+// 返回: 返回结果
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021/12/07 5:44 下午 #
+
+func GetBlacklistList(fields map[string]interface{}, page, size int) []*GetBlacklistListRes {
+
+	var returnList []*GetBlacklistListRes
+
+	if DbType == "xorm" {
+		list, err := xormDbStruct.GetBlacklistList(fields, page, size)
+		if err != nil {
+			logs.Error("Action xormDbStruct.GetShortUrlList, err: ", err.Error())
+		} else {
+			for _, queueStruct := range list {
+				var One GetBlacklistListRes
+				One.Id = queueStruct.Id
+				One.Ip = queueStruct.Ip
+				One.CreateTime = queueStruct.CreateTime
+				One.UpdateTime = queueStruct.UpdateTime
+				returnList = append(returnList, &One)
+			}
+		}
+	} else {
+		//list, err := mongoDbStruct.GetShortUrlList(fields, page, size)
+		//if err != nil {
+		//	logs.Error("Action mongoDbStruct.GetShortUrlList err :", err.Error())
+		//} else {
+		//	for _, queueStruct := range list {
+		//		var One GetShortUrlListRes
+		//		One.Id = queueStruct.Id.Hex()
+		//		One.ShortNum = queueStruct.ShortNum
+		//		One.FullUrl = queueStruct.FullUrl
+		//		One.ExpirationTime = queueStruct.ExpirationTime
+		//		One.IsFrozen = queueStruct.IsFrozen
+		//		One.CreateTime = int(queueStruct.CreateTime.T)
+		//		One.UpdateTime = int(queueStruct.UpdateTime.T)
+		//		returnList = append(returnList, &One)
+		//	}
+		//}
+	}
+
+	return returnList
+}
+
+// 函数名称: GetBlacklistListTotal
+// 功能: 查询黑名单列表数据条数
+// 输入参数:
+//     where：业务搜索条件
+// 输出参数:
+// 返回: 结果条数
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021/12/07 5:44 下午 #
+
+func GetBlacklistListTotal(fields map[string]interface{}) int64 {
+
+	if DbType == "xorm" {
+		total, err := xormDbStruct.GetBlacklistListTotal(fields)
+		if err != nil {
+			logs.Error("Action xormDbStruct.GetBlacklistListTotal, err: ", err.Error())
+		}
+		return total
+	} else {
+		//total, err := mongoDbStruct.GetShortUrlListCount(fields)
+		//if err != nil {
+		//	logs.Error("Action mongoDbStruct.GetShortUrlListTotal err :", err.Error())
+		//}
+		//return total
+	}
+	return 1
+}
+
+
+// 函数名称: DelBlacklistById
+// 功能: 通过id删除黑名单数据
+// 输入参数:
+//     id: 数据id
+// 输出参数:
+//	   reBool bool
+//	   err error
+// 返回: 删除结果
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021/12/07 5:44 下午 #
+
+func DelBlacklistById(id string) (reBool bool, err error) {
+
+	if DbType == "xorm" {
+		reBool, err = xormDbStruct.DelBlacklistById(id)
+		if err != nil {
+			logs.Error("Action xormDbStruct.DelUrlById, err: ", err.Error())
+		}
+	} else {
+		//reBool, err = mongoDbStruct.DelUrlById(id, shortNum)
+		//if err != nil {
+		//	logs.Error("Action mongoDbStruct.DelUrlById, err: ", err.Error())
+		//}
+	}
+
 	return reBool, err
 }
