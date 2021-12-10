@@ -18,7 +18,12 @@ services:
       - ./db.conf:/durl/durl-jump/conf/db.conf
     ports:
       - '9092:8082'
-
+  durl-backend:
+    image: songangweb/durl-backend:v1.0.0
+    volumes:
+      - ./db.conf:/durl/durl-backend/conf/db.conf
+    ports:
+      - '9093:8083'
 
 ## ./db.conf 为替换配置文件，容器内程序配置使用默认数据库连接，需要在此选择挂载重新配置
 ## 可选择自己所需启动的容器、修改端口映射关系
