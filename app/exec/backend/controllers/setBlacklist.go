@@ -10,11 +10,10 @@ type setBlacklistReq struct {
 	Ip string `valid:"IP"`
 }
 
-// 函数名称: SetShortUrl
+// 函数名称: SetBlacklist
 // 功能: 根据 单个fullUrl设置短链
 // 输入参数:
-//		fullUrl: 原始url
-//		expirationTime: 过期时间
+//		Ip: Ip地址
 // 输出参数:
 // 返回: 返回请求结果
 // 实现描述:
