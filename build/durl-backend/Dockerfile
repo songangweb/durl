@@ -19,7 +19,7 @@ ENV RUN_MODE=$ENV APP_NAME="durl-backend"
 
 WORKDIR /durl/durl-backend
 
-COPY --from=builder /go/src/durl-portal/app/exec/backend/backend.tar.gz .
+COPY --from=builder /go/src/durl-backend/app/exec/backend/backend.tar.gz .
 
 RUN tar -zxvf backend.tar.gz \
     && rm -f backend.tar.gz
