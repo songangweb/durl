@@ -1,11 +1,9 @@
 package controllers
 
 import (
-	comm "durl/app/share/comm"
+	"durl/app/exec/jump/mcache"
 	"durl/app/share/dao/db"
-	"fmt"
 	"github.com/beego/beego/v2/server/web"
-	"github.com/songangweb/mcache"
 	"strconv"
 	"strings"
 	"time"
@@ -47,39 +45,26 @@ type UrlConf struct {
 	GoodUrlLen int
 	BedUrlLen  int
 }
+//
+//// GoodUrlCache shortUrl 内存缓存
+//var GoodUrlCache *mcache.ARCCache
+//
+//// BedUrlCache bed shortUrl 缓存
+//var BedUrlCache *mcache.LruCache
 
-// GoodUrlCache shortUrl 内存缓存
-var GoodUrlCache *mcache.ARCCache
+func InitJump(c mcache.Conf) {
 
-// BedUrlCache bed shortUrl 缓存
-var BedUrlCache *mcache.LruCache
-
-func (c UrlConf) InitJump() {
-
-	var err error
+	// 初始化缓存
+	mcache.InitCache(c)
 
 	// 获取任务队列表里最新的一条数据id
 	queueId := db.QueueLastId()
-
-	// 初始化Cache数据池
-	GoodUrlCache, err = mcache.NewARC(c.GoodUrlLen)
-	if err != nil {
-		defer fmt.Println(comm.MsgInitializeCacheError)
-		panic(comm.MsgInitializeCacheError + ", err: " + err.Error())
-	}
 
 	// 获取数据库中需要放到缓存的url
 	UrlList := db.GetCacheUrlAllByLimit(c.GoodUrlLen)
 	// 添加数据到缓存中
 	for i := 0; i < len(UrlList); i++ {
-		GoodUrlCache.Add(UrlList[i].ShortNum, UrlList[i].FullUrl, int64(UrlList[i].ExpirationTime))
-	}
-
-	// 初始化错误urlCache
-	BedUrlCache, err = mcache.NewLRU(c.BedUrlLen)
-	if err != nil {
-		defer fmt.Println(comm.MsgInitializeCacheError)
-		panic(comm.MsgInitializeCacheError + ", err: " + err.Error())
+		mcache.NewMcache.Gadd(UrlList[i].ShortNum, UrlList[i].FullUrl, int64(UrlList[i].ExpirationTime))
 	}
 
 	// 开启定时任务获取需要处理的数据
@@ -95,7 +80,7 @@ func taskDisposalQueue(queueId interface{}) {
 			queueId = list[count-1].Id
 			for _, val := range list {
 				shortNum := val.ShortNum
-				GoodUrlCache.Remove(shortNum)
+				mcache.NewMcache.Gremove(shortNum)
 			}
 		}
 		time.Sleep(30 * time.Second)
