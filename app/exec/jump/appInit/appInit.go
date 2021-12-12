@@ -1,8 +1,8 @@
 package appInit
 
 import (
+	"durl/app/exec/jump/cache"
 	"durl/app/exec/jump/controllers"
-	"durl/app/exec/jump/mcache"
 	"durl/app/exec/jump/routers"
 	"durl/app/share/dao/db"
 	"durl/app/share/log"
@@ -21,7 +21,7 @@ func Init() {
 type Conf struct {
 	Db          db.Conf
 	Log         log.Conf
-	MemoryCache mcache.Conf
+	MemoryCache cache.Conf
 }
 
 func initConf() (AppConf *Conf) {
@@ -46,7 +46,7 @@ func initConf() (AppConf *Conf) {
 	// log
 	AppConf.Log.Conf, _ = config.String(runmode + "::Log_Conf")
 
-	// memory mcache
+	// memory cache
 	AppConf.MemoryCache.GoodUrlLen, _ = config.Int(runmode + "::MemoryCache_GoodUrlLen")
 	AppConf.MemoryCache.BedUrlLen, _ = config.Int(runmode + "::MemoryCache_BedUrlLen")
 
@@ -64,8 +64,11 @@ func initApp(c *Conf) {
 	// 初始化路由组
 	routers.RouterHandler()
 
-	// jump初始化
-	controllers.InitJump(c.MemoryCache)
+	// 初始化url缓存
+	controllers.InitUrlCache(c.MemoryCache)
+
+	// 初始化黑名单
+	controllers.InitBlacklist()
 
 	// 布隆过滤器初始化
 	fmt.Println("布隆过滤器初始化")

@@ -848,3 +848,47 @@ func DelBlacklistById(id string) (reBool bool, err error) {
 
 	return reBool, err
 }
+
+
+
+// 函数名称: GetBlacklistAll
+// 功能: 获取符合条件的所有黑名单列表
+// 输入参数:
+// 输出参数:
+// 返回: 删除结果
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021/12/12 5:44 下午 #
+
+func GetBlacklistAll() []*GetBlacklistListRes {
+
+	var returnList []*GetBlacklistListRes
+
+	if DbType == "xorm" {
+		list, err := xormDbStruct.GetBlacklistAll()
+		if err != nil {
+			logs.Error("Action xormDbStruct.GetCacheUrlAllByLimit, err: ", err.Error())
+		} else {
+			for _, queueStruct := range list {
+				var One GetBlacklistListRes
+				One.Ip = queueStruct.Ip
+				returnList = append(returnList, &One)
+			}
+		}
+	} else {
+		//list, err := mongoDbStruct.GetCacheUrlAllByLimit(limit)
+		//if err != nil {
+		//	logs.Error("Action mongoDbStruct.GetCacheUrlAllByLimit err :", err.Error())
+		//} else {
+		//	for _, queueStruct := range list {
+		//		var One GetCacheUrlAllByLimitRe
+		//		One.ShortNum = queueStruct.ShortNum
+		//		One.FullUrl = queueStruct.FullUrl
+		//		One.ExpirationTime = queueStruct.ExpirationTime
+		//		returnList = append(returnList, &One)
+		//	}
+		//}
+	}
+
+	return returnList
+}

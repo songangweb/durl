@@ -165,12 +165,34 @@ func GetBlacklistListTotal(fields map[string]interface{}) (int64, error) {
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
 
 func GetBlacklistInfo(fields map[string]interface{}) (*BlacklistStruct, error) {
-	urlDetail := new(BlacklistStruct)
+	blacklistDetail := new(BlacklistStruct)
 
 	q := xormDb.Engine.Where("is_del = ? ", comm.FalseDel)
 	if fields["id"] != nil {
 		q.And(builder.Eq{"id": fields["id"]})
 	}
-	_, err := q.Get(urlDetail)
-	return urlDetail, err
+	_, err := q.Get(blacklistDetail)
+	return blacklistDetail, err
+}
+
+
+// 函数名称: GetBlacklistAll
+// 功能: 查询出符合条件的黑名单列表
+// 输入参数:
+//     where: 检索条件
+// 输出参数:
+//	   *BlacklistStruct: Blacklist结构
+//	   error
+// 返回: 检索结果
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021/12/12 5:44 下午 #
+
+func GetBlacklistAll() ([]BlacklistStruct, error) {
+	blacklistList := make([]BlacklistStruct, 0)
+	err := xormDb.Engine.
+		Where(" is_del = ?",
+			0).
+		Find(&blacklistList)
+	return blacklistList, err
 }
