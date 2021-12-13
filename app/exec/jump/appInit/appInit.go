@@ -6,7 +6,6 @@ import (
 	"durl/app/exec/jump/routers"
 	"durl/app/share/dao/db"
 	"durl/app/share/log"
-	"fmt"
 	"github.com/beego/beego/v2/core/config"
 )
 
@@ -70,7 +69,4 @@ func initApp(c *Conf) {
 	// 初始化黑名单
 	controllers.InitBlacklist()
 
-	// 布隆过滤器初始化
-	fmt.Println("布隆过滤器初始化")
-	//controllers.InitBloomFilter()
 }

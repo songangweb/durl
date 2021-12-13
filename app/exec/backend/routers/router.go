@@ -11,9 +11,6 @@ func RouterHandler() {
 	// backendapi初始化
 	controllers.InitCon()
 
-	// 获取xsrfToken
-	web.Router("/xsrf-token", &controllers.BackendController{}, "get:GetXsrfToken")
-
 	// 设置短链
 	web.Router("/url", &controllers.BackendController{}, "post:SetShortUrl")
 	// 修改短链
