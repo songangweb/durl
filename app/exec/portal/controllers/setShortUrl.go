@@ -10,13 +10,12 @@ import (
 )
 
 type setShortUrlReq struct {
-	Url            string `form:"shortUrl" valid:"Required"`
+	Url            string `form:"url" valid:"Required"`
 	ExpirationTime int    `form:"expirationTime"`
 }
 
 type setShortUrlDataResp struct {
-	Key            string `json:"key"`
-	Url            string `json:"shortUrl"`
+	ShortKey       string `json:"shortKey"`
 	ExpirationTime int    `json:"expirationTime"`
 }
 
@@ -93,8 +92,7 @@ func (c *Controller) SetShortUrl() {
 	shortKey := tool.Base62Encode(shortNum)
 
 	data := &setShortUrlDataResp{
-		Url:            req.Url,
-		Key:            shortKey,
+		ShortKey:       shortKey,
 		ExpirationTime: req.ExpirationTime,
 	}
 

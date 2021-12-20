@@ -28,4 +28,4 @@ EXPOSE 8083
 CMD ["/durl/durl-backend/backend"]
 
 ## 在根目录执行
-## docker build -f build/durl-portal/Dockerfile . -t durl-portal:v1.0.0
+## docker build -f build/durl-backend/Dockerfile . -t durl-backend:v1.0.1

@@ -270,7 +270,7 @@
 
         $.ajax({
             type : "POST",
-            url : "/url",
+            url : "/shortUrl",
             contentType:"json/application",
             data : JSON.stringify({
                 url : urlStr,
@@ -281,7 +281,7 @@
             },
             success : function(successData) {
                 if(successData.code === 200) {
-                    $("#body_content4_flex_content").html("durl.fun/" + successData.data.key);
+                    $("#body_content4_flex_content").html("durl.fun/" + successData.data.shortKey);
                 } else {
                     $("#body_content4_flex_content").html(successData.msg);
                 }
