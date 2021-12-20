@@ -47,8 +47,11 @@ func reStatusNotFoundAndCache(c *Controller, shortKey string) {
 // 返回跳转页面
 func reStatusFound(c *Controller, fullUrl string) {
 	c.Data["shortUrl"] = fullUrl
+
 	// 百度统计key
-	sConf, _ := config.String("Statistical_Baidu")
+	runmode, _ := config.String("runmode")
+	sConf, _ := config.String(runmode+ "::Baidu")
+
 	if sConf != "" {
 		c.Data["Statistical_Baidu_Key"] = sConf
 	}
