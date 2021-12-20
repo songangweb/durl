@@ -8,23 +8,6 @@ import (
 	"github.com/beego/beego/v2/core/validation"
 )
 
-type GetXsrfTokenResp struct {
-	Code  int    `json:"code"`
-	Msg   string `json:"msg"`
-	Token string `json:"token"`
-}
-
-// GetXsrfToken 获取token
-func (c *Controller) GetXsrfToken() {
-	c.Data["json"] = &GetXsrfTokenResp{
-		Code:  comm.OK,
-		Msg:   comm.MsgOk,
-		Token: c.XSRFToken(),
-	}
-	_ = c.ServeJSON()
-	return
-}
-
 type setShortUrlReq struct {
 	Url            string `form:"shortUrl" valid:"Required"`
 	ExpirationTime int    `form:"expirationTime"`

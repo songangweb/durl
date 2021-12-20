@@ -11,9 +11,6 @@ func RouterHandler() {
 	// openapi初始化
 	controllers.InitCon()
 
-	// 获取xsrfToken
-	web.Router("/xsrf-token", &controllers.Controller{}, "get:GetXsrfToken")
-
 	// 设置短链
 	web.Router("/shortUrl", &controllers.Controller{}, "post:SetShortUrl")
 
