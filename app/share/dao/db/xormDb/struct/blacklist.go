@@ -27,7 +27,6 @@ func InsertBlacklistOne(urlStructReq BlacklistStruct) (int64, error) {
 	return affected, err
 }
 
-
 // 函数名称: DelBlacklistById
 // 功能: 通过id删除数据
 // 输入参数:
@@ -61,7 +60,6 @@ func DelBlacklistById(id string) (bool, error) {
 
 	return true, nil
 }
-
 
 // UpdateBlacklistById 通过Id修改数据
 func UpdateBlacklistById(id string, data map[string]interface{}) (bool, error) {
@@ -103,8 +101,8 @@ func GetBlacklistList(fields map[string]interface{}, page, size int) ([]Blacklis
 
 	q := xormDb.Engine.Where("is_del = ? ", comm.FalseDel)
 
-	if fields["fullUrl"] != nil {
-		q.And(builder.Like{"full_url", fields["fullUrl"].(string)})
+	if fields["ip"] != nil {
+		q.And(builder.Like{"ip", fields["ip"].(string)})
 	}
 
 	if fields["createTimeL"] != nil {
@@ -174,7 +172,6 @@ func GetBlacklistInfo(fields map[string]interface{}) (*BlacklistStruct, error) {
 	_, err := q.Get(blacklistDetail)
 	return blacklistDetail, err
 }
-
 
 // 函数名称: GetBlacklistAll
 // 功能: 查询出符合条件的黑名单列表

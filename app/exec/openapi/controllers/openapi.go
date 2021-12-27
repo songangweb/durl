@@ -3,6 +3,7 @@ package controllers
 import (
 	comm "durl/app/share/comm"
 	"durl/app/share/dao/db"
+	"durl/app/share/dao/db/xormDb"
 	"durl/app/share/tool"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/core/validation"
@@ -81,7 +82,8 @@ func (c *Controller) SetShortUrl() {
 	UrlOne.ShortNum = shortNum
 	UrlOne.FullUrl = req.Url
 	UrlOne.ExpirationTime = req.ExpirationTime
-	err := db.InsertUrlOne(&UrlOne)
+
+	err := db.NewDbService(xormDb.Engine).InsertUrlOne(&UrlOne)
 	if err != nil {
 		logs.Error("Action SetShortUrl, err: ", err.Error())
 		c.Data["json"] = &setShortUrlResp{
@@ -177,7 +179,7 @@ func (c *Controller) DelShortKey() {
 	shortNum := tool.Base62Decode(shortKey)
 
 	// 删除此短链
-	_, err := db.DelUrlByShortNum(shortNum)
+	_, err := db.NewDbService(xormDb.Engine).DelUrlByShortNum(shortNum)
 	if err != nil {
 		logs.Error("Action DelShortKey, err: ", err.Error())
 		c.Data["json"] = &delShortKeyResp{
@@ -293,7 +295,7 @@ func (c *Controller) UpdateShortUrl() {
 	}
 
 	// 修改此短链信息
-	_, err = db.UpdateUrlByShortNum(shortNum, &updateData)
+	_, err = db.NewDbService(xormDb.Engine).UpdateUrlByShortNum(shortNum, &updateData)
 	if err != nil {
 		c.Data["json"] = &updateShortUrlResp{
 			Code: comm.ErrSysDb,

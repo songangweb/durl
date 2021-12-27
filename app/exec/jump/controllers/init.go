@@ -3,6 +3,7 @@ package controllers
 import (
 	"durl/app/exec/jump/cache"
 	"durl/app/share/dao/db"
+	"durl/app/share/dao/db/xormDb"
 	"github.com/beego/beego/v2/server/web"
 	"time"
 )
@@ -25,7 +26,6 @@ func reStatusNotFound(c *Controller) {
 	c.Abort("404")
 }
 
-
 type UrlConf struct {
 	GoodUrlLen int
 	BedUrlLen  int
@@ -37,10 +37,11 @@ func InitUrlCache(c cache.Conf) {
 	cache.InitUrlCache(c)
 
 	// 获取任务队列表里最新的一条数据id
-	queueId := db.QueueLastId()
+	engine := db.NewDbService(xormDb.Engine)
+	queueId := engine.QueueLastId()
 
 	// 获取数据库中需要放到缓存的url
-	UrlList := db.GetCacheUrlAllByLimit(c.GoodUrlLen)
+	UrlList := engine.GetCacheUrlAllByLimit(c.GoodUrlLen)
 	// 添加数据到缓存中
 	for i := 0; i < len(UrlList); i++ {
 		cache.UrlListCache.Gadd(UrlList[i].ShortNum, UrlList[i].FullUrl, int64(UrlList[i].ExpirationTime))
@@ -53,7 +54,7 @@ func InitUrlCache(c cache.Conf) {
 // taskDisposalQueue 获取需要处理的数据
 func taskDisposalQueue(queueId interface{}) {
 	for {
-		list := db.GetQueueListById(queueId)
+		list := db.NewDbService(xormDb.Engine).GetQueueListById(queueId)
 		count := len(list)
 		if count > 0 {
 			queueId = list[count-1].Id
@@ -74,11 +75,12 @@ func InitBlacklist() {
 
 // taskBlacklist 开启定时任务获取黑名单列表
 func taskBlacklist() {
+	engine := db.NewDbService(xormDb.Engine)
 	for {
 		// 初始化缓存
 		cache.InitBlacklist()
 		// 获取所有黑名单列表
-		list := db.GetBlacklistAll()
+		list := engine.GetBlacklistAll()
 		for _, val := range list {
 			cache.Blacklist.Add(val.Ip)
 		}

@@ -3,6 +3,7 @@ package controllers
 import (
 	comm "durl/app/share/comm"
 	"durl/app/share/dao/db"
+	"durl/app/share/dao/db/xormDb"
 )
 
 // 函数名称: FrozenShortUrl
@@ -21,7 +22,8 @@ func (c *BackendController) FrozenShortUrl() {
 
 	// 查询此短链
 	fields := map[string]interface{}{"id": id}
-	urlInfo := db.GetShortUrlInfo(fields)
+	engine := db.NewDbService(xormDb.Engine)
+	urlInfo := engine.GetShortUrlInfo(fields)
 	if urlInfo.ShortNum == 0 {
 		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
 		return
@@ -35,7 +37,7 @@ func (c *BackendController) FrozenShortUrl() {
 
 	updateData := make(map[string]interface{})
 	updateData["is_frozen"] = 0
-	_, err := db.UpdateUrlById(id, urlInfo.ShortNum, updateData)
+	_, err := engine.UpdateUrlById(id, urlInfo.ShortNum, updateData)
 	if err != nil {
 		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)
 		return

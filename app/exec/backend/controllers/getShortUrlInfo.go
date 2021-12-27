@@ -3,17 +3,18 @@ package controllers
 import (
 	comm "durl/app/share/comm"
 	"durl/app/share/dao/db"
+	"durl/app/share/dao/db/xormDb"
 	"durl/app/share/tool"
 )
 
 type ShortUrlInfoRes struct {
-	Id             interface{} `json:"id"`
-	ShortKey       string      `json:"shortKey"`
-	FullUrl        string      `json:"fullUrl"`
-	ExpirationTime int         `json:"expirationTime"`
-	IsFrozen       int8        `json:"isFrozen"`
-	CreateTime     int         `json:"createTime"`
-	UpdateTime     int         `json:"updateTime"`
+	Id             int    `json:"id"`
+	ShortKey       string `json:"shortKey"`
+	FullUrl        string `json:"fullUrl"`
+	ExpirationTime int    `json:"expirationTime"`
+	IsFrozen       int8   `json:"isFrozen"`
+	CreateTime     int    `json:"createTime"`
+	UpdateTime     int    `json:"updateTime"`
 }
 
 // 函数名称: GetShortUrlInfo
@@ -31,7 +32,8 @@ func (c *BackendController) GetShortUrlInfo() {
 
 	// 查询此短链
 	fields := map[string]interface{}{"id": id}
-	urlInfo := db.GetShortUrlInfo(fields)
+
+	urlInfo := db.NewDbService(xormDb.Engine).GetShortUrlInfo(fields)
 	if urlInfo.ShortNum == 0 {
 		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
 		return

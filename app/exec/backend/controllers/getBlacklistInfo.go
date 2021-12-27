@@ -3,13 +3,14 @@ package controllers
 import (
 	comm "durl/app/share/comm"
 	"durl/app/share/dao/db"
+	"durl/app/share/dao/db/xormDb"
 )
 
 type BlacklistInfoRes struct {
-	Id         interface{} `json:"id"`
-	Ip         string      `json:"ip"`
-	CreateTime int         `json:"createTime"`
-	UpdateTime int         `json:"updateTime"`
+	Id         int    `json:"id"`
+	Ip         string `json:"ip"`
+	CreateTime int    `json:"createTime"`
+	UpdateTime int    `json:"updateTime"`
 }
 
 // 函数名称: GetBlacklistInfo
@@ -26,16 +27,11 @@ func (c *BackendController) GetBlacklistInfo() {
 	id := c.Ctx.Input.Param(":id")
 
 	fields := map[string]interface{}{"id": id}
-	BlacklistInfo := db.GetBlacklistInfo(fields)
+	BlacklistInfo := db.NewDbService(xormDb.Engine).GetBlacklistInfo(fields)
 	if BlacklistInfo.Ip == "" {
 		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
 	}
 
-	c.FormatInterfaceResp(comm.OK, comm.OK, comm.MsgOk, BlacklistInfoRes{
-		Id:             BlacklistInfo.Id,
-		Ip:        BlacklistInfo.Ip,
-		CreateTime:     BlacklistInfo.CreateTime,
-		UpdateTime:     BlacklistInfo.UpdateTime,
-	})
+	c.FormatInterfaceResp(comm.OK, comm.OK, comm.MsgOk, &BlacklistInfo)
 	return
 }

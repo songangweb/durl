@@ -3,6 +3,7 @@ package controllers
 import (
 	comm "durl/app/share/comm"
 	"durl/app/share/dao/db"
+	"durl/app/share/dao/db/xormDb"
 	"durl/app/share/tool"
 )
 
@@ -15,20 +16,20 @@ type getShortUrlListReq struct {
 }
 
 type getShortUrlListDataResp struct {
-	Id             interface{} `json:"id"`
-	ShortKey       string      `json:"shortKey"`
-	FullUrl        string      `json:"fullUrl"`
-	ExpirationTime int         `json:"expirationTime"`
-	IsFrozen       int8        `json:"isFrozen"`
-	CreateTime     int         `json:"createTime"`
-	UpdateTime     int         `json:"updateTime"`
+	Id             int    `json:"id"`
+	ShortKey       string `json:"shortKey"`
+	FullUrl        string `json:"fullUrl"`
+	ExpirationTime int    `json:"expirationTime"`
+	IsFrozen       int8   `json:"isFrozen"`
+	CreateTime     int    `json:"createTime"`
+	UpdateTime     int    `json:"updateTime"`
 }
 
 // 函数名称: GetShortUrlList
 // 功能: 分页获取url数据
 // 输入参数:
 //   	shortUrl: 原始url
-//		page: 页码  默认0
+//		page: 页码  默认1
 //		size: 每页展示条数 默认 20  最大500
 // 输出参数:
 // 返回: 返回请求结果
@@ -52,14 +53,14 @@ func (c *BackendController) GetShortUrlList() {
 	if req.EndTime != 0 {
 		fields["endTime"] = req.EndTime
 	}
-
-	data := db.GetShortUrlList(fields, req.Page, req.Size)
+	engine := db.NewDbService(xormDb.Engine)
+	data := engine.GetShortUrlList(fields, req.Page, req.Size)
 
 	var total int64
 	// 有数据且当page=1时计算结果总条数
 	if data != nil && req.Page == 1 {
 		// 统计结果总条数
-		total = db.GetShortUrlListTotal(fields)
+		total = engine.GetShortUrlListTotal(fields)
 	}
 
 	var list []*getShortUrlListDataResp

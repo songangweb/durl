@@ -3,6 +3,7 @@ package controllers
 import (
 	comm "durl/app/share/comm"
 	"durl/app/share/dao/db"
+	"durl/app/share/dao/db/xormDb"
 	"github.com/beego/beego/v2/core/logs"
 )
 
@@ -21,13 +22,14 @@ func (c *BackendController) DelBlacklist() {
 	id := c.Ctx.Input.Param(":id")
 
 	fields := map[string]interface{}{"id": id}
-	urlInfo := db.GetBlacklistInfo(fields)
-	if urlInfo.Id == nil {
-		c.FormatResp(comm.OK, comm.OK, comm.MsgOk)
+	engine := db.NewDbService(xormDb.Engine)
+	urlInfo := engine.GetBlacklistInfo(fields)
+	if urlInfo.Id == 0 {
+		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
 		return
 	}
 
-	_, err := db.DelBlacklistById(id)
+	_, err := engine.DelBlacklistById(id)
 	if err != nil {
 		logs.Error("Action DelBlacklist, err: ", err.Error())
 		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)

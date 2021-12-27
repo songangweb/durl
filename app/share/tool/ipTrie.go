@@ -44,11 +44,10 @@ func ipv4ToByte(ipAddr string) []byte {
 	b3, _ := strconv.Atoi(bits[3])
 
 	var b []byte
-	b = append(b,byte(uint32(b0)))
-	b = append(b,byte(uint32(b1)))
-	b = append(b,byte(uint32(b2)))
-	b = append(b,byte(uint32(b3)))
+	b = append(b, byte(uint32(b0)))
+	b = append(b, byte(uint32(b1)))
+	b = append(b, byte(uint32(b2)))
+	b = append(b, byte(uint32(b3)))
 
 	return b
 }
-

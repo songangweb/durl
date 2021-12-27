@@ -28,7 +28,6 @@ func RouterHandler() {
 	// 批量冻结Url
 	web.Router("/url/frozen", &controllers.BackendController{}, "put:BatchFrozenShortUrl")
 
-
 	// 设置黑名单
 	web.Router("/blacklist", &controllers.BackendController{}, "post:SetBlacklist")
 	// 修改黑名单
@@ -36,7 +35,7 @@ func RouterHandler() {
 	// 删除黑名单
 	web.Router("/blacklist/:id([0-9a-zA-Z]+)", &controllers.BackendController{}, "delete:DelBlacklist")
 	// 黑名单详情
-	web.Router("/blacklist/:id([0-9a-zA-Z]+)", &controllers.BackendController{}, "get:GetBlacklistInfo")
+	web.Router("/blacklist/:id([0-9]+)", &controllers.BackendController{}, "get:GetBlacklistInfo")
 	// 黑名单列表
 	web.Router("/blacklist/list", &controllers.BackendController{}, "get:GetBlacklistList")
 

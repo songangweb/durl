@@ -21,7 +21,6 @@ func TestIpTrie(t *testing.T) {
 	fmt.Println(list.Search("127.0.0.1"))
 }
 
-
 func TestIpTrie_performance(t *testing.T) {
 	//runtime.GOMAXPROCS(runtime.NumCPU())
 	runtime.GOMAXPROCS(1)
@@ -102,7 +101,6 @@ func genIpaddr() string {
 	ip := fmt.Sprintf("%d.%d.%d.%d", rand.Intn(255), rand.Intn(255), rand.Intn(255), rand.Intn(255))
 	return ip
 }
-
 
 func TestGenIp(t *testing.T) {
 	//runtime.GOMAXPROCS(runtime.NumCPU())
