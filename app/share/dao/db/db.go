@@ -411,7 +411,7 @@ func (s *service) GetShortUrlInfo(fields map[string]interface{}) *GetShortUrlLis
 	if err != nil {
 		logs.Error("Action xormDbStruct.GetShortUrlInfo, err: ", err.Error())
 	}
-	if detail.Id != 0{
+	if detail.Id != 0 {
 		returnRes.Id = detail.Id
 		returnRes.ShortNum = detail.ShortNum
 		returnRes.FullUrl = detail.FullUrl
@@ -524,7 +524,7 @@ func (s *service) GetBlacklistInfo(fields map[string]interface{}) *GetBlacklistL
 	if err != nil {
 		logs.Error("Action xormDbStruct.GetBlacklistInfo, err: ", err.Error())
 	}
-	if detail.Id != 0{
+	if detail.Id != 0 {
 		returnRes.Id = detail.Id
 		returnRes.Ip = detail.Ip
 		returnRes.CreateTime = detail.CreateTime
