@@ -10,7 +10,7 @@ var UrlListCache *urlListCache
 
 type urlListCache struct {
 	GoodUrlCache *mcache.ARCCache
-	BedUrlCache *mcache.LruCache
+	BedUrlCache  *mcache.LruCache
 }
 
 type Conf struct {

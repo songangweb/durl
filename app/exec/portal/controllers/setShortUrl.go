@@ -3,6 +3,7 @@ package controllers
 import (
 	comm "durl/app/share/comm"
 	"durl/app/share/dao/db"
+	"durl/app/share/dao/db/xormDb"
 	"durl/app/share/tool"
 	"encoding/json"
 	"github.com/beego/beego/v2/core/logs"
@@ -81,7 +82,7 @@ func (c *Controller) SetShortUrl() {
 	UrlOne.ShortNum = shortNum
 	UrlOne.FullUrl = req.Url
 	UrlOne.ExpirationTime = req.ExpirationTime
-	err := db.InsertUrlOne(&UrlOne)
+	err := db.NewDbService(xormDb.Engine).InsertUrlOne(&UrlOne)
 	if err != nil {
 		logs.Error("Action SetShortUrl, err: ", err.Error())
 		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)

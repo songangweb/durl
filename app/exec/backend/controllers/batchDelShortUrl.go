@@ -3,18 +3,17 @@ package controllers
 import (
 	comm "durl/app/share/comm"
 	"durl/app/share/dao/db"
-	"reflect"
-	"strconv"
+	"durl/app/share/dao/db/xormDb"
 )
 
 type BatchDelShortUrlReq struct {
-	Ids []string `from:"ids" valid:"Required"`
+	Ids []int `from:"ids" valid:"Required"`
 }
 
 type BatchDelShortUrlRes struct {
-	RequestCount int      `json:"requestCount"`
-	DelCount     int      `json:"delCount"`
-	ErrIds       []string `json:"errIds"`
+	RequestCount int   `json:"requestCount"`
+	DelCount     int   `json:"delCount"`
+	ErrIds       []int `json:"errIds"`
 }
 
 // 函数名称: BatchDelShortUrl
@@ -36,14 +35,15 @@ func (c *BackendController) BatchDelShortUrl() {
 
 	// 查询待操作Url信息
 	fields := map[string]interface{}{"id": req.Ids}
-	data := db.GetAllShortUrl(fields)
+	engine := db.NewDbService(xormDb.Engine)
+	data := engine.GetAllShortUrl(fields)
 	if data == nil {
 		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
 		return
 	}
 
-	var updateIds []string
-	errIds := make([]string, 0)
+	var updateIds []int
+	errIds := make([]int, 0)
 	var insertShortNum []int
 	// 提交id数量与查询出的数据量不一致
 	// 需要以数据库数据为准筛选出差集，准备进行错误返回
@@ -52,15 +52,9 @@ func (c *BackendController) BatchDelShortUrl() {
 	if updateCount != requestCount {
 
 		// 将请求操作的id 提为key
-		mapData := make(map[string]interface{})
-		if vType := reflect.TypeOf(data[0].Id); vType.Name() == "int" {
-			for _, v := range data {
-				mapData[strconv.Itoa(v.Id.(int))] = v.ShortNum
-			}
-		} else {
-			for _, v := range data {
-				mapData[v.Id.(string)] = v.ShortNum
-			}
+		mapData := make(map[int]interface{})
+		for _, v := range data {
+			mapData[v.Id] = v.ShortNum
 		}
 
 		for _, v := range req.Ids {
@@ -84,7 +78,7 @@ func (c *BackendController) BatchDelShortUrl() {
 	updateWhere := map[string]interface{}{"id": updateIds}
 	updateWhere["id"] = updateIds
 
-	_, err := db.BatchUpdateUrlByIds(updateWhere, insertShortNum, updateData)
+	_, err := engine.BatchUpdateUrlByIds(updateWhere, insertShortNum, updateData)
 	if err != nil {
 		c.FormatInterfaceResp(comm.OK, comm.OK, comm.MsgOk, &BatchDelShortUrlRes{
 			RequestCount: requestCount,

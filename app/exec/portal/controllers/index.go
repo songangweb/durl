@@ -11,7 +11,7 @@ func (c *Controller) Index() {
 
 	// 百度统计key
 	runmode, _ := config.String("runmode")
-	sConf, _ := config.String(runmode+ "::Baidu")
+	sConf, _ := config.String(runmode + "::Baidu")
 	if sConf != "" {
 		c.Data["Statistical_Baidu_Key"] = sConf
 	}

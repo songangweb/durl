@@ -3,6 +3,7 @@ package controllers
 import (
 	comm "durl/app/share/comm"
 	"durl/app/share/dao/db"
+	"durl/app/share/dao/db/xormDb"
 	"github.com/beego/beego/v2/core/logs"
 )
 
@@ -22,14 +23,15 @@ func (c *BackendController) DelShortUrl() {
 
 	// 查询此短链
 	fields := map[string]interface{}{"id": id}
-	urlInfo := db.GetShortUrlInfo(fields)
+	engine := db.NewDbService(xormDb.Engine)
+	urlInfo := engine.GetShortUrlInfo(fields)
 	if urlInfo.ShortNum == 0 {
 		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
 		return
 	}
 
 	// 删除此短链
-	_, err := db.DelUrlById(id, urlInfo.ShortNum)
+	_, err := engine.DelUrlById(id, urlInfo.ShortNum)
 	if err != nil {
 		logs.Error("Action DelShortKey, err: ", err.Error())
 		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)
