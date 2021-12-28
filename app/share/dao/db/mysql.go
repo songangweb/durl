@@ -5,6 +5,7 @@ import (
 
 	"durl/app/share/comm"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/xormplus/xorm"
 )
 
@@ -16,7 +17,6 @@ type MysqlConf struct {
 }
 
 func InitMysql(m MysqlConf) {
-
 	var err error
 
 	// 主库
