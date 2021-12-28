@@ -37,6 +37,9 @@ func (t *Trie) Search(ip string) bool {
 }
 
 func ipv4ToByte(ipAddr string) []byte {
+	if ipAddr == "::1" {
+		ipAddr = "127.0.0.1"
+	}
 	bits := strings.Split(ipAddr, ".")
 	b0, _ := strconv.Atoi(bits[0])
 	b1, _ := strconv.Atoi(bits[1])
