@@ -2,6 +2,7 @@ package routers
 
 import (
 	"durl/app/exec/openapi/controllers"
+
 	"github.com/beego/beego/v2/server/web"
 )
 

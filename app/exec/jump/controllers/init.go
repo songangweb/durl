@@ -1,10 +1,12 @@
 package controllers
 
 import (
-	"durl/app/exec/jump/cache"
-	"durl/app/share/dao/db"
-	"github.com/beego/beego/v2/server/web"
 	"time"
+
+	"durl/app/share/dao/cache"
+	"durl/app/share/dao/db"
+
+	"github.com/beego/beego/v2/server/web"
 )
 
 type Controller struct {
@@ -52,8 +54,9 @@ func InitUrlCache(c cache.Conf) {
 
 // taskDisposalQueue 获取需要处理的数据
 func taskDisposalQueue(queueId interface{}) {
+	engine := db.NewDbService()
 	for {
-		list := db.NewDbService().GetQueueListById(queueId)
+		list := engine.GetQueueListById(queueId)
 		count := len(list)
 		if count > 0 {
 			queueId = list[count-1].Id

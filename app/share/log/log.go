@@ -1,8 +1,10 @@
 package log
 
 import (
-	comm "durl/app/share/comm"
 	"fmt"
+
+	"durl/app/share/comm"
+
 	"github.com/beego/beego/v2/core/logs"
 )
 

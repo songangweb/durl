@@ -1,10 +1,12 @@
 package controllers
 
 import (
-	comm "durl/app/share/comm"
+	"encoding/json"
+
+	"durl/app/share/comm"
 	"durl/app/share/dao/db"
 	"durl/app/share/tool"
-	"encoding/json"
+
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/core/validation"
 )

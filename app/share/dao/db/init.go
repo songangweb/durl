@@ -1,10 +1,11 @@
 package db
 
 import (
-	"durl/app/share/dao/db/struct"
 	"fmt"
 
+	"durl/app/share/dao/db/struct"
 	"durl/app/share/comm"
+
 	"github.com/xormplus/xorm"
 )
 

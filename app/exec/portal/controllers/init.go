@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"container/list"
-	"durl/app/share/comm"
-	"durl/app/share/dao/db"
 	"fmt"
 	"sync"
+
+	"durl/app/share/comm"
+	"durl/app/share/dao/db"
 )
 
 type Controller struct {

@@ -1,10 +1,11 @@
 package db
 
 import (
-	"durl/app/share/dao/db/struct"
 	"fmt"
 
 	"durl/app/share/comm"
+	"durl/app/share/dao/db/struct"
+
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/xormplus/xorm"
 )

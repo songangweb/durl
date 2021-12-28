@@ -1,10 +1,12 @@
 package controllers
 
 import (
-	"durl/app/exec/jump/cache"
+	"fmt"
+
+	"durl/app/share/dao/cache"
 	"durl/app/share/dao/db"
 	"durl/app/share/tool"
-	"fmt"
+
 	"github.com/beego/beego/v2/core/config"
 )
 
@@ -21,27 +23,25 @@ func (c *Controller) Jump() {
 
 	// 判断错误url缓存是否存在, 如果存在返回404
 	if _, ok := cache.UrlListCache.Bget(shortKey); ok {
-		reStatusNotFoundAndCache(c, shortKey)
+		cache.UrlListCache.Badd(shortKey, "", (tool.TimeNowUnix()+600)*1000)
+		reStatusNotFound(c)
 		return
 	}
 
 	// 查询数据库
 	urlDetail := db.NewDbService().GetFullUrlByShortNum(shortNum)
-
 	// 跳转到 404 页面
 	if urlDetail == nil {
-		reStatusNotFoundAndCache(c, shortKey)
+		cache.UrlListCache.Badd(shortKey, "", (tool.TimeNowUnix()+600)*1000)
+		reStatusNotFound(c)
 		return
 	}
 
-	reStatusFoundAndCache(c, shortNum, urlDetail.FullUrl, urlDetail.ExpirationTime)
-	return
-}
+	cache.UrlListCache.Gadd(shortNum, urlDetail.FullUrl, int64(urlDetail.ExpirationTime*1000))
+	cache.UrlListCache.Gget(shortNum)
 
-// 返回404页面,并加入缓存(60秒)
-func reStatusNotFoundAndCache(c *Controller, shortKey string) {
-	cache.UrlListCache.Badd(shortKey, "", (tool.TimeNowUnix()+600)*1000)
-	c.Abort("404")
+	reStatusFound(c, urlDetail.FullUrl)
+	return
 }
 
 // 返回跳转页面
@@ -58,13 +58,4 @@ func reStatusFound(c *Controller, fullUrl string) {
 
 	c.TplName = "jump.html"
 	_ = c.Render()
-}
-
-// 返回跳转页面,并加入缓存
-func reStatusFoundAndCache(c *Controller, shortNum int, fullUrl string, expirationTime int) {
-	cache.UrlListCache.Gadd(shortNum, fullUrl, int64(expirationTime*1000))
-	cache.UrlListCache.Gget(shortNum)
-
-	// 跳转页面
-	reStatusFound(c, fullUrl)
 }

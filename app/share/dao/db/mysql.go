@@ -1,9 +1,10 @@
 package db
 
 import (
-	comm "durl/app/share/comm"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
+
+	"durl/app/share/comm"
+
 	"github.com/xormplus/xorm"
 )
 
