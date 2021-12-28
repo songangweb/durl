@@ -4,6 +4,7 @@ import (
 	"durl/app/exec/backend/routers"
 	"durl/app/share/dao/db"
 	"durl/app/share/log"
+
 	"github.com/beego/beego/v2/core/config"
 )
 
@@ -16,7 +17,7 @@ func Init() {
 }
 
 type Conf struct {
-	Db  db.Conf
+	Db  db.DBConf
 	Log log.Conf
 }
 

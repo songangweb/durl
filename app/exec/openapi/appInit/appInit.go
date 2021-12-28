@@ -16,7 +16,7 @@ func Init() {
 }
 
 type Conf struct {
-	Db  db.Conf
+	Db  db.DBConf
 	Log log.Conf
 }
 

@@ -1,11 +1,11 @@
-package xormDbStruct
+package dbstruct
 
 import (
 	"durl/app/share/comm"
-	"durl/app/share/dao/db/xormDb"
 	"durl/app/share/tool"
-	_ "github.com/go-sql-driver/mysql"
+
 	"github.com/xormplus/builder"
+	"github.com/xormplus/xorm"
 )
 
 type UrlStruct struct {
@@ -24,9 +24,10 @@ func (I *UrlStruct) TableName() string {
 }
 
 // GetFullUrlByShortNum 通过 ShortNum 获取 完整连接
-func GetFullUrlByShortNum(shortNum int) (*UrlStruct, error) {
+func GetFullUrlByShortNum(engine *xorm.EngineGroup, shortNum int) (*UrlStruct, error) {
 	urlDetail := new(UrlStruct)
-	has, err := xormDb.Engine.
+
+	has, err := engine.
 		Where(" short_num = ? and is_del = ? and (expiration_time > ? or expiration_time = ?)",
 			shortNum, 0, tool.TimeNowUnix(), 0).Get(urlDetail)
 	if nil != err {
@@ -38,9 +39,10 @@ func GetFullUrlByShortNum(shortNum int) (*UrlStruct, error) {
 }
 
 // GetCacheUrlAllByLimit 查询出符合条件的limit条url
-func GetCacheUrlAllByLimit(limit int) ([]UrlStruct, error) {
+func GetCacheUrlAllByLimit(engine *xorm.EngineGroup, limit int) ([]UrlStruct, error) {
 	urlList := make([]UrlStruct, 0)
-	err := xormDb.Engine.
+
+	err := engine.
 		Where(" is_del = ? and (expiration_time > ? or expiration_time = ?) ",
 			0, tool.TimeNowUnix(), 0).
 		Limit(limit, 0).
@@ -49,19 +51,19 @@ func GetCacheUrlAllByLimit(limit int) ([]UrlStruct, error) {
 }
 
 // InsertUrlOne 插入一条数据
-func InsertUrlOne(urlStructReq UrlStruct) (int64, error) {
+func InsertUrlOne(engine *xorm.EngineGroup, urlStructReq UrlStruct) (int64, error) {
 	url := new(UrlStruct)
 	url.FullUrl = urlStructReq.FullUrl
 	url.ShortNum = urlStructReq.ShortNum
 	url.ExpirationTime = urlStructReq.ExpirationTime
-	affected, err := xormDb.Engine.Insert(url)
+	affected, err := engine.Insert(url)
 	return affected, err
 }
 
 // DelUrlByShortNum 通过shortNum删除数据
-func DelUrlByShortNum(shortNum int) (bool, error) {
+func DelUrlByShortNum(engine *xorm.EngineGroup, shortNum int) (bool, error) {
 
-	session := xormDb.Engine.NewSession()
+	session := engine.NewSession()
 	defer session.Close()
 
 	err := session.Begin()
@@ -102,9 +104,9 @@ func DelUrlByShortNum(shortNum int) (bool, error) {
 // 注意事项:
 // 作者: # leon # 2021/11/24 5:14 下午 #
 
-func DelUrlById(id string, shortNum int) (bool, error) {
+func DelUrlById(engine *xorm.EngineGroup, id string, shortNum int) (bool, error) {
 
-	session := xormDb.Engine.NewSession()
+	session := engine.NewSession()
 	defer session.Close()
 
 	err := session.Begin()
@@ -136,9 +138,9 @@ func DelUrlById(id string, shortNum int) (bool, error) {
 }
 
 // UpdateUrlByShortNum 通过shortNum修改数据
-func UpdateUrlByShortNum(shortNum int, data *map[string]interface{}) (bool, error) {
+func UpdateUrlByShortNum(engine *xorm.EngineGroup, shortNum int, data *map[string]interface{}) (bool, error) {
 
-	session := xormDb.Engine.NewSession()
+	session := engine.NewSession()
 	defer session.Close()
 
 	err := session.Begin()
@@ -184,9 +186,9 @@ func UpdateUrlByShortNum(shortNum int, data *map[string]interface{}) (bool, erro
 }
 
 // UpdateUrlById 通过Id修改数据
-func UpdateUrlById(id string, shortNum int, data map[string]interface{}) (bool, error) {
+func UpdateUrlById(engine *xorm.EngineGroup, id string, shortNum int, data map[string]interface{}) (bool, error) {
 
-	session := xormDb.Engine.NewSession()
+	session := engine.NewSession()
 	defer session.Close()
 
 	err := session.Begin()
@@ -226,10 +228,10 @@ func UpdateUrlById(id string, shortNum int, data map[string]interface{}) (bool, 
 // 注意事项:
 // 作者: # leon # 2021/11/22 11:25 上午 #
 
-func GetShortUrlList(fields map[string]interface{}, page, size int) ([]UrlStruct, error) {
+func GetShortUrlList(engine *xorm.EngineGroup, fields map[string]interface{}, page, size int) ([]UrlStruct, error) {
 	urlList := make([]UrlStruct, 0)
 
-	q := xormDb.Engine.Where("is_del = ? ", comm.FalseDel)
+	q := engine.Where("is_del = ? ", comm.FalseDel)
 	if fields["fullUrl"] != nil {
 		q.And(builder.Like{"full_url", fields["fullUrl"].(string)})
 	}
@@ -256,10 +258,10 @@ func GetShortUrlList(fields map[string]interface{}, page, size int) ([]UrlStruct
 // 注意事项:
 // 作者: # leon # 2021/11/22 11:27 上午 #
 
-func GetShortUrlListTotal(fields map[string]interface{}) (int64, error) {
+func GetShortUrlListTotal(engine *xorm.EngineGroup, fields map[string]interface{}) (int64, error) {
 	urlCount := new(UrlStruct)
 
-	q := xormDb.Engine.Where("is_del = ? ", comm.FalseDel)
+	q := engine.Where("is_del = ? ", comm.FalseDel)
 	if fields["fullUrl"] != nil {
 		q.And(builder.Like{"full_url", fields["fullUrl"].(string)})
 	}
@@ -286,10 +288,10 @@ func GetShortUrlListTotal(fields map[string]interface{}) (int64, error) {
 // 注意事项:
 // 作者: # leon # 2021/11/24 5:10 下午 #
 
-func GetShortUrlInfo(fields map[string]interface{}) (*UrlStruct, error) {
+func GetShortUrlInfo(engine *xorm.EngineGroup, fields map[string]interface{}) (*UrlStruct, error) {
 	urlDetail := new(UrlStruct)
 
-	q := xormDb.Engine.Where("is_del = ? ", comm.FalseDel)
+	q := engine.Where("is_del = ? ", comm.FalseDel)
 	if fields["id"] != nil {
 		q.And(builder.Eq{"id": fields["id"]})
 	}
@@ -307,10 +309,10 @@ func GetShortUrlInfo(fields map[string]interface{}) (*UrlStruct, error) {
 // 注意事项:
 // 作者: # leon # 2021/11/30 6:13 下午 #
 
-func GetAllShortUrl(fields map[string]interface{}) ([]UrlStruct, error) {
+func GetAllShortUrl(engine *xorm.EngineGroup, fields map[string]interface{}) ([]UrlStruct, error) {
 	urlList := make([]UrlStruct, 0)
 
-	q := xormDb.Engine.Where("is_del = ? ", comm.FalseDel)
+	q := engine.Where("is_del = ? ", comm.FalseDel)
 	if fields["id"] != nil {
 		q.And(builder.Eq{"id": fields["id"]})
 	}
@@ -330,9 +332,9 @@ func GetAllShortUrl(fields map[string]interface{}) ([]UrlStruct, error) {
 // 注意事项:
 // 作者: # leon # 2021/11/30 6:19 下午 #
 
-func BatchUpdateUrlByIds(updateWhere map[string]interface{}, insertShortNum []int, updateData map[string]interface{}) (bool, error) {
+func BatchUpdateUrlByIds(engine *xorm.EngineGroup, updateWhere map[string]interface{}, insertShortNum []int, updateData map[string]interface{}) (bool, error) {
 
-	session := xormDb.Engine.NewSession()
+	session := engine.NewSession()
 	defer session.Close()
 
 	err := session.Begin()

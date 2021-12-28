@@ -1,10 +1,10 @@
-package xormDbStruct
+package dbstruct
 
 import (
 	"durl/app/share/comm"
-	"durl/app/share/dao/db/xormDb"
-	_ "github.com/go-sql-driver/mysql"
+
 	"github.com/xormplus/builder"
+	"github.com/xormplus/xorm"
 )
 
 type BlacklistStruct struct {
@@ -20,10 +20,10 @@ func (I *BlacklistStruct) TableName() string {
 }
 
 // InsertBlacklistOne 插入一条数据
-func InsertBlacklistOne(urlStructReq BlacklistStruct) (int64, error) {
+func InsertBlacklistOne(engine *xorm.EngineGroup, urlStructReq BlacklistStruct) (int64, error) {
 	url := new(BlacklistStruct)
 	url.Ip = urlStructReq.Ip
-	affected, err := xormDb.Engine.Insert(url)
+	affected, err := engine.Insert(url)
 	return affected, err
 }
 
@@ -37,9 +37,9 @@ func InsertBlacklistOne(urlStructReq BlacklistStruct) (int64, error) {
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
 
-func DelBlacklistById(id string) (bool, error) {
+func DelBlacklistById(engine *xorm.EngineGroup, id string) (bool, error) {
 
-	session := xormDb.Engine.NewSession()
+	session := engine.NewSession()
 	defer session.Close()
 
 	err := session.Begin()
@@ -62,9 +62,9 @@ func DelBlacklistById(id string) (bool, error) {
 }
 
 // UpdateBlacklistById 通过Id修改数据
-func UpdateBlacklistById(id string, data map[string]interface{}) (bool, error) {
+func UpdateBlacklistById(engine *xorm.EngineGroup, id string, data map[string]interface{}) (bool, error) {
 
-	session := xormDb.Engine.NewSession()
+	session := engine.NewSession()
 	defer session.Close()
 
 	err := session.Begin()
@@ -96,10 +96,10 @@ func UpdateBlacklistById(id string, data map[string]interface{}) (bool, error) {
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
 
-func GetBlacklistList(fields map[string]interface{}, page, size int) ([]BlacklistStruct, error) {
+func GetBlacklistList(engine *xorm.EngineGroup, fields map[string]interface{}, page, size int) ([]BlacklistStruct, error) {
 	BlacklistList := make([]BlacklistStruct, 0)
 
-	q := xormDb.Engine.Where("is_del = ? ", comm.FalseDel)
+	q := engine.Where("is_del = ? ", comm.FalseDel)
 
 	if fields["ip"] != nil {
 		q.And(builder.Like{"ip", fields["ip"].(string)})
@@ -129,10 +129,10 @@ func GetBlacklistList(fields map[string]interface{}, page, size int) ([]Blacklis
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
 
-func GetBlacklistListTotal(fields map[string]interface{}) (int64, error) {
+func GetBlacklistListTotal(engine *xorm.EngineGroup, fields map[string]interface{}) (int64, error) {
 	BlacklistCount := new(BlacklistStruct)
 
-	q := xormDb.Engine.Where("is_del = ? ", comm.FalseDel)
+	q := engine.Where("is_del = ? ", comm.FalseDel)
 
 	if fields["fullUrl"] != nil {
 		q.And(builder.Like{"full_url", fields["fullUrl"].(string)})
@@ -162,10 +162,10 @@ func GetBlacklistListTotal(fields map[string]interface{}) (int64, error) {
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
 
-func GetBlacklistInfo(fields map[string]interface{}) (*BlacklistStruct, error) {
+func GetBlacklistInfo(engine *xorm.EngineGroup, fields map[string]interface{}) (*BlacklistStruct, error) {
 	blacklistDetail := new(BlacklistStruct)
 
-	q := xormDb.Engine.Where("is_del = ? ", comm.FalseDel)
+	q := engine.Where("is_del = ? ", comm.FalseDel)
 	if fields["id"] != nil {
 		q.And(builder.Eq{"id": fields["id"]})
 	}
@@ -185,9 +185,9 @@ func GetBlacklistInfo(fields map[string]interface{}) (*BlacklistStruct, error) {
 // 注意事项:
 // 作者: # ang.song # 2021/12/12 5:44 下午 #
 
-func GetBlacklistAll() ([]BlacklistStruct, error) {
+func GetBlacklistAll(engine *xorm.EngineGroup) ([]BlacklistStruct, error) {
 	blacklistList := make([]BlacklistStruct, 0)
-	err := xormDb.Engine.
+	err := engine.
 		Where(" is_del = ?",
 			0).
 		Find(&blacklistList)

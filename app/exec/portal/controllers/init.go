@@ -4,14 +4,12 @@ import (
 	"container/list"
 	"durl/app/share/comm"
 	"durl/app/share/dao/db"
-	"durl/app/share/dao/db/xormDb"
 	"fmt"
 	"sync"
 )
 
 type Controller struct {
 	comm.BaseController
-	//web.Controller
 }
 
 type Pool struct {
@@ -33,7 +31,7 @@ func InitCon() {
 // ProducerKey 申请号码段 放入缓存里
 func (p *Pool) ProducerKey() {
 	// 申请号码段
-	Step, MaxNum, _ := db.NewDbService(xormDb.Engine).ReturnShortNumPeriod()
+	Step, MaxNum, _ := db.NewDbService().ReturnShortNumPeriod()
 	fmt.Println("Step: ", Step)
 	fmt.Println("MaxNum: ", MaxNum)
 	if Step != 0 && MaxNum != 0 {

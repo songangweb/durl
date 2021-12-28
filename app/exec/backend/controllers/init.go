@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"container/list"
+	"sync"
+
 	"durl/app/share/comm"
 	"durl/app/share/dao/db"
-	"durl/app/share/dao/db/xormDb"
-	"sync"
 )
 
 type BackendController struct {
@@ -31,7 +31,7 @@ func InitCon() {
 // ProducerKey 申请号码段 放入缓存里
 func (p *Pool) ProducerKey() {
 	// 申请号码段
-	Step, MaxNum, _ := db.NewDbService(xormDb.Engine).ReturnShortNumPeriod()
+	Step, MaxNum, _ := db.NewDbService().ReturnShortNumPeriod()
 	if Step != 0 && MaxNum != 0 {
 		p.lock.Lock()
 		defer p.lock.Unlock()

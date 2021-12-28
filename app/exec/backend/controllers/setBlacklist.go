@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	comm "durl/app/share/comm"
+	"durl/app/share/comm"
 	"durl/app/share/dao/db"
-	"durl/app/share/dao/db/xormDb"
+
 	"github.com/beego/beego/v2/core/logs"
 )
 
@@ -29,7 +29,7 @@ func (c *BackendController) SetBlacklist() {
 	// 数据放入数据库
 	var BlacklistOne db.InsertBlacklistOneReq
 	BlacklistOne.Ip = req.Ip
-	err := db.NewDbService(xormDb.Engine).InsertBlacklistOne(&BlacklistOne)
+	err := db.NewDbService().InsertBlacklistOne(&BlacklistOne)
 	if err != nil {
 		logs.Error("Action SetBlacklist, err: ", err.Error())
 		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)

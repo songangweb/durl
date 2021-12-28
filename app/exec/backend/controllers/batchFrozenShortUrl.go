@@ -3,7 +3,6 @@ package controllers
 import (
 	"durl/app/share/comm"
 	"durl/app/share/dao/db"
-	"durl/app/share/dao/db/xormDb"
 )
 
 type BatchFrozenShortUrlReq struct {
@@ -35,7 +34,7 @@ func (c *BackendController) BatchFrozenShortUrl() {
 
 	// 查询待操作Url信息
 	fields := map[string]interface{}{"id": req.Ids}
-	engine := db.NewDbService(xormDb.Engine)
+	engine := db.NewDbService()
 	data := engine.GetAllShortUrl(fields)
 	if data == nil {
 		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)

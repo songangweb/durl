@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	comm "durl/app/share/comm"
+	"durl/app/share/comm"
 	"durl/app/share/dao/db"
-	"durl/app/share/dao/db/xormDb"
 )
 
 type updateBlacklistReq struct {
@@ -32,7 +31,7 @@ func (c *BackendController) UpdateBlacklist() {
 
 	// 查询此短链
 	fields := map[string]interface{}{"id": id}
-	engine := db.NewDbService(xormDb.Engine)
+	engine := db.NewDbService()
 	urlInfo := engine.GetBlacklistInfo(fields)
 	if urlInfo.Id == 0 {
 		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)

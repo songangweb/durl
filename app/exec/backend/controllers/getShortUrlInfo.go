@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	comm "durl/app/share/comm"
+	"durl/app/share/comm"
 	"durl/app/share/dao/db"
-	"durl/app/share/dao/db/xormDb"
 	"durl/app/share/tool"
 )
 
@@ -33,7 +32,7 @@ func (c *BackendController) GetShortUrlInfo() {
 	// 查询此短链
 	fields := map[string]interface{}{"id": id}
 
-	urlInfo := db.NewDbService(xormDb.Engine).GetShortUrlInfo(fields)
+	urlInfo := db.NewDbService().GetShortUrlInfo(fields)
 	if urlInfo.ShortNum == 0 {
 		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
 		return

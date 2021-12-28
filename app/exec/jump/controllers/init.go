@@ -3,7 +3,6 @@ package controllers
 import (
 	"durl/app/exec/jump/cache"
 	"durl/app/share/dao/db"
-	"durl/app/share/dao/db/xormDb"
 	"github.com/beego/beego/v2/server/web"
 	"time"
 )
@@ -37,7 +36,7 @@ func InitUrlCache(c cache.Conf) {
 	cache.InitUrlCache(c)
 
 	// 获取任务队列表里最新的一条数据id
-	engine := db.NewDbService(xormDb.Engine)
+	engine := db.NewDbService()
 	queueId := engine.QueueLastId()
 
 	// 获取数据库中需要放到缓存的url
@@ -54,7 +53,7 @@ func InitUrlCache(c cache.Conf) {
 // taskDisposalQueue 获取需要处理的数据
 func taskDisposalQueue(queueId interface{}) {
 	for {
-		list := db.NewDbService(xormDb.Engine).GetQueueListById(queueId)
+		list := db.NewDbService().GetQueueListById(queueId)
 		count := len(list)
 		if count > 0 {
 			queueId = list[count-1].Id
@@ -75,7 +74,7 @@ func InitBlacklist() {
 
 // taskBlacklist 开启定时任务获取黑名单列表
 func taskBlacklist() {
-	engine := db.NewDbService(xormDb.Engine)
+	engine := db.NewDbService()
 	for {
 		// 初始化缓存
 		cache.InitBlacklist()

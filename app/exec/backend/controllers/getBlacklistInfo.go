@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	comm "durl/app/share/comm"
+	"durl/app/share/comm"
 	"durl/app/share/dao/db"
-	"durl/app/share/dao/db/xormDb"
 )
 
 type BlacklistInfoRes struct {
@@ -27,7 +26,7 @@ func (c *BackendController) GetBlacklistInfo() {
 	id := c.Ctx.Input.Param(":id")
 
 	fields := map[string]interface{}{"id": id}
-	BlacklistInfo := db.NewDbService(xormDb.Engine).GetBlacklistInfo(fields)
+	BlacklistInfo := db.NewDbService().GetBlacklistInfo(fields)
 	if BlacklistInfo.Ip == "" {
 		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
 	}

@@ -3,7 +3,6 @@ package controllers
 import (
 	"durl/app/exec/jump/cache"
 	"durl/app/share/dao/db"
-	"durl/app/share/dao/db/xormDb"
 	"durl/app/share/tool"
 	"fmt"
 	"github.com/beego/beego/v2/core/config"
@@ -27,7 +26,7 @@ func (c *Controller) Jump() {
 	}
 
 	// 查询数据库
-	urlDetail := db.NewDbService(xormDb.Engine).GetFullUrlByShortNum(shortNum)
+	urlDetail := db.NewDbService().GetFullUrlByShortNum(shortNum)
 
 	// 跳转到 404 页面
 	if urlDetail == nil {

@@ -3,7 +3,6 @@ package controllers
 import (
 	"container/list"
 	"durl/app/share/dao/db"
-	"durl/app/share/dao/db/xormDb"
 	"github.com/beego/beego/v2/server/web"
 	"sync"
 )
@@ -31,7 +30,7 @@ func InitCon() {
 // ProducerKey 申请号码段 放入缓存里
 func (p *Pool) ProducerKey() {
 	// 申请号码段
-	Step, MaxNum, _ := db.NewDbService(xormDb.Engine).ReturnShortNumPeriod()
+	Step, MaxNum, _ := db.NewDbService(db.Engine).ReturnShortNumPeriod()
 	if Step != 0 && MaxNum != 0 {
 		p.lock.Lock()
 		defer p.lock.Unlock()

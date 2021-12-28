@@ -1,16 +1,15 @@
 package db
 
 import (
-	_ "durl/app/share/comm"
-	comm "durl/app/share/comm"
-	"durl/app/share/dao/db/xormDb"
-	xormDbStruct "durl/app/share/dao/db/xormDb/struct"
+	"durl/app/share/dao/db/struct"
 	"fmt"
+
+	"durl/app/share/comm"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/xormplus/xorm"
 )
 
-type Service interface {
+type DbService interface {
 
 	// QueueLastId 获取任务最新一条数据的id
 	QueueLastId() (id interface{})
@@ -61,25 +60,30 @@ type Service interface {
 }
 
 type service struct {
-	Engine *xorm.EngineGroup
+	EngineGroup *xorm.EngineGroup
 }
 
-func NewDbService(Engine *xorm.EngineGroup) Service {
+func NewDbService() DbService {
 	return &service{
-		Engine: Engine,
+		EngineGroup: Engine,
 	}
 }
 
-type Conf struct {
+type DBConf struct {
 	Type string
-	Xorm xormDb.Conf
+	Xorm XormConf
 }
 
-func (c Conf) InitDb() {
+type XormConf struct {
+	Type  string
+	Mysql MysqlConf
+}
+
+func (c DBConf) InitDb() {
 	c.Xorm.Type = c.Type
 	switch c.Type {
 	case "mysql":
-		xormDb.InitXormDb(c.Xorm)
+		InitXormDb(c.Xorm)
 		// 检查数据库表结构是否完善,如不完善则自动创建
 		CheckMysqlTable()
 	default:
@@ -88,62 +92,9 @@ func (c Conf) InitDb() {
 	}
 }
 
-// CheckMysqlTable 检查Mysql表配置
-func CheckMysqlTable() {
-	// 获取数据表信息
-	tables := make(map[string]interface{}, 3)
-	NewQueue := xormDbStruct.QueueStruct{}
-	tables[NewQueue.TableName()] = NewQueue
-
-	NewShortNum := xormDbStruct.ShortNumStruct{}
-	tables[NewShortNum.TableName()] = NewShortNum
-
-	NewUrl := xormDbStruct.UrlStruct{}
-	tables[NewUrl.TableName()] = NewUrl
-
-	NewBlacklist := xormDbStruct.BlacklistStruct{}
-	tables[NewUrl.TableName()] = NewBlacklist
-
-	for tableName, tableStruct := range tables {
-		// 判断表是否已经存在, 如果已经存在则不自动创建
-		res, err := xormDb.Engine.IsTableExist(tableName)
-		if err != nil {
-			defer fmt.Println(comm.MsgCheckDbMysqlConf)
-			panic(tableName + " " + comm.MsgInitDbMysqlTable + ", errMsg: " + err.Error())
-		}
-
-		if !res {
-			// 同步表结构
-			err = xormDb.Engine.Charset("utf8mb4").StoreEngine("InnoDB").Sync2(tableStruct)
-			if err != nil {
-				defer fmt.Println(comm.MsgCheckDbMysqlConf)
-				panic(tableName + " " + comm.MsgInitDbMysqlTable + ", errMsg: " + err.Error())
-			}
-
-			if tableName == NewShortNum.TableName() {
-				// 添加短链号码段表数据
-				has, err := xormDb.Engine.ID(1).Exist(&xormDbStruct.ShortNumStruct{})
-				if err != nil {
-					defer fmt.Println(comm.MsgCheckDbMysqlConf)
-					panic(tableName + " " + comm.MsgCheckDbMysqlConf + ", errMsg: " + err.Error())
-				}
-				if !has {
-					err := xormDbStruct.InsertFirst()
-					if err != nil {
-						defer fmt.Println(comm.MsgCheckDbMysqlConf)
-						panic(tableName + " " + comm.MsgInitDbMysqlData + ", errMsg: " + err.Error())
-					}
-				}
-			}
-		}
-	}
-
-	fmt.Println("业务数据表检查完毕!!")
-}
-
 // QueueLastId 获取任务最新一条数据的id
 func (s *service) QueueLastId() (id interface{}) {
-	id, _ = xormDbStruct.ReturnQueueLastId()
+	id, _ = dbstruct.ReturnQueueLastId(s.EngineGroup)
 	return id
 }
 
@@ -151,9 +102,9 @@ func (s *service) QueueLastId() (id interface{}) {
 func (s *service) GetQueueListById(id interface{}) []*GetQueueListByIdRe {
 	var returnList []*GetQueueListByIdRe
 
-	list, err := xormDbStruct.GetQueueListById(id)
+	list, err := dbstruct.GetQueueListById(s.EngineGroup, id)
 	if err != nil {
-		logs.Error("Action xormDbStruct.GetQueueListById, err: ", err.Error())
+		logs.Error("Action dbStruct.GetQueueListById, err: ", err.Error())
 	} else {
 		for _, queueStruct := range list {
 			var One GetQueueListByIdRe
@@ -182,9 +133,9 @@ func (s *service) GetCacheUrlAllByLimit(limit int) []*GetCacheUrlAllByLimitRe {
 
 	var returnList []*GetCacheUrlAllByLimitRe
 
-	list, err := xormDbStruct.GetCacheUrlAllByLimit(limit)
+	list, err := dbstruct.GetCacheUrlAllByLimit(s.EngineGroup, limit)
 	if err != nil {
-		logs.Error("Action xormDbStruct.GetCacheUrlAllByLimit, err: ", err.Error())
+		logs.Error("Action dbStruct.GetCacheUrlAllByLimit, err: ", err.Error())
 	} else {
 		for _, queueStruct := range list {
 			var One GetCacheUrlAllByLimitRe
@@ -206,9 +157,9 @@ func (s *service) ReturnShortNumPeriod() (Step int, MaxNum int, err error) {
 		if i >= 10 {
 			break
 		}
-		Step, MaxNum, err = xormDbStruct.ReturnShortNumPeriod()
+		Step, MaxNum, err = dbstruct.ReturnShortNumPeriod(s.EngineGroup)
 		if err != nil {
-			logs.Error("Action xormDbStruct.ReturnShortNumPeriod, err: ", err.Error())
+			logs.Error("Action dbStruct.ReturnShortNumPeriod, err: ", err.Error())
 		} else {
 			break
 		}
@@ -227,13 +178,13 @@ type InsertUrlOneReq struct {
 // InsertUrlOne 插入一条数据 shortUrl
 func (s *service) InsertUrlOne(urlStructReq *InsertUrlOneReq) (err error) {
 
-	var reqOne xormDbStruct.UrlStruct
+	var reqOne dbstruct.UrlStruct
 	reqOne.ShortNum = urlStructReq.ShortNum
 	reqOne.FullUrl = urlStructReq.FullUrl
 	reqOne.ExpirationTime = urlStructReq.ExpirationTime
-	_, err = xormDbStruct.InsertUrlOne(reqOne)
+	_, err = dbstruct.InsertUrlOne(s.EngineGroup, reqOne)
 	if err != nil {
-		logs.Error("Action xormDbStruct.InsertUrlOne, err: ", err.Error())
+		logs.Error("Action dbStruct.InsertUrlOne, err: ", err.Error())
 	}
 
 	return err
@@ -242,9 +193,9 @@ func (s *service) InsertUrlOne(urlStructReq *InsertUrlOneReq) (err error) {
 // DelUrlByShortNum 通过shortNum删除数据
 func (s *service) DelUrlByShortNum(shortNum int) (reBool bool, err error) {
 
-	reBool, err = xormDbStruct.DelUrlByShortNum(shortNum)
+	reBool, err = dbstruct.DelUrlByShortNum(s.EngineGroup, shortNum)
 	if err != nil {
-		logs.Error("Action xormDbStruct.DelUrlByShortNum, err: ", err.Error())
+		logs.Error("Action dbStruct.DelUrlByShortNum, err: ", err.Error())
 	}
 
 	return reBool, err
@@ -265,9 +216,9 @@ func (s *service) DelUrlByShortNum(shortNum int) (reBool bool, err error) {
 
 func (s *service) DelUrlById(id string, shortNum int) (reBool bool, err error) {
 
-	reBool, err = xormDbStruct.DelUrlById(id, shortNum)
+	reBool, err = dbstruct.DelUrlById(s.EngineGroup, id, shortNum)
 	if err != nil {
-		logs.Error("Action xormDbStruct.DelUrlById, err: ", err.Error())
+		logs.Error("Action dbStruct.DelUrlById, err: ", err.Error())
 	}
 
 	return reBool, err
@@ -276,9 +227,9 @@ func (s *service) DelUrlById(id string, shortNum int) (reBool bool, err error) {
 // UpdateUrlByShortNum 修改一条数据 shortUrl
 func (s *service) UpdateUrlByShortNum(shortNum int, data *map[string]interface{}) (reBool bool, err error) {
 
-	reBool, err = xormDbStruct.UpdateUrlByShortNum(shortNum, data)
+	reBool, err = dbstruct.UpdateUrlByShortNum(s.EngineGroup, shortNum, data)
 	if err != nil {
-		logs.Error("Action xormDbStruct.UpdateUrlByShortNum, err: ", err.Error())
+		logs.Error("Action dbStruct.UpdateUrlByShortNum, err: ", err.Error())
 	}
 	return reBool, err
 }
@@ -297,9 +248,9 @@ func (s *service) UpdateUrlByShortNum(shortNum int, data *map[string]interface{}
 
 func (s *service) UpdateUrlById(id string, shortNum int, data map[string]interface{}) (reBool bool, err error) {
 
-	reBool, err = xormDbStruct.UpdateUrlById(id, shortNum, data)
+	reBool, err = dbstruct.UpdateUrlById(s.EngineGroup, id, shortNum, data)
 	if err != nil {
-		logs.Error("Action xormDbStruct.UpdateUrlById, err: ", err.Error())
+		logs.Error("Action dbStruct.UpdateUrlById, err: ", err.Error())
 	}
 	return reBool, err
 }
@@ -313,9 +264,9 @@ type getFullUrlByShortNumReq struct {
 func (s *service) GetFullUrlByShortNum(shortNum int) *getFullUrlByShortNumReq {
 
 	var One getFullUrlByShortNumReq
-	Detail, err := xormDbStruct.GetFullUrlByShortNum(shortNum)
+	Detail, err := dbstruct.GetFullUrlByShortNum(s.EngineGroup, shortNum)
 	if err != nil {
-		logs.Error("Action xormDbStruct.GetFullUrlByShortNum, err: ", err.Error())
+		logs.Error("Action dbStruct.GetFullUrlByShortNum, err: ", err.Error())
 	}
 	if Detail != nil {
 		One.ShortNum = Detail.ShortNum
@@ -354,9 +305,9 @@ func (s *service) GetShortUrlList(fields map[string]interface{}, page, size int)
 
 	var returnList []*GetShortUrlListRes
 
-	list, err := xormDbStruct.GetShortUrlList(fields, page, size)
+	list, err := dbstruct.GetShortUrlList(s.EngineGroup, fields, page, size)
 	if err != nil {
-		logs.Error("Action xormDbStruct.GetShortUrlList, err: ", err.Error())
+		logs.Error("Action dbStruct.GetShortUrlList, err: ", err.Error())
 	} else {
 		for _, queueStruct := range list {
 			var one GetShortUrlListRes
@@ -386,9 +337,9 @@ func (s *service) GetShortUrlList(fields map[string]interface{}, page, size int)
 
 func (s *service) GetShortUrlListTotal(fields map[string]interface{}) int64 {
 
-	total, err := xormDbStruct.GetShortUrlListTotal(fields)
+	total, err := dbstruct.GetShortUrlListTotal(s.EngineGroup, fields)
 	if err != nil {
-		logs.Error("Action xormDbStruct.GetShortUrlListTotal, err: ", err.Error())
+		logs.Error("Action dbStruct.GetShortUrlListTotal, err: ", err.Error())
 	}
 	return total
 
@@ -407,9 +358,9 @@ func (s *service) GetShortUrlListTotal(fields map[string]interface{}) int64 {
 func (s *service) GetShortUrlInfo(fields map[string]interface{}) *GetShortUrlListRes {
 
 	var returnRes GetShortUrlListRes
-	detail, err := xormDbStruct.GetShortUrlInfo(fields)
+	detail, err := dbstruct.GetShortUrlInfo(s.EngineGroup, fields)
 	if err != nil {
-		logs.Error("Action xormDbStruct.GetShortUrlInfo, err: ", err.Error())
+		logs.Error("Action dbStruct.GetShortUrlInfo, err: ", err.Error())
 	}
 	if detail.Id != 0 {
 		returnRes.Id = detail.Id
@@ -436,9 +387,9 @@ func (s *service) GetAllShortUrl(fields map[string]interface{}) []*GetShortUrlLi
 
 	var returnRes []*GetShortUrlListRes
 
-	list, err := xormDbStruct.GetAllShortUrl(fields)
+	list, err := dbstruct.GetAllShortUrl(s.EngineGroup, fields)
 	if err != nil {
-		logs.Error("Action xormDbStruct.GetAllShortUrl, err: ", err.Error())
+		logs.Error("Action dbStruct.GetAllShortUrl, err: ", err.Error())
 	} else {
 		for _, v := range list {
 			var One GetShortUrlListRes
@@ -468,9 +419,9 @@ func (s *service) GetAllShortUrl(fields map[string]interface{}) []*GetShortUrlLi
 
 func (s *service) BatchUpdateUrlByIds(updateWhere map[string]interface{}, insertShortNum []int, updateData map[string]interface{}) (reBool bool, err error) {
 
-	reBool, err = xormDbStruct.BatchUpdateUrlByIds(updateWhere, insertShortNum, updateData)
+	reBool, err = dbstruct.BatchUpdateUrlByIds(s.EngineGroup, updateWhere, insertShortNum, updateData)
 	if err != nil {
-		logs.Error("Action xormDbStruct.BatchUpdateUrlByIds, err: ", err.Error())
+		logs.Error("Action dbStruct.BatchUpdateUrlByIds, err: ", err.Error())
 	}
 	return reBool, err
 }
@@ -489,11 +440,11 @@ type InsertBlacklistOneReq struct {
 
 func (s *service) InsertBlacklistOne(urlStructReq *InsertBlacklistOneReq) (err error) {
 
-	var reqOne xormDbStruct.BlacklistStruct
+	var reqOne dbstruct.BlacklistStruct
 	reqOne.Ip = urlStructReq.Ip
-	_, err = xormDbStruct.InsertBlacklistOne(reqOne)
+	_, err = dbstruct.InsertBlacklistOne(s.EngineGroup, reqOne)
 	if err != nil {
-		logs.Error("Action xormDbStruct.InsertBlacklistOne, err: ", err.Error())
+		logs.Error("Action dbStruct.InsertBlacklistOne, err: ", err.Error())
 	}
 
 	return err
@@ -520,9 +471,9 @@ type GetBlacklistListRes struct {
 func (s *service) GetBlacklistInfo(fields map[string]interface{}) *GetBlacklistListRes {
 
 	var returnRes GetBlacklistListRes
-	detail, err := xormDbStruct.GetBlacklistInfo(fields)
+	detail, err := dbstruct.GetBlacklistInfo(s.EngineGroup, fields)
 	if err != nil {
-		logs.Error("Action xormDbStruct.GetBlacklistInfo, err: ", err.Error())
+		logs.Error("Action dbStruct.GetBlacklistInfo, err: ", err.Error())
 	}
 	if detail.Id != 0 {
 		returnRes.Id = detail.Id
@@ -545,9 +496,9 @@ func (s *service) GetBlacklistInfo(fields map[string]interface{}) *GetBlacklistL
 
 func (s *service) UpdateBlacklistById(id string, data map[string]interface{}) (reBool bool, err error) {
 
-	reBool, err = xormDbStruct.UpdateBlacklistById(id, data)
+	reBool, err = dbstruct.UpdateBlacklistById(s.EngineGroup, id, data)
 	if err != nil {
-		logs.Error("Action xormDbStruct.UpdateBlacklistById, err: ", err.Error())
+		logs.Error("Action dbStruct.UpdateBlacklistById, err: ", err.Error())
 	}
 	return reBool, err
 }
@@ -567,9 +518,9 @@ func (s *service) UpdateBlacklistById(id string, data map[string]interface{}) (r
 func (s *service) GetBlacklistList(fields map[string]interface{}, page, size int) []*GetBlacklistListRes {
 
 	var returnRes []*GetBlacklistListRes
-	list, err := xormDbStruct.GetBlacklistList(fields, page, size)
+	list, err := dbstruct.GetBlacklistList(s.EngineGroup, fields, page, size)
 	if err != nil {
-		logs.Error("Action xormDbStruct.GetShortUrlList, err: ", err.Error())
+		logs.Error("Action dbStruct.GetShortUrlList, err: ", err.Error())
 	} else {
 		for _, v := range list {
 			var one GetBlacklistListRes
@@ -596,9 +547,9 @@ func (s *service) GetBlacklistList(fields map[string]interface{}, page, size int
 
 func (s *service) GetBlacklistListTotal(fields map[string]interface{}) int64 {
 
-	total, err := xormDbStruct.GetBlacklistListTotal(fields)
+	total, err := dbstruct.GetBlacklistListTotal(s.EngineGroup, fields)
 	if err != nil {
-		logs.Error("Action xormDbStruct.GetBlacklistListTotal, err: ", err.Error())
+		logs.Error("Action dbStruct.GetBlacklistListTotal, err: ", err.Error())
 	}
 	return total
 }
@@ -617,9 +568,9 @@ func (s *service) GetBlacklistListTotal(fields map[string]interface{}) int64 {
 
 func (s *service) DelBlacklistById(id string) (reBool bool, err error) {
 
-	reBool, err = xormDbStruct.DelBlacklistById(id)
+	reBool, err = dbstruct.DelBlacklistById(s.EngineGroup, id)
 	if err != nil {
-		logs.Error("Action xormDbStruct.DelUrlById, err: ", err.Error())
+		logs.Error("Action dbStruct.DelUrlById, err: ", err.Error())
 	}
 
 	return reBool, err
@@ -638,9 +589,9 @@ func (s *service) GetBlacklistAll() []*GetBlacklistListRes {
 
 	var returnList []*GetBlacklistListRes
 
-	list, err := xormDbStruct.GetBlacklistAll()
+	list, err := dbstruct.GetBlacklistAll(s.EngineGroup)
 	if err != nil {
-		logs.Error("Action xormDbStruct.GetCacheUrlAllByLimit, err: ", err.Error())
+		logs.Error("Action dbStruct.GetCacheUrlAllByLimit, err: ", err.Error())
 	} else {
 		for _, queueStruct := range list {
 			var One GetBlacklistListRes

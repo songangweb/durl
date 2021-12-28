@@ -1,7 +1,7 @@
-package xormDbStruct
+package dbstruct
 
 import (
-	"durl/app/share/dao/db/xormDb"
+	"github.com/xormplus/xorm"
 )
 
 type ShortNumStruct struct {
@@ -17,15 +17,15 @@ func (I *ShortNumStruct) TableName() string {
 }
 
 // ReturnShortNumPeriod 获取号码段
-func ReturnShortNumPeriod() (int, int, error) {
+func ReturnShortNumPeriod(engine *xorm.EngineGroup) (int, int, error) {
 	var shortNumDetail ShortNumStruct
 
 	// 获取数据
-	if has, err := xormDb.Engine.ID(1).Get(&shortNumDetail); nil != err {
+	if has, err := engine.ID(1).Get(&shortNumDetail); nil != err {
 		return 0, 0, err
 	} else if !has {
 		// 插入第一条默认数据
-		err := InsertFirst()
+		err := InsertFirst(engine)
 		if err != nil {
 			return 0, 0, err
 		}
@@ -33,7 +33,7 @@ func ReturnShortNumPeriod() (int, int, error) {
 	}
 	// 修改数据
 	shortNumDetail.MaxNum += shortNumDetail.Step
-	if affected, err := xormDb.Engine.ID(1).Update(&shortNumDetail); nil != err {
+	if affected, err := engine.ID(1).Update(&shortNumDetail); nil != err {
 		return 0, 0, err
 	} else if 0 == affected {
 		return 0, 0, err
@@ -43,11 +43,11 @@ func ReturnShortNumPeriod() (int, int, error) {
 }
 
 // InsertFirst 插入第一条默认数据
-func InsertFirst() error {
+func InsertFirst(engine *xorm.EngineGroup) error {
 	var shortNumDetail ShortNumStruct
 	shortNumDetail.Id = 1
 	shortNumDetail.MaxNum = 100
 	shortNumDetail.Step = 100
-	_, err := xormDb.Engine.Insert(shortNumDetail)
+	_, err := engine.Insert(shortNumDetail)
 	return err
 }

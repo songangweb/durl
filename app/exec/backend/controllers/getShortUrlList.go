@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	comm "durl/app/share/comm"
+	"durl/app/share/comm"
 	"durl/app/share/dao/db"
-	"durl/app/share/dao/db/xormDb"
 	"durl/app/share/tool"
 )
 
@@ -53,7 +52,7 @@ func (c *BackendController) GetShortUrlList() {
 	if req.EndTime != 0 {
 		fields["endTime"] = req.EndTime
 	}
-	engine := db.NewDbService(xormDb.Engine)
+	engine := db.NewDbService()
 	data := engine.GetShortUrlList(fields, req.Page, req.Size)
 
 	var total int64

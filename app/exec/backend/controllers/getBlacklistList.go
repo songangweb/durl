@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	comm "durl/app/share/comm"
+	"durl/app/share/comm"
 	"durl/app/share/dao/db"
-	"durl/app/share/dao/db/xormDb"
 )
 
 type getBlacklistListReq struct {
@@ -43,7 +42,7 @@ func (c *BackendController) GetBlacklistList() {
 		fields["createTimeR"] = req.CreateTimeR
 	}
 
-	engine := db.NewDbService(xormDb.Engine)
+	engine := db.NewDbService()
 	data := engine.GetBlacklistList(fields, req.Page, req.Size)
 
 	var total int64

@@ -1,4 +1,4 @@
-package xormDb
+package db
 
 import (
 	comm "durl/app/share/comm"
