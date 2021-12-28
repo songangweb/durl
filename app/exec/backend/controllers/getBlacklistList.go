@@ -3,6 +3,7 @@ package controllers
 import (
 	comm "durl/app/share/comm"
 	"durl/app/share/dao/db"
+	"durl/app/share/dao/db/xormDb"
 )
 
 type getBlacklistListReq struct {
@@ -13,18 +14,11 @@ type getBlacklistListReq struct {
 	CreateTimeR int    `from:"createTimeR" valid:"Match(/([0-9]{10}$)|([0])/);Range(0,9999999999)"`
 }
 
-type getBlacklistListDataResp struct {
-	Id         interface{} `json:"id"`
-	Ip         string      `json:"ip"`
-	CreateTime int         `json:"createTime"`
-	UpdateTime int         `json:"updateTime"`
-}
-
 // 函数名称: GetBlacklistList
 // 功能: 分页获取url数据
 // 输入参数:
 //   	shortUrl: 原始url
-//		page: 页码  默认0
+//		page: 页码  默认1
 //		size: 每页展示条数 默认 20  最大500
 // 输出参数:
 // 返回: 返回请求结果
@@ -49,25 +43,17 @@ func (c *BackendController) GetBlacklistList() {
 		fields["createTimeR"] = req.CreateTimeR
 	}
 
-	data := db.GetBlacklistList(fields, req.Page, req.Size)
+	engine := db.NewDbService(xormDb.Engine)
+	data := engine.GetBlacklistList(fields, req.Page, req.Size)
 
 	var total int64
 	// 有数据且当page=1时计算结果总条数
 	if data != nil && req.Page == 1 {
 		// 统计结果总条数
-		total = db.GetBlacklistListTotal(fields)
+		total = engine.GetBlacklistListTotal(fields)
 	}
 
-	var list []*getBlacklistListDataResp
-	for _, queueStruct := range data {
-		var One getBlacklistListDataResp
-		One.Id = queueStruct.Id
-		One.Ip = queueStruct.Ip
-		One.CreateTime = queueStruct.CreateTime
-		One.UpdateTime = queueStruct.UpdateTime
-		list = append(list, &One)
-	}
-	c.FormatInterfaceListResp(comm.OK, comm.OK, total, comm.MsgOk, list)
+	c.FormatInterfaceListResp(comm.OK, comm.OK, total, comm.MsgOk, data)
 	return
 
 }

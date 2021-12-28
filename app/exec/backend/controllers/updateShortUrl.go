@@ -3,10 +3,11 @@ package controllers
 import (
 	comm "durl/app/share/comm"
 	"durl/app/share/dao/db"
+	"durl/app/share/dao/db/xormDb"
 )
 
 type updateShortUrlReq struct {
-	FullUrl            string `form:"fullUrl" valid:"Required"`
+	FullUrl        string `form:"fullUrl" valid:"Required"`
 	IsFrozen       int    `form:"isFrozen" valid:"Range(0,1)"`
 	ExpirationTime int    `form:"expirationTime" valid:"Match(/([0-9]{10}$)|([0])/);Max(9999999999)"`
 }
@@ -33,7 +34,8 @@ func (c *BackendController) UpdateShortUrl() {
 
 	// 查询此短链
 	fields := map[string]interface{}{"id": id}
-	urlInfo := db.GetShortUrlInfo(fields)
+	engine := db.NewDbService(xormDb.Engine)
+	urlInfo := engine.GetShortUrlInfo(fields)
 	if urlInfo.ShortNum == 0 {
 		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
 		return
@@ -46,7 +48,7 @@ func (c *BackendController) UpdateShortUrl() {
 	updateData["is_frozen"] = req.IsFrozen
 
 	// 修改此短链信息
-	_, err := db.UpdateUrlById(id, urlInfo.ShortNum, updateData)
+	_, err := engine.UpdateUrlById(id, urlInfo.ShortNum, updateData)
 	if err != nil {
 		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)
 		return

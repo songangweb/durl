@@ -37,10 +37,6 @@ func initConf() (AppConf *Conf) {
 	AppConf.Db.Xorm.Mysql.Slave1, _ = config.String(runmode + "::Db_Mysql_Slave1")
 	AppConf.Db.Xorm.Mysql.SetMaxOpen, _ = config.Int(runmode + "::Db_Mysql_SetMaxOpen")
 	AppConf.Db.Xorm.Mysql.SetMaxIdle, _ = config.Int(runmode + "::Db_Mysql_SetMaxIdle")
-	// mongo
-	AppConf.Db.Mongo.Mongo.Uri, _ = config.String(runmode + "::Db_Mongo_Uri")
-	AppConf.Db.Mongo.Mongo.Db, _ = config.String(runmode + "::Db_Mongo_Db")
-	AppConf.Db.Mongo.Mongo.SetMaxPoolSize, _ = config.Int(runmode + "::Db_Mongo_SetMaxPoolSize")
 
 	// log
 	AppConf.Log.Conf, _ = config.String(runmode + "::Log_Conf")
