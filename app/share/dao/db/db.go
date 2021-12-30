@@ -60,12 +60,12 @@ type DbService interface {
 	GetBlacklistAll() []*GetBlacklistListRes
 }
 
-type service struct {
+type dbService struct {
 	EngineGroup *xorm.EngineGroup
 }
 
 func NewDbService() DbService {
-	return &service{
+	return &dbService{
 		EngineGroup: Engine,
 	}
 }
@@ -94,13 +94,13 @@ func (c DBConf) InitDb() {
 }
 
 // QueueLastId 获取任务最新一条数据的id
-func (s *service) QueueLastId() (id interface{}) {
+func (s *dbService) QueueLastId() (id interface{}) {
 	id, _ = dbstruct.ReturnQueueLastId(s.EngineGroup)
 	return id
 }
 
 //GetQueueListById 获取需要处理的任务数据列表
-func (s *service) GetQueueListById(id interface{}) []*GetQueueListByIdRe {
+func (s *dbService) GetQueueListById(id interface{}) []*GetQueueListByIdRe {
 	var returnList []*GetQueueListByIdRe
 
 	list, err := dbstruct.GetQueueListById(s.EngineGroup, id)
@@ -130,7 +130,7 @@ type GetCacheUrlAllByLimitRe struct {
 }
 
 // GetCacheUrlAllByLimit 查询出符合条件的全部url
-func (s *service) GetCacheUrlAllByLimit(limit int) []*GetCacheUrlAllByLimitRe {
+func (s *dbService) GetCacheUrlAllByLimit(limit int) []*GetCacheUrlAllByLimitRe {
 
 	var returnList []*GetCacheUrlAllByLimitRe
 
@@ -151,7 +151,7 @@ func (s *service) GetCacheUrlAllByLimit(limit int) []*GetCacheUrlAllByLimitRe {
 }
 
 // ReturnShortNumPeriod 获取号码段
-func (s *service) ReturnShortNumPeriod() (Step int, MaxNum int, err error) {
+func (s *dbService) ReturnShortNumPeriod() (Step int, MaxNum int, err error) {
 
 	var i int
 	for {
@@ -177,7 +177,7 @@ type InsertUrlOneReq struct {
 }
 
 // InsertUrlOne 插入一条数据 shortUrl
-func (s *service) InsertUrlOne(urlStructReq *InsertUrlOneReq) (err error) {
+func (s *dbService) InsertUrlOne(urlStructReq *InsertUrlOneReq) (err error) {
 
 	var reqOne dbstruct.UrlStruct
 	reqOne.ShortNum = urlStructReq.ShortNum
@@ -192,7 +192,7 @@ func (s *service) InsertUrlOne(urlStructReq *InsertUrlOneReq) (err error) {
 }
 
 // DelUrlByShortNum 通过shortNum删除数据
-func (s *service) DelUrlByShortNum(shortNum int) (reBool bool, err error) {
+func (s *dbService) DelUrlByShortNum(shortNum int) (reBool bool, err error) {
 
 	reBool, err = dbstruct.DelUrlByShortNum(s.EngineGroup, shortNum)
 	if err != nil {
@@ -215,7 +215,7 @@ func (s *service) DelUrlByShortNum(shortNum int) (reBool bool, err error) {
 // 注意事项:
 // 作者: # leon # 2021/11/24 5:13 下午 #
 
-func (s *service) DelUrlById(id string, shortNum int) (reBool bool, err error) {
+func (s *dbService) DelUrlById(id string, shortNum int) (reBool bool, err error) {
 
 	reBool, err = dbstruct.DelUrlById(s.EngineGroup, id, shortNum)
 	if err != nil {
@@ -226,7 +226,7 @@ func (s *service) DelUrlById(id string, shortNum int) (reBool bool, err error) {
 }
 
 // UpdateUrlByShortNum 修改一条数据 shortUrl
-func (s *service) UpdateUrlByShortNum(shortNum int, data *map[string]interface{}) (reBool bool, err error) {
+func (s *dbService) UpdateUrlByShortNum(shortNum int, data *map[string]interface{}) (reBool bool, err error) {
 
 	reBool, err = dbstruct.UpdateUrlByShortNum(s.EngineGroup, shortNum, data)
 	if err != nil {
@@ -247,7 +247,7 @@ func (s *service) UpdateUrlByShortNum(shortNum int, data *map[string]interface{}
 // 注意事项:
 // 作者: # leon # 2021/11/25 4:53 下午 #
 
-func (s *service) UpdateUrlById(id string, shortNum int, data map[string]interface{}) (reBool bool, err error) {
+func (s *dbService) UpdateUrlById(id string, shortNum int, data map[string]interface{}) (reBool bool, err error) {
 
 	reBool, err = dbstruct.UpdateUrlById(s.EngineGroup, id, shortNum, data)
 	if err != nil {
@@ -262,7 +262,7 @@ type getFullUrlByShortNumReq struct {
 	ExpirationTime int    `json:"expirationTime"`
 }
 
-func (s *service) GetFullUrlByShortNum(shortNum int) *getFullUrlByShortNumReq {
+func (s *dbService) GetFullUrlByShortNum(shortNum int) *getFullUrlByShortNumReq {
 
 	var One getFullUrlByShortNumReq
 	Detail, err := dbstruct.GetFullUrlByShortNum(s.EngineGroup, shortNum)
@@ -302,7 +302,7 @@ type GetShortUrlListRes struct {
 // 注意事项:
 // 作者: # leon # 2021/11/19 3:27 下午 #
 
-func (s *service) GetShortUrlList(fields map[string]interface{}, page, size int) []*GetShortUrlListRes {
+func (s *dbService) GetShortUrlList(fields map[string]interface{}, page, size int) []*GetShortUrlListRes {
 
 	var returnList []*GetShortUrlListRes
 
@@ -336,7 +336,7 @@ func (s *service) GetShortUrlList(fields map[string]interface{}, page, size int)
 // 注意事项:
 // 作者: # leon # 2021/11/23 6:21 下午 #
 
-func (s *service) GetShortUrlListTotal(fields map[string]interface{}) int64 {
+func (s *dbService) GetShortUrlListTotal(fields map[string]interface{}) int64 {
 
 	total, err := dbstruct.GetShortUrlListTotal(s.EngineGroup, fields)
 	if err != nil {
@@ -356,7 +356,7 @@ func (s *service) GetShortUrlListTotal(fields map[string]interface{}) int64 {
 // 注意事项:
 // 作者: # leon # 2021/11/24 5:09 下午 #
 
-func (s *service) GetShortUrlInfo(fields map[string]interface{}) *GetShortUrlListRes {
+func (s *dbService) GetShortUrlInfo(fields map[string]interface{}) *GetShortUrlListRes {
 
 	var returnRes GetShortUrlListRes
 	detail, err := dbstruct.GetShortUrlInfo(s.EngineGroup, fields)
@@ -384,7 +384,7 @@ func (s *service) GetShortUrlInfo(fields map[string]interface{}) *GetShortUrlLis
 // 注意事项:
 // 作者: # leon # 2021/11/30 6:12 下午 #
 
-func (s *service) GetAllShortUrl(fields map[string]interface{}) []*GetShortUrlListRes {
+func (s *dbService) GetAllShortUrl(fields map[string]interface{}) []*GetShortUrlListRes {
 
 	var returnRes []*GetShortUrlListRes
 
@@ -418,7 +418,7 @@ func (s *service) GetAllShortUrl(fields map[string]interface{}) []*GetShortUrlLi
 // 注意事项:
 // 作者: # leon # 2021/11/30 6:19 下午 #
 
-func (s *service) BatchUpdateUrlByIds(updateWhere map[string]interface{}, insertShortNum []int, updateData map[string]interface{}) (reBool bool, err error) {
+func (s *dbService) BatchUpdateUrlByIds(updateWhere map[string]interface{}, insertShortNum []int, updateData map[string]interface{}) (reBool bool, err error) {
 
 	reBool, err = dbstruct.BatchUpdateUrlByIds(s.EngineGroup, updateWhere, insertShortNum, updateData)
 	if err != nil {
@@ -439,7 +439,7 @@ type InsertBlacklistOneReq struct {
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
 
-func (s *service) InsertBlacklistOne(urlStructReq *InsertBlacklistOneReq) (err error) {
+func (s *dbService) InsertBlacklistOne(urlStructReq *InsertBlacklistOneReq) (err error) {
 
 	var reqOne dbstruct.BlacklistStruct
 	reqOne.Ip = urlStructReq.Ip
@@ -469,7 +469,7 @@ type GetBlacklistListRes struct {
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
 
-func (s *service) GetBlacklistInfo(fields map[string]interface{}) *GetBlacklistListRes {
+func (s *dbService) GetBlacklistInfo(fields map[string]interface{}) *GetBlacklistListRes {
 
 	var returnRes GetBlacklistListRes
 	detail, err := dbstruct.GetBlacklistInfo(s.EngineGroup, fields)
@@ -495,7 +495,7 @@ func (s *service) GetBlacklistInfo(fields map[string]interface{}) *GetBlacklistL
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
 
-func (s *service) UpdateBlacklistById(id string, data map[string]interface{}) (reBool bool, err error) {
+func (s *dbService) UpdateBlacklistById(id string, data map[string]interface{}) (reBool bool, err error) {
 
 	reBool, err = dbstruct.UpdateBlacklistById(s.EngineGroup, id, data)
 	if err != nil {
@@ -516,7 +516,7 @@ func (s *service) UpdateBlacklistById(id string, data map[string]interface{}) (r
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
 
-func (s *service) GetBlacklistList(fields map[string]interface{}, page, size int) []*GetBlacklistListRes {
+func (s *dbService) GetBlacklistList(fields map[string]interface{}, page, size int) []*GetBlacklistListRes {
 
 	var returnRes []*GetBlacklistListRes
 	list, err := dbstruct.GetBlacklistList(s.EngineGroup, fields, page, size)
@@ -546,7 +546,7 @@ func (s *service) GetBlacklistList(fields map[string]interface{}, page, size int
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
 
-func (s *service) GetBlacklistListTotal(fields map[string]interface{}) int64 {
+func (s *dbService) GetBlacklistListTotal(fields map[string]interface{}) int64 {
 
 	total, err := dbstruct.GetBlacklistListTotal(s.EngineGroup, fields)
 	if err != nil {
@@ -567,7 +567,7 @@ func (s *service) GetBlacklistListTotal(fields map[string]interface{}) int64 {
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
 
-func (s *service) DelBlacklistById(id string) (reBool bool, err error) {
+func (s *dbService) DelBlacklistById(id string) (reBool bool, err error) {
 
 	reBool, err = dbstruct.DelBlacklistById(s.EngineGroup, id)
 	if err != nil {
@@ -586,7 +586,7 @@ func (s *service) DelBlacklistById(id string) (reBool bool, err error) {
 // 注意事项:
 // 作者: # ang.song # 2021/12/12 5:44 下午 #
 
-func (s *service) GetBlacklistAll() []*GetBlacklistListRes {
+func (s *dbService) GetBlacklistAll() []*GetBlacklistListRes {
 
 	var returnList []*GetBlacklistListRes
 
