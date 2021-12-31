@@ -3,8 +3,8 @@ package db
 import (
 	"fmt"
 
-	"durl/app/share/dao/db/struct"
 	"durl/app/share/comm"
+	"durl/app/share/dao/db/struct"
 
 	"github.com/xormplus/xorm"
 )
@@ -20,7 +20,6 @@ func InitXormDb(c XormConf) {
 		panic(comm.MsgDbTypeError + ", type: " + c.Type)
 	}
 }
-
 
 // CheckMysqlTable 检查Mysql表配置
 func CheckMysqlTable() {

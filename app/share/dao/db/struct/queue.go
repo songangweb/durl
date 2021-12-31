@@ -37,4 +37,3 @@ func GetQueueListById(engine *xorm.EngineGroup, id interface{}) ([]*QueueStruct,
 	err := engine.Where("id > ? and is_del = ?", id, 0).Find(&pEveryOne)
 	return pEveryOne, err
 }
-
