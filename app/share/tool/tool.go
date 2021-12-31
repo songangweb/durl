@@ -28,9 +28,9 @@ func ReverseString(s string) string {
 // 作者: # songang # 2020/11/26 10:59 上午 #
 
 var CODE62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-var CodeLength = 62
+var CodeLength uint32 = 62
 
-func Base62Encode(number int) string {
+func Base62Encode(number uint32) string {
 	if number == 0 {
 		return "0"
 	}
@@ -61,8 +61,9 @@ func Base62Decode(str string) int {
 	str = ReverseString(str)
 	str = strings.TrimSpace(str)
 	var result = 0
+	CodeLength := float64(CodeLength)
 	for index, char := range []byte(str) {
-		result += Edoc[string(char)] * int(math.Pow(float64(CodeLength), float64(index)))
+		result += Edoc[string(char)] * int(math.Pow(CodeLength, float64(index)))
 	}
 	return result
 }
@@ -78,7 +79,7 @@ func Base62Decode(str string) int {
 // 作者: # songang # 2020/11/26 10:59 上午 #
 
 func DisposeUrlProto(url string) string {
-	if strings.Index(url, "http://") == -1 && strings.Index(url, "https://") == -1 {
+	if !strings.HasPrefix(url, "http://")  && !strings.HasPrefix(url, "https://"){
 		url = "http://" + url
 	}
 	return url

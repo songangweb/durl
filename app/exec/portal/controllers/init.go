@@ -48,7 +48,7 @@ func (p *Pool) ProducerKey() {
 }
 
 // ReturnShortNumOne 获取单个short_num
-func ReturnShortNumOne() (ShortNum int) {
+func ReturnShortNumOne() (ShortNum uint32) {
 	KeyPool.lock.Lock()
 
 	ent := KeyPool.numList.Front()
@@ -56,7 +56,7 @@ func ReturnShortNumOne() (ShortNum int) {
 
 	KeyPool.lock.Unlock()
 
-	ShortNum, _ = ent.Value.(int)
+	ShortNum, _ = ent.Value.(uint32)
 	// 判断是否需要申请新的号码段
 	if KeyPool.numList.Len() < KeyPool.step {
 		// 申请号码段 放入缓存里

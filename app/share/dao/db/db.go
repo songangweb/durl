@@ -124,7 +124,7 @@ type GetQueueListByIdRe struct {
 }
 
 type GetCacheUrlAllByLimitRe struct {
-	ShortNum       int    `json:"shortNum"`
+	ShortNum       uint32    `json:"shortNum"`
 	FullUrl        string `json:"fullUrl"`
 	ExpirationTime int    `json:"expirationTime"`
 }
@@ -171,7 +171,7 @@ func (s *dbService) ReturnShortNumPeriod() (Step int, MaxNum int, err error) {
 }
 
 type InsertUrlOneReq struct {
-	ShortNum       int    `json:"shortNum"`
+	ShortNum       uint32    `json:"shortNum"`
 	FullUrl        string `json:"fullUrl"`
 	ExpirationTime int    `json:"expirationTime"`
 }
@@ -257,7 +257,7 @@ func (s *dbService) UpdateUrlById(id string, shortNum int, data map[string]inter
 }
 
 type getFullUrlByShortNumReq struct {
-	ShortNum       int    `json:"shortNum"`
+	ShortNum       uint32    `json:"shortNum"`
 	FullUrl        string `json:"fullUrl"`
 	ExpirationTime int    `json:"expirationTime"`
 }
@@ -282,7 +282,7 @@ func (s *dbService) GetFullUrlByShortNum(shortNum int) *getFullUrlByShortNumReq 
 // GetShortUrlListRes url列表结构体
 type GetShortUrlListRes struct {
 	Id             int    `json:"id"`
-	ShortNum       int    `json:"shortNum"`
+	ShortNum       uint32    `json:"shortNum"`
 	FullUrl        string `json:"fullUrl"`
 	ExpirationTime int    `json:"expirationTime"`
 	IsFrozen       int8   `json:"isFrozen"`

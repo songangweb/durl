@@ -10,7 +10,7 @@ import (
 
 type UrlStruct struct {
 	Id             int    `xorm:" int pk notnull autoincr"`
-	ShortNum       int    `xorm:" int notnull index"`
+	ShortNum       uint32    `xorm:" int notnull index"`
 	FullUrl        string `xorm:" varchar(2048) default('') notnull"`
 	ExpirationTime int    `xorm:" int notnull default(0)"`
 	IsDel          int8   `xorm:" tinyint default(0) notnull"`
