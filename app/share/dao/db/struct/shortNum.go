@@ -5,19 +5,24 @@ import (
 )
 
 type ShortNumStruct struct {
-	Id         int8 `xorm:" tinyint pk notnull autoincr"`
-	MaxNum     int  `xorm:" int notnull default(100)"`
-	Step       int  `xorm:" int notnull default(100)"`
-	Version    int  `xorm:" version notnull default(1)"`
-	UpdateTime int  `xorm:" updated notnull default(0)"`
+	Id         uint8  `xorm:" int pk notnull autoincr"`
+	MaxNum     uint32 `xorm:" int notnull default(100)"`
+	Step       uint32 `xorm:" int notnull default(100)"`
+	Version    uint32 `xorm:" version int notnull default(1)"`
+	UpdateTime uint32 `xorm:" updated int notnull default(0)"`
 }
 
 func (I *ShortNumStruct) TableName() string {
 	return "durl_short_num"
 }
 
+const (
+	ShortNumIsDelYes uint8 = 1
+	ShortNumIsDelNo  uint8 = 0
+)
+
 // ReturnShortNumPeriod 获取号码段
-func ReturnShortNumPeriod(engine *xorm.EngineGroup) (int, int, error) {
+func ReturnShortNumPeriod(engine *xorm.EngineGroup) (uint32, uint32, error) {
 	var shortNumDetail ShortNumStruct
 
 	// 获取数据

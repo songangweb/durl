@@ -1,7 +1,6 @@
 package dbstruct
 
 import (
-	"durl/app/share/comm"
 	"durl/app/share/tool"
 
 	"github.com/xormplus/builder"
@@ -9,27 +8,32 @@ import (
 )
 
 type UrlStruct struct {
-	Id             int    `xorm:" int pk notnull autoincr"`
-	ShortNum       uint32    `xorm:" int notnull index"`
+	Id             uint32 `xorm:" int pk notnull autoincr"`
+	ShortNum       uint32 `xorm:" int notnull index"`
 	FullUrl        string `xorm:" varchar(2048) default('') notnull"`
-	ExpirationTime int    `xorm:" int notnull default(0)"`
-	IsDel          int8   `xorm:" tinyint default(0) notnull"`
-	IsFrozen       int8   `xorm:" tinyint default(0) notnull"`
-	CreateTime     int    `xorm:" created default(0) notnull"`
-	UpdateTime     int    `xorm:" updated default(0) notnull"`
+	ExpirationTime uint32 `xorm:" int notnull default(0)"`
+	IsDel          uint8  `xorm:" int default(0) notnull"`
+	IsFrozen       uint8  `xorm:" int default(0) notnull"`
+	CreateTime     uint32 `xorm:" created int default(0) notnull"`
+	UpdateTime     uint32 `xorm:" updated int default(0) notnull"`
 }
 
 func (I *UrlStruct) TableName() string {
 	return "durl_url"
 }
 
+const (
+	UrlIsDelYes uint8 = 1
+	UrlIsDelNo  uint8 = 0
+)
+
 // GetFullUrlByShortNum 通过 ShortNum 获取 完整连接
-func GetFullUrlByShortNum(engine *xorm.EngineGroup, shortNum int) (*UrlStruct, error) {
+func GetFullUrlByShortNum(engine *xorm.EngineGroup, shortNum uint32) (*UrlStruct, error) {
 	urlDetail := new(UrlStruct)
 
 	has, err := engine.
 		Where(" short_num = ? and is_del = ? and (expiration_time > ? or expiration_time = ?)",
-			shortNum, 0, tool.TimeNowUnix(), 0).Get(urlDetail)
+			shortNum, UrlIsDelNo, tool.TimeNowUnix(), UrlIsDelNo).Get(urlDetail)
 	if nil != err {
 		return nil, err
 	} else if !has {
@@ -44,24 +48,24 @@ func GetCacheUrlAllByLimit(engine *xorm.EngineGroup, limit int) ([]UrlStruct, er
 
 	err := engine.
 		Where(" is_del = ? and (expiration_time > ? or expiration_time = ?) ",
-			0, tool.TimeNowUnix(), 0).
+		UrlIsDelNo, tool.TimeNowUnix(), UrlIsDelNo).
 		Limit(limit, 0).
 		Find(&urlList)
 	return urlList, err
 }
 
 // InsertUrlOne 插入一条数据
-func InsertUrlOne(engine *xorm.EngineGroup, urlStructReq UrlStruct) (int64, error) {
+func InsertUrlOne(engine *xorm.EngineGroup, urlStructReq UrlStruct) (uint32, error) {
 	url := new(UrlStruct)
 	url.FullUrl = urlStructReq.FullUrl
 	url.ShortNum = urlStructReq.ShortNum
 	url.ExpirationTime = urlStructReq.ExpirationTime
 	affected, err := engine.Insert(url)
-	return affected, err
+	return uint32(affected), err
 }
 
 // DelUrlByShortNum 通过shortNum删除数据
-func DelUrlByShortNum(engine *xorm.EngineGroup, shortNum int) (bool, error) {
+func DelUrlByShortNum(engine *xorm.EngineGroup, shortNum uint32) (bool, error) {
 
 	session := engine.NewSession()
 	defer session.Close()
@@ -70,7 +74,7 @@ func DelUrlByShortNum(engine *xorm.EngineGroup, shortNum int) (bool, error) {
 
 	// 修改数据
 	urlStruct := new(UrlStruct)
-	urlStruct.IsDel = 1
+	urlStruct.IsDel = UrlIsDelYes
 	_, err = session.Where(" short_num = ? ", shortNum).Update(urlStruct)
 	if err != nil {
 		_ = session.Rollback()
@@ -104,7 +108,7 @@ func DelUrlByShortNum(engine *xorm.EngineGroup, shortNum int) (bool, error) {
 // 注意事项:
 // 作者: # leon # 2021/11/24 5:14 下午 #
 
-func DelUrlById(engine *xorm.EngineGroup, id string, shortNum int) (bool, error) {
+func DelUrlById(engine *xorm.EngineGroup, id uint32, shortNum uint32) (bool, error) {
 
 	session := engine.NewSession()
 	defer session.Close()
@@ -113,7 +117,7 @@ func DelUrlById(engine *xorm.EngineGroup, id string, shortNum int) (bool, error)
 
 	// 修改数据
 	urlStruct := new(UrlStruct)
-	urlStruct.IsDel = 1
+	urlStruct.IsDel = UrlIsDelYes
 	_, err = session.Where(" id = ? ", id).Update(urlStruct)
 	if err != nil {
 		_ = session.Rollback()
@@ -138,7 +142,7 @@ func DelUrlById(engine *xorm.EngineGroup, id string, shortNum int) (bool, error)
 }
 
 // UpdateUrlByShortNum 通过shortNum修改数据
-func UpdateUrlByShortNum(engine *xorm.EngineGroup, shortNum int, data *map[string]interface{}) (bool, error) {
+func UpdateUrlByShortNum(engine *xorm.EngineGroup, shortNum uint32, data *map[string]interface{}) (bool, error) {
 
 	session := engine.NewSession()
 	defer session.Close()
@@ -186,7 +190,7 @@ func UpdateUrlByShortNum(engine *xorm.EngineGroup, shortNum int, data *map[strin
 }
 
 // UpdateUrlById 通过Id修改数据
-func UpdateUrlById(engine *xorm.EngineGroup, id string, shortNum int, data map[string]interface{}) (bool, error) {
+func UpdateUrlById(engine *xorm.EngineGroup, id uint32, shortNum uint32, data map[string]interface{}) (bool, error) {
 
 	session := engine.NewSession()
 	defer session.Close()
@@ -231,7 +235,7 @@ func UpdateUrlById(engine *xorm.EngineGroup, id string, shortNum int, data map[s
 func GetShortUrlList(engine *xorm.EngineGroup, fields map[string]interface{}, page, size int) ([]UrlStruct, error) {
 	urlList := make([]UrlStruct, 0)
 
-	q := engine.Where("is_del = ? ", comm.FalseDel)
+	q := engine.Where("is_del = ? ", UrlIsDelNo)
 	if fields["fullUrl"] != nil {
 		q.And(builder.Like{"full_url", fields["fullUrl"].(string)})
 	}
@@ -261,7 +265,7 @@ func GetShortUrlList(engine *xorm.EngineGroup, fields map[string]interface{}, pa
 func GetShortUrlListTotal(engine *xorm.EngineGroup, fields map[string]interface{}) (int64, error) {
 	urlCount := new(UrlStruct)
 
-	q := engine.Where("is_del = ? ", comm.FalseDel)
+	q := engine.Where("is_del = ? ", UrlIsDelNo)
 	if fields["fullUrl"] != nil {
 		q.And(builder.Like{"full_url", fields["fullUrl"].(string)})
 	}
@@ -291,7 +295,7 @@ func GetShortUrlListTotal(engine *xorm.EngineGroup, fields map[string]interface{
 func GetShortUrlInfo(engine *xorm.EngineGroup, fields map[string]interface{}) (*UrlStruct, error) {
 	urlDetail := new(UrlStruct)
 
-	q := engine.Where("is_del = ? ", comm.FalseDel)
+	q := engine.Where("is_del = ? ", UrlIsDelNo)
 	if fields["id"] != nil {
 		q.And(builder.Eq{"id": fields["id"]})
 	}
@@ -312,7 +316,7 @@ func GetShortUrlInfo(engine *xorm.EngineGroup, fields map[string]interface{}) (*
 func GetAllShortUrl(engine *xorm.EngineGroup, fields map[string]interface{}) ([]UrlStruct, error) {
 	urlList := make([]UrlStruct, 0)
 
-	q := engine.Where("is_del = ? ", comm.FalseDel)
+	q := engine.Where("is_del = ? ", UrlIsDelNo)
 	if fields["id"] != nil {
 		q.And(builder.Eq{"id": fields["id"]})
 	}
@@ -332,7 +336,7 @@ func GetAllShortUrl(engine *xorm.EngineGroup, fields map[string]interface{}) ([]
 // 注意事项:
 // 作者: # leon # 2021/11/30 6:19 下午 #
 
-func BatchUpdateUrlByIds(engine *xorm.EngineGroup, updateWhere map[string]interface{}, insertShortNum []int, updateData map[string]interface{}) (bool, error) {
+func BatchUpdateUrlByIds(engine *xorm.EngineGroup, updateWhere map[string]interface{}, insertShortNum []uint32, updateData map[string]interface{}) (bool, error) {
 
 	session := engine.NewSession()
 	defer session.Close()
@@ -340,7 +344,7 @@ func BatchUpdateUrlByIds(engine *xorm.EngineGroup, updateWhere map[string]interf
 	err := session.Begin()
 
 	// 修改数据
-	q := session.Table(new(UrlStruct)).Where("is_del = ?", comm.FalseDel)
+	q := session.Table(new(UrlStruct)).Where("is_del = ?", UrlIsDelNo)
 	if updateWhere["id"] != nil {
 		q.And(builder.Eq{"id": updateWhere["id"]})
 	}

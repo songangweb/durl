@@ -53,7 +53,7 @@ func InitUrlCache(c cache.Conf) {
 }
 
 // taskDisposalQueue 获取需要处理的数据
-func taskDisposalQueue(queueId interface{}) {
+func taskDisposalQueue(queueId uint32) {
 	engine := db.NewDbService()
 	for {
 		list := engine.GetQueueListById(queueId)

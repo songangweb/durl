@@ -9,8 +9,8 @@ type getBlacklistListReq struct {
 	Ip          string `form:"ip"`
 	Page        int    `form:"page" valid:"Min(1)"`
 	Size        int    `form:"size" valid:"Range(1,500)"`
-	CreateTimeL int    `from:"createTimeL" valid:"Match(/([0-9]{10}$)|([0])/);Range(0,9999999999)"`
-	CreateTimeR int    `from:"createTimeR" valid:"Match(/([0-9]{10}$)|([0])/);Range(0,9999999999)"`
+	CreateTimeL uint32 `from:"createTimeL" valid:"Match(/([0-9]{10}$)|([0])/);Range(0,9999999999)"`
+	CreateTimeR uint32 `from:"createTimeR" valid:"Match(/([0-9]{10}$)|([0])/);Range(0,9999999999)"`
 }
 
 // 函数名称: GetBlacklistList
@@ -45,7 +45,7 @@ func (c *BackendController) GetBlacklistList() {
 	engine := db.NewDbService()
 	data := engine.GetBlacklistList(fields, req.Page, req.Size)
 
-	var total int64
+	var total uint32
 	// 有数据且当page=1时计算结果总条数
 	if data != nil && req.Page == 1 {
 		// 统计结果总条数

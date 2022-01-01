@@ -3,16 +3,17 @@ package controllers
 import (
 	"durl/app/share/comm"
 	"durl/app/share/dao/db"
+	dbstruct "durl/app/share/dao/db/struct"
 )
 
 type BatchDelShortUrlReq struct {
-	Ids []int `from:"ids" valid:"Required"`
+	Ids []uint32 `from:"ids" valid:"Required"`
 }
 
 type BatchDelShortUrlRes struct {
-	RequestCount int   `json:"requestCount"`
-	DelCount     int   `json:"delCount"`
-	ErrIds       []int `json:"errIds"`
+	RequestCount uint32   `json:"requestCount"`
+	DelCount     uint32   `json:"delCount"`
+	ErrIds       []uint32 `json:"errIds"`
 }
 
 // 函数名称: BatchDelShortUrl
@@ -41,17 +42,17 @@ func (c *BackendController) BatchDelShortUrl() {
 		return
 	}
 
-	var updateIds []int
-	errIds := make([]int, 0)
-	var insertShortNum []int
+	var updateIds []uint32
+	errIds := make([]uint32, 0)
+	var insertShortNum []uint32
 	// 提交id数量与查询出的数据量不一致
 	// 需要以数据库数据为准筛选出差集，准备进行错误返回
-	requestCount := len(req.Ids)
-	updateCount := len(data)
+	requestCount := uint32(len(req.Ids))
+	updateCount := uint32(len(data))
 	if updateCount != requestCount {
 
 		// 将请求操作的id 提为key
-		mapData := make(map[int]interface{})
+		mapData := make(map[uint32]interface{})
 		for _, v := range data {
 			mapData[v.Id] = v.ShortNum
 		}
@@ -59,7 +60,7 @@ func (c *BackendController) BatchDelShortUrl() {
 		for _, v := range req.Ids {
 			if mapData[v] != nil {
 				updateIds = append(updateIds, v)
-				insertShortNum = append(insertShortNum, mapData[v].(int))
+				insertShortNum = append(insertShortNum, mapData[v].(uint32))
 			} else {
 				errIds = append(errIds, v)
 			}
@@ -73,7 +74,7 @@ func (c *BackendController) BatchDelShortUrl() {
 	}
 
 	// 进行删除操作
-	updateData := map[string]interface{}{"is_del": comm.TureDel}
+	updateData := map[string]interface{}{"is_del": dbstruct.UrlIsDelYes}
 	updateWhere := map[string]interface{}{"id": updateIds}
 	updateWhere["id"] = updateIds
 

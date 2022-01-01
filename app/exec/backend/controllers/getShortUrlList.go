@@ -10,18 +10,18 @@ type getShortUrlListReq struct {
 	Url       string `form:"shortUrl"`
 	Page      int    `form:"page" valid:"Min(1)"`
 	Size      int    `form:"size" valid:"Range(1,500)"`
-	StartTime int    `from:"startTime" valid:"Match(/([0-9]{10}$)|([0])/);Range(0,9999999999)"`
-	EndTime   int    `from:"endTime" valid:"Match(/([0-9]{10}$)|([0])/);Range(0,9999999999)"`
+	StartTime uint32    `from:"startTime" valid:"Match(/([0-9]{10}$)|([0])/);Range(0,9999999999)"`
+	EndTime   uint32    `from:"endTime" valid:"Match(/([0-9]{10}$)|([0])/);Range(0,9999999999)"`
 }
 
 type getShortUrlListDataResp struct {
-	Id             int    `json:"id"`
+	Id             uint32 `json:"id"`
 	ShortKey       string `json:"shortKey"`
 	FullUrl        string `json:"fullUrl"`
-	ExpirationTime int    `json:"expirationTime"`
-	IsFrozen       int8   `json:"isFrozen"`
-	CreateTime     int    `json:"createTime"`
-	UpdateTime     int    `json:"updateTime"`
+	ExpirationTime uint32 `json:"expirationTime"`
+	IsFrozen       uint8   `json:"isFrozen"`
+	CreateTime     uint32 `json:"createTime"`
+	UpdateTime     uint32 `json:"updateTime"`
 }
 
 // 函数名称: GetShortUrlList
@@ -55,7 +55,7 @@ func (c *BackendController) GetShortUrlList() {
 	engine := db.NewDbService()
 	data := engine.GetShortUrlList(fields, req.Page, req.Size)
 
-	var total int64
+	var total uint32
 	// 有数据且当page=1时计算结果总条数
 	if data != nil && req.Page == 1 {
 		// 统计结果总条数

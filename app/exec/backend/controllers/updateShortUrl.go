@@ -3,12 +3,13 @@ package controllers
 import (
 	"durl/app/share/comm"
 	"durl/app/share/dao/db"
+	"strconv"
 )
 
 type updateShortUrlReq struct {
 	FullUrl        string `form:"fullUrl" valid:"Required"`
-	IsFrozen       int    `form:"isFrozen" valid:"Range(0,1)"`
-	ExpirationTime int    `form:"expirationTime" valid:"Match(/([0-9]{10}$)|([0])/);Max(9999999999)"`
+	IsFrozen       uint8    `form:"isFrozen" valid:"Range(0,1)"`
+	ExpirationTime uint32    `form:"expirationTime" valid:"Match(/([0-9]{10}$)|([0])/);Max(9999999999)"`
 }
 
 // 函数名称: UpdateShortUrl
@@ -30,9 +31,11 @@ func (c *BackendController) UpdateShortUrl() {
 	c.BaseCheckParams(&req)
 
 	id := c.Ctx.Input.Param(":id")
+	intId, _ := strconv.ParseUint(id, 10, 32)
+	uint32Id := uint32(intId)
 
 	// 查询此短链
-	fields := map[string]interface{}{"id": id}
+	fields := map[string]interface{}{"id": uint32Id}
 	engine := db.NewDbService()
 	urlInfo := engine.GetShortUrlInfo(fields)
 	if urlInfo.ShortNum == 0 {
@@ -47,7 +50,7 @@ func (c *BackendController) UpdateShortUrl() {
 	updateData["is_frozen"] = req.IsFrozen
 
 	// 修改此短链信息
-	_, err := engine.UpdateUrlById(id, urlInfo.ShortNum, updateData)
+	_, err := engine.UpdateUrlById(uint32Id, urlInfo.ShortNum, updateData)
 	if err != nil {
 		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)
 		return

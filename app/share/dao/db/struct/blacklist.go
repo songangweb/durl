@@ -1,23 +1,26 @@
 package dbstruct
 
 import (
-	"durl/app/share/comm"
-
 	"github.com/xormplus/builder"
 	"github.com/xormplus/xorm"
 )
 
 type BlacklistStruct struct {
-	Id         int    `xorm:" int pk notnull autoincr"`
+	Id         uint32 `xorm:" int pk notnull autoincr"`
 	Ip         string `xorm:" varchar(2048) default('') notnull"`
-	IsDel      int8   `xorm:" tinyint default(0) notnull"`
-	CreateTime int    `xorm:" created default(0) notnull"`
-	UpdateTime int    `xorm:" updated default(0) notnull"`
+	IsDel      uint8  `xorm:" Int default(0) notnull"`
+	CreateTime uint32 `xorm:" created int default(0) notnull"`
+	UpdateTime uint32 `xorm:" updated int default(0) notnull"`
 }
 
 func (I *BlacklistStruct) TableName() string {
 	return "durl_blacklist"
 }
+
+const (
+	BlacklistIsDelYes uint8 = 1
+	BlacklistIsDelNo  uint8 = 0
+)
 
 // InsertBlacklistOne 插入一条数据
 func InsertBlacklistOne(engine *xorm.EngineGroup, urlStructReq BlacklistStruct) (int64, error) {
@@ -46,7 +49,7 @@ func DelBlacklistById(engine *xorm.EngineGroup, id string) (bool, error) {
 
 	// 修改数据
 	blacklistStruct := new(BlacklistStruct)
-	blacklistStruct.IsDel = 1
+	blacklistStruct.IsDel = BlacklistIsDelYes
 	_, err = session.Where(" id = ? ", id).Update(blacklistStruct)
 	if err != nil {
 		_ = session.Rollback()
@@ -99,7 +102,7 @@ func UpdateBlacklistById(engine *xorm.EngineGroup, id string, data map[string]in
 func GetBlacklistList(engine *xorm.EngineGroup, fields map[string]interface{}, page, size int) ([]BlacklistStruct, error) {
 	BlacklistList := make([]BlacklistStruct, 0)
 
-	q := engine.Where("is_del = ? ", comm.FalseDel)
+	q := engine.Where("is_del = ? ", BlacklistIsDelNo)
 
 	if fields["ip"] != nil {
 		q.And(builder.Like{"ip", fields["ip"].(string)})
@@ -129,10 +132,10 @@ func GetBlacklistList(engine *xorm.EngineGroup, fields map[string]interface{}, p
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
 
-func GetBlacklistListTotal(engine *xorm.EngineGroup, fields map[string]interface{}) (int64, error) {
+func GetBlacklistListTotal(engine *xorm.EngineGroup, fields map[string]interface{}) (uint32, error) {
 	BlacklistCount := new(BlacklistStruct)
 
-	q := engine.Where("is_del = ? ", comm.FalseDel)
+	q := engine.Where("is_del = ? ", BlacklistIsDelNo)
 
 	if fields["fullUrl"] != nil {
 		q.And(builder.Like{"full_url", fields["fullUrl"].(string)})
@@ -147,7 +150,7 @@ func GetBlacklistListTotal(engine *xorm.EngineGroup, fields map[string]interface
 	}
 
 	total, err := q.Count(BlacklistCount)
-	return total, err
+	return uint32(total), err
 }
 
 // 函数名称: GetBlacklistInfo
@@ -165,7 +168,7 @@ func GetBlacklistListTotal(engine *xorm.EngineGroup, fields map[string]interface
 func GetBlacklistInfo(engine *xorm.EngineGroup, fields map[string]interface{}) (*BlacklistStruct, error) {
 	blacklistDetail := new(BlacklistStruct)
 
-	q := engine.Where("is_del = ? ", comm.FalseDel)
+	q := engine.Where("is_del = ? ", BlacklistIsDelNo)
 	if fields["id"] != nil {
 		q.And(builder.Eq{"id": fields["id"]})
 	}
@@ -189,7 +192,7 @@ func GetBlacklistAll(engine *xorm.EngineGroup) ([]BlacklistStruct, error) {
 	blacklistList := make([]BlacklistStruct, 0)
 	err := engine.
 		Where(" is_del = ?",
-			0).
+			BlacklistIsDelNo).
 		Find(&blacklistList)
 	return blacklistList, err
 }

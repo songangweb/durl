@@ -3,13 +3,14 @@ package controllers
 import (
 	"durl/app/share/comm"
 	"durl/app/share/dao/db"
+	"strconv"
 )
 
 type BlacklistInfoRes struct {
-	Id         int    `json:"id"`
+	Id         uint32    `json:"id"`
 	Ip         string `json:"ip"`
-	CreateTime int    `json:"createTime"`
-	UpdateTime int    `json:"updateTime"`
+	CreateTime uint32    `json:"createTime"`
+	UpdateTime uint32    `json:"updateTime"`
 }
 
 // 函数名称: GetBlacklistInfo
@@ -24,8 +25,10 @@ type BlacklistInfoRes struct {
 
 func (c *BackendController) GetBlacklistInfo() {
 	id := c.Ctx.Input.Param(":id")
+	intId, _ := strconv.ParseUint(id, 10, 32)
+	uint32Id := uint32(intId)
 
-	fields := map[string]interface{}{"id": id}
+	fields := map[string]interface{}{"id": uint32Id}
 	BlacklistInfo := db.NewDbService().GetBlacklistInfo(fields)
 	if BlacklistInfo.Ip == "" {
 		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
