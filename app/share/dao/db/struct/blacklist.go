@@ -137,8 +137,8 @@ func GetBlacklistListTotal(engine *xorm.EngineGroup, fields map[string]interface
 
 	q := engine.Where("is_del = ? ", BlacklistIsDelNo)
 
-	if fields["fullUrl"] != nil {
-		q.And(builder.Like{"full_url", fields["fullUrl"].(string)})
+	if fields["ip"] != nil {
+		q.And(builder.Like{"ip", fields["ip"].(string)})
 	}
 
 	if fields["createTimeL"] != nil {

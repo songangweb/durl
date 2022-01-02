@@ -52,6 +52,9 @@ func InitUrlCache(c cache.Conf) {
 	go taskDisposalQueue(queueId)
 }
 
+// 循环获取queue表数据时间 s
+const taskQueueTime = 30
+
 // taskDisposalQueue 获取需要处理的数据
 func taskDisposalQueue(queueId uint32) {
 	engine := db.NewDbService()
@@ -65,7 +68,7 @@ func taskDisposalQueue(queueId uint32) {
 				cache.NewUrlListCache().Gremove(shortNum)
 			}
 		}
-		time.Sleep(30 * time.Second)
+		time.Sleep(taskQueueTime * time.Second)
 	}
 }
 
@@ -74,6 +77,10 @@ func InitBlacklist() {
 	// 开启定时任务获取黑名单列表
 	go taskBlacklist()
 }
+
+
+// 循环获取黑名单数据时间 s
+const taskBlacklistTime = 300
 
 // taskBlacklist 开启定时任务获取黑名单列表
 func taskBlacklist() {
@@ -88,6 +95,6 @@ func taskBlacklist() {
 		for _, val := range list {
 			c.Add(val.Ip)
 		}
-		time.Sleep(60 * time.Second)
+		time.Sleep(taskBlacklistTime * time.Second)
 	}
 }

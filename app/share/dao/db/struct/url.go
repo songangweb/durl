@@ -239,11 +239,14 @@ func GetShortUrlList(engine *xorm.EngineGroup, fields map[string]interface{}, pa
 	if fields["fullUrl"] != nil {
 		q.And(builder.Like{"full_url", fields["fullUrl"].(string)})
 	}
-	if fields["startTime"] != nil {
-		q.And(builder.Gte{"create_time": fields["startTime"]})
+	if fields["isFrozen"] != nil {
+		q.And(builder.Eq{"is_frozen": fields["isFrozen"]})
 	}
-	if fields["endTime"] != nil {
-		q.And(builder.Lte{"create_time": fields["endTime"]})
+	if fields["createTimeL"] != nil {
+		q.And(builder.Gte{"create_time": fields["createTimeL"]})
+	}
+	if fields["createTimeR"] != nil {
+		q.And(builder.Lte{"create_time": fields["createTimeR"]})
 	}
 
 	err := q.Limit(size, (page-1)*size).Desc("create_time").Find(&urlList)
@@ -269,11 +272,14 @@ func GetShortUrlListTotal(engine *xorm.EngineGroup, fields map[string]interface{
 	if fields["fullUrl"] != nil {
 		q.And(builder.Like{"full_url", fields["fullUrl"].(string)})
 	}
-	if fields["startTime"] != nil {
-		q.And(builder.Gte{"create_time": fields["startTime"]})
+	if fields["isFrozen"] != nil {
+		q.And(builder.Eq{"is_frozen": fields["isFrozen"]})
 	}
-	if fields["endTime"] != nil {
-		q.And(builder.Lte{"create_time": fields["endTime"]})
+	if fields["createTimeL"] != nil {
+		q.And(builder.Gte{"create_time": fields["createTimeL"]})
+	}
+	if fields["createTimeR"] != nil {
+		q.And(builder.Lte{"create_time": fields["createTimeR"]})
 	}
 
 	total, err := q.Count(urlCount)
