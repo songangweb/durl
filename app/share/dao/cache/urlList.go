@@ -8,12 +8,29 @@ import (
 	"github.com/songangweb/mcache"
 )
 
-var UrlListCache *urlListCache
+type UrlListCache interface {
+	Gget(key interface{}) (fullUrl interface{}, ok bool)
+	Gadd(key, value interface{}, expirationTime int64)
+	Gremove(key interface{})
 
-type urlListCache struct {
+	Bget(key interface{}) (fullUrl interface{}, ok bool)
+	Badd(key, value interface{}, expirationTime int64)
+}
+
+func NewUrlListCache() UrlListCache {
+	return &ulServer{
+		GoodUrlCache: GoodUrlCache,
+		BedUrlCache: BedUrlCache,
+	}
+}
+
+type ulServer struct {
 	GoodUrlCache *mcache.ARCCache
 	BedUrlCache  *mcache.LruCache
 }
+
+var GoodUrlCache *mcache.ARCCache
+var BedUrlCache  *mcache.LruCache
 
 type Conf struct {
 	GoodUrlLen int
@@ -36,30 +53,28 @@ func InitUrlCache(c Conf) {
 		panic(comm.MsgInitializeCacheError + ", err: " + err.Error())
 	}
 
-	UrlListCache = &urlListCache{
-		GoodUrlCache: goodUrlCache,
-		BedUrlCache:  bedUrlCache,
-	}
+	GoodUrlCache = goodUrlCache
+	BedUrlCache = bedUrlCache
 }
 
-func (s *urlListCache) Gget(key interface{}) (fullUrl interface{}, ok bool) {
+func (s *ulServer) Gget(key interface{}) (fullUrl interface{}, ok bool) {
 	fullUrl, _, ok = s.GoodUrlCache.Get(key)
 	return fullUrl, ok
 }
 
-func (s *urlListCache) Gadd(key, value interface{}, expirationTime int64) {
+func (s *ulServer) Gadd(key, value interface{}, expirationTime int64) {
 	s.GoodUrlCache.Add(key, value, expirationTime)
 }
 
-func (s *urlListCache) Gremove(key interface{}) {
+func (s *ulServer) Gremove(key interface{}) {
 	s.GoodUrlCache.Remove(key)
 }
 
-func (s *urlListCache) Bget(key interface{}) (fullUrl interface{}, ok bool) {
+func (s *ulServer) Bget(key interface{}) (fullUrl interface{}, ok bool) {
 	fullUrl, _, ok = s.BedUrlCache.Get(key)
 	return fullUrl, ok
 }
 
-func (s *urlListCache) Badd(key, value interface{}, expirationTime int64) {
+func (s *ulServer) Badd(key, value interface{}, expirationTime int64) {
 	s.BedUrlCache.Add(key, value, expirationTime)
 }

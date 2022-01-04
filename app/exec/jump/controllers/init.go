@@ -16,7 +16,7 @@ type Controller struct {
 func (c *Controller) Prepare() {
 	// 过滤黑名单
 	ip := c.Ctx.Input.IP()
-	if cache.Blacklist.Search(ip) {
+	if cache.NewBlackListCache().Search(ip) {
 		reStatusNotFound(c)
 		return
 	}
@@ -45,15 +45,18 @@ func InitUrlCache(c cache.Conf) {
 	UrlList := engine.GetCacheUrlAllByLimit(c.GoodUrlLen)
 	// 添加数据到缓存中
 	for i := 0; i < len(UrlList); i++ {
-		cache.UrlListCache.Gadd(UrlList[i].ShortNum, UrlList[i].FullUrl, int64(UrlList[i].ExpirationTime))
+		cache.NewUrlListCache().Gadd(UrlList[i].ShortNum, UrlList[i].FullUrl, int64(UrlList[i].ExpirationTime))
 	}
 
 	// 开启定时任务获取需要处理的数据
 	go taskDisposalQueue(queueId)
 }
 
+// 循环获取queue表数据时间 s
+const taskQueueTime = 30
+
 // taskDisposalQueue 获取需要处理的数据
-func taskDisposalQueue(queueId interface{}) {
+func taskDisposalQueue(queueId uint32) {
 	engine := db.NewDbService()
 	for {
 		list := engine.GetQueueListById(queueId)
@@ -62,10 +65,10 @@ func taskDisposalQueue(queueId interface{}) {
 			queueId = list[count-1].Id
 			for _, val := range list {
 				shortNum := val.ShortNum
-				cache.UrlListCache.Gremove(shortNum)
+				cache.NewUrlListCache().Gremove(shortNum)
 			}
 		}
-		time.Sleep(30 * time.Second)
+		time.Sleep(taskQueueTime * time.Second)
 	}
 }
 
@@ -75,17 +78,23 @@ func InitBlacklist() {
 	go taskBlacklist()
 }
 
+
+// 循环获取黑名单数据时间 s
+const taskBlacklistTime = 300
+
 // taskBlacklist 开启定时任务获取黑名单列表
 func taskBlacklist() {
 	engine := db.NewDbService()
+
+	// 初始化缓存
+	cache.InitBlacklist()
+	c := cache.NewBlackListCache()
 	for {
-		// 初始化缓存
-		cache.InitBlacklist()
 		// 获取所有黑名单列表
 		list := engine.GetBlacklistAll()
 		for _, val := range list {
-			cache.Blacklist.Add(val.Ip)
+			c.Add(val.Ip)
 		}
-		time.Sleep(60 * time.Second)
+		time.Sleep(taskBlacklistTime * time.Second)
 	}
 }

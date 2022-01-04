@@ -14,31 +14,32 @@ func (c *Controller) Jump() {
 
 	shortKey := c.Ctx.Input.Param(":jump")
 	shortNum := tool.Base62Decode(shortKey)
+	uint32ShortNum := uint32(shortNum)
 
 	// 判断缓存是否存在数据
-	if fullUrl, ok := cache.UrlListCache.Gget(shortNum); ok {
+	if fullUrl, ok := cache.NewUrlListCache().Gget(uint32ShortNum); ok {
 		reStatusFound(c, fmt.Sprint(fullUrl))
 		return
 	}
 
 	// 判断错误url缓存是否存在, 如果存在返回404
-	if _, ok := cache.UrlListCache.Bget(shortKey); ok {
-		cache.UrlListCache.Badd(shortKey, "", (tool.TimeNowUnix()+600)*1000)
+	if _, ok := cache.NewUrlListCache().Bget(shortKey); ok {
+		cache.NewUrlListCache().Badd(shortKey, "", (tool.TimeNowUnix()+600)*1000)
 		reStatusNotFound(c)
 		return
 	}
 
 	// 查询数据库
-	urlDetail := db.NewDbService().GetFullUrlByShortNum(shortNum)
+	urlDetail := db.NewDbService().GetFullUrlByShortNum(uint32ShortNum)
 	// 跳转到 404 页面
 	if urlDetail == nil {
-		cache.UrlListCache.Badd(shortKey, "", (tool.TimeNowUnix()+600)*1000)
+		cache.NewUrlListCache().Badd(shortKey, "", (tool.TimeNowUnix()+600)*1000)
 		reStatusNotFound(c)
 		return
 	}
 
-	cache.UrlListCache.Gadd(shortNum, urlDetail.FullUrl, int64(urlDetail.ExpirationTime*1000))
-	cache.UrlListCache.Gget(shortNum)
+	cache.NewUrlListCache().Gadd(shortNum, urlDetail.FullUrl, int64(urlDetail.ExpirationTime*1000))
+	cache.NewUrlListCache().Gget(shortNum)
 
 	reStatusFound(c, urlDetail.FullUrl)
 	return

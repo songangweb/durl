@@ -4,23 +4,32 @@ import (
 	"durl/app/share/tool"
 )
 
-var Blacklist *blacklist
-
-type blacklist struct {
-	trie *tool.Trie
+type BlackListCache interface {
+	Add(ip string)
+	Search(ip string) bool
 }
 
-func InitBlacklist() {
-	ipTrie := tool.Constructor()
-	Blacklist = &blacklist{
-		trie: &ipTrie,
+func NewBlackListCache() BlackListCache {
+	return &blcServer{
+		Blacklist: Blacklist,
 	}
 }
 
-func (b *blacklist) Add(ip string) {
-	b.trie.Add(ip)
+type blcServer struct {
+	Blacklist *tool.Trie
 }
 
-func (b *blacklist) Search(ip string) bool {
-	return b.trie.Search(ip)
+var Blacklist *tool.Trie
+
+func InitBlacklist() {
+	ipTrie := tool.Constructor()
+	Blacklist = &ipTrie
+}
+
+func (b *blcServer) Add(ip string) {
+	b.Blacklist.Add(ip)
+}
+
+func (b *blcServer) Search(ip string) bool {
+	return b.Blacklist.Search(ip)
 }

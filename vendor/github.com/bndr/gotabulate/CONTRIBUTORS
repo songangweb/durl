@@ -1,2 +1,0 @@
-# Contributors git log --format='%aN <%aE>' | sort -uf
-Vadim Kravcenko <bndrzz@gmail.com>

@@ -7,21 +7,22 @@ import (
 )
 
 type getShortUrlListReq struct {
-	Url       string `form:"shortUrl"`
-	Page      int    `form:"page" valid:"Min(1)"`
-	Size      int    `form:"size" valid:"Range(1,500)"`
-	StartTime int    `from:"startTime" valid:"Match(/([0-9]{10}$)|([0])/);Range(0,9999999999)"`
-	EndTime   int    `from:"endTime" valid:"Match(/([0-9]{10}$)|([0])/);Range(0,9999999999)"`
+	Url         string `form:"shortUrl"`
+	IsFrozen    uint8  `form:"isFrozen"`
+	Page        int    `form:"page" valid:"Min(1)"`
+	Size        int    `form:"size" valid:"Range(1,500)"`
+	CreateTimeL uint32 `form:"createTimeL"`
+	CreateTimeR uint32 `form:"createTimeR"`
 }
 
 type getShortUrlListDataResp struct {
-	Id             int    `json:"id"`
+	Id             uint32 `json:"id"`
 	ShortKey       string `json:"shortKey"`
 	FullUrl        string `json:"fullUrl"`
-	ExpirationTime int    `json:"expirationTime"`
-	IsFrozen       int8   `json:"isFrozen"`
-	CreateTime     int    `json:"createTime"`
-	UpdateTime     int    `json:"updateTime"`
+	ExpirationTime uint32 `json:"expirationTime"`
+	IsFrozen       uint8  `json:"isFrozen"`
+	CreateTime     uint32 `json:"createTime"`
+	UpdateTime     uint32 `json:"updateTime"`
 }
 
 // 函数名称: GetShortUrlList
@@ -46,34 +47,40 @@ func (c *BackendController) GetShortUrlList() {
 	if req.Url != "" {
 		fields["fullUrl"] = req.Url
 	}
-	if req.StartTime != 0 {
-		fields["startTime"] = req.StartTime
+	if req.Url != "" {
+		fields["fullUrl"] = req.Url
 	}
-	if req.EndTime != 0 {
-		fields["endTime"] = req.EndTime
+	if req.IsFrozen == 0 || req.IsFrozen == 1 {
+		fields["isFrozen"] = req.IsFrozen
+	}
+	if req.CreateTimeL != 0 {
+		fields["createTimeL"] = req.CreateTimeL
+	}
+	if req.CreateTimeR != 0 {
+		fields["createTimeR"] = req.CreateTimeR
 	}
 	engine := db.NewDbService()
-	data := engine.GetShortUrlList(fields, req.Page, req.Size)
 
-	var total int64
-	// 有数据且当page=1时计算结果总条数
-	if data != nil && req.Page == 1 {
-		// 统计结果总条数
-		total = engine.GetShortUrlListTotal(fields)
-	}
+	var total uint32
+	// 统计结果总条数
+	total = engine.GetShortUrlListTotal(fields)
 
 	var list []*getShortUrlListDataResp
-	for _, queueStruct := range data {
-		var One getShortUrlListDataResp
-		One.Id = queueStruct.Id
-		One.ShortKey = tool.Base62Encode(queueStruct.ShortNum)
-		One.FullUrl = queueStruct.FullUrl
-		One.ExpirationTime = queueStruct.ExpirationTime
-		One.IsFrozen = queueStruct.IsFrozen
-		One.CreateTime = queueStruct.CreateTime
-		One.UpdateTime = queueStruct.UpdateTime
-		list = append(list, &One)
+	if total != 0 {
+		data := engine.GetShortUrlList(fields, req.Page, req.Size)
+		for _, queueStruct := range data {
+			var One getShortUrlListDataResp
+			One.Id = queueStruct.Id
+			One.ShortKey = tool.Base62Encode(queueStruct.ShortNum)
+			One.FullUrl = queueStruct.FullUrl
+			One.ExpirationTime = queueStruct.ExpirationTime
+			One.IsFrozen = queueStruct.IsFrozen
+			One.CreateTime = queueStruct.CreateTime
+			One.UpdateTime = queueStruct.UpdateTime
+			list = append(list, &One)
+		}
 	}
+
 	c.FormatInterfaceListResp(comm.OK, comm.OK, total, comm.MsgOk, list)
 	return
 

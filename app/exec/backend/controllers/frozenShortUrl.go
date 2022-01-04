@@ -3,6 +3,7 @@ package controllers
 import (
 	"durl/app/share/comm"
 	"durl/app/share/dao/db"
+	"strconv"
 )
 
 // 函数名称: FrozenShortUrl
@@ -18,9 +19,11 @@ import (
 func (c *BackendController) FrozenShortUrl() {
 
 	id := c.Ctx.Input.Param(":id")
+	intId, _ := strconv.ParseUint(id, 10, 32)
+	uint32Id := uint32(intId)
 
 	// 查询此短链
-	fields := map[string]interface{}{"id": id}
+	fields := map[string]interface{}{"id": uint32Id}
 	engine := db.NewDbService()
 	urlInfo := engine.GetShortUrlInfo(fields)
 	if urlInfo.ShortNum == 0 {
@@ -36,7 +39,7 @@ func (c *BackendController) FrozenShortUrl() {
 
 	updateData := make(map[string]interface{})
 	updateData["is_frozen"] = 0
-	_, err := engine.UpdateUrlById(id, urlInfo.ShortNum, updateData)
+	_, err := engine.UpdateUrlById(uint32Id, urlInfo.ShortNum, updateData)
 	if err != nil {
 		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)
 		return

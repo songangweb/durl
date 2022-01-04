@@ -22,12 +22,12 @@ type InterfaceResp struct {
 }
 
 type BaseResp struct {
-	Code    int    `json:"code"`    // 返回码
+	Code    int `json:"code"`    // 返回码
 	Message string `json:"message"` // 错误描述
 }
 
 type BaseListResp struct {
-	Len  int64       `json:"len"`
+	Len  uint32       `json:"len"`
 	List interface{} `json:"list"`
 }
 
@@ -134,7 +134,7 @@ func (b *BaseController) FormatInterfaceResp(httpCode, code int, message string,
 // 注意事项:
 // 作者: # ang.song # 2021-11-17 15:15:42 #
 
-func (b *BaseController) FormatInterfaceListResp(httpCode, code int, len int64, message string, i interface{}) {
+func (b *BaseController) FormatInterfaceListResp(httpCode, code int, len uint32, message string, i interface{}) {
 	b.Ctx.Output.SetStatus(httpCode)
 
 	// 为空时转换为 []
