@@ -8,13 +8,13 @@ import (
 )
 
 type ShortUrlInfoRes struct {
-	Id             uint32    `json:"id"`
+	Id             uint32 `json:"id"`
 	ShortKey       string `json:"shortKey"`
 	FullUrl        string `json:"fullUrl"`
-	ExpirationTime uint32    `json:"expirationTime"`
-	IsFrozen       uint8   `json:"isFrozen"`
-	CreateTime     uint32    `json:"createTime"`
-	UpdateTime     uint32    `json:"updateTime"`
+	ExpirationTime uint32 `json:"expirationTime"`
+	IsFrozen       uint8  `json:"isFrozen"`
+	CreateTime     uint32 `json:"createTime"`
+	UpdateTime     uint32 `json:"updateTime"`
 }
 
 // 函数名称: GetShortUrlInfo

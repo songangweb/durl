@@ -7,12 +7,13 @@ import (
 )
 
 type getShortUrlListReq struct {
-	Url         string `form:"shortUrl"`
+	FullUrl     string `form:"fullUrl"`
+	ShortKey    string `form:"shortKey"`
 	IsFrozen    uint8  `form:"isFrozen"`
 	Page        int    `form:"page" valid:"Min(1)"`
 	Size        int    `form:"size" valid:"Range(1,500)"`
-	CreateTimeL uint32 `form:"createTimeL"`
-	CreateTimeR uint32 `form:"createTimeR"`
+	CreateTimeL uint32 `form:"createTimeL" valid:"MaxSize(10)"`
+	CreateTimeR uint32 `form:"createTimeR" valid:"MaxSize(10)"`
 }
 
 type getShortUrlListDataResp struct {
@@ -44,11 +45,11 @@ func (c *BackendController) GetShortUrlList() {
 
 	// 透传业务搜索字段
 	fields := make(map[string]interface{})
-	if req.Url != "" {
-		fields["fullUrl"] = req.Url
+	if req.FullUrl != "" {
+		fields["fullUrl"] = req.FullUrl
 	}
-	if req.Url != "" {
-		fields["fullUrl"] = req.Url
+	if req.ShortKey != "" {
+		fields["shortKey"] = req.ShortKey
 	}
 	if req.IsFrozen == 0 || req.IsFrozen == 1 {
 		fields["isFrozen"] = req.IsFrozen

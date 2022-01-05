@@ -7,10 +7,10 @@ import (
 )
 
 type BlacklistInfoRes struct {
-	Id         uint32    `json:"id"`
+	Id         uint32 `json:"id"`
 	Ip         string `json:"ip"`
-	CreateTime uint32    `json:"createTime"`
-	UpdateTime uint32    `json:"updateTime"`
+	CreateTime uint32 `json:"createTime"`
+	UpdateTime uint32 `json:"updateTime"`
 }
 
 // 函数名称: GetBlacklistInfo

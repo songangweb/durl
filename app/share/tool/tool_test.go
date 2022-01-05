@@ -67,15 +67,15 @@ func BenchmarkReverseString(b *testing.B) {
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/12/31 10:30 上午 #
-func benchmarkReverseString(b *testing.B,s string)  {
+func benchmarkReverseString(b *testing.B, s string) {
 	for i := 0; i < b.N; i++ {
 		ReverseString(s)
 	}
 }
 
-func BenchmarkReverseString2(b *testing.B)  { benchmarkReverseString(b, "dsfd") }
-func BenchmarkReverseString3(b *testing.B)  { benchmarkReverseString(b, "213") }
-func BenchmarkReverseString4(b *testing.B)  { benchmarkReverseString(b, "!@#@!#") }
+func BenchmarkReverseString2(b *testing.B) { benchmarkReverseString(b, "dsfd") }
+func BenchmarkReverseString3(b *testing.B) { benchmarkReverseString(b, "213") }
+func BenchmarkReverseString4(b *testing.B) { benchmarkReverseString(b, "!@#@!#") }
 func BenchmarkReverseString5(b *testing.B) { benchmarkReverseString(b, "123fdsf") }
 
 // 函数名称: ExampleReverseString
@@ -112,11 +112,11 @@ func TestBase62Encode(t *testing.T) {
 		want string
 	}{
 		// TODO: Add test cases.
-		{"1",args{1},"1"},
-		{"空",args{},"0"},
-		{"0",args{0},"0"},
-		{"最大值",args{4294967295},"4GFfc3"},
-		{"5.",args{5.},"5"},
+		{"1", args{1}, "1"},
+		{"空", args{}, "0"},
+		{"0", args{0}, "0"},
+		{"最大值", args{4294967295}, "4GFfc3"},
+		{"5.", args{5.}, "5"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -152,15 +152,15 @@ func BenchmarkBase62Encode(b *testing.B) {
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/12/31 10:30 上午 #
-func benchmarkBase62Encode(b *testing.B,n uint32)  {
+func benchmarkBase62Encode(b *testing.B, n uint32) {
 	for i := 0; i < b.N; i++ {
 		Base62Encode(n)
 	}
 }
 
-func BenchmarkBase62Encode2(b *testing.B)  { benchmarkBase62Encode(b, 1) }
-func BenchmarkBase62Encode3(b *testing.B)  { benchmarkBase62Encode(b, 0) }
-func BenchmarkBase62Encode4(b *testing.B)  { benchmarkBase62Encode(b, 90904092) }
+func BenchmarkBase62Encode2(b *testing.B) { benchmarkBase62Encode(b, 1) }
+func BenchmarkBase62Encode3(b *testing.B) { benchmarkBase62Encode(b, 0) }
+func BenchmarkBase62Encode4(b *testing.B) { benchmarkBase62Encode(b, 90904092) }
 func BenchmarkBase62Encode5(b *testing.B) { benchmarkBase62Encode(b, 432.) }
 
 // 函数名称: ExampleBase62Encode
@@ -197,13 +197,13 @@ func TestBase62Decode(t *testing.T) {
 		want int
 	}{
 		// TODO: Add test cases.
-		{"1",args{"1"},1},
-		{"空",args{},0},
-		{"0",args{"0"},0},
-		{"最大值",args{"4GFfc3"},4294967295},
-		{"5.",args{"5"},5},
-		{"符号",args{"@#¥"},0},
-		{"中文",args{"你好"},0},
+		{"1", args{"1"}, 1},
+		{"空", args{}, 0},
+		{"0", args{"0"}, 0},
+		{"最大值", args{"4GFfc3"}, 4294967295},
+		{"5.", args{"5"}, 5},
+		{"符号", args{"@#¥"}, 0},
+		{"中文", args{"你好"}, 0},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -239,15 +239,15 @@ func BenchmarkBase62Decode(b *testing.B) {
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/12/31 10:30 上午 #
-func benchmarkBase62Decode(b *testing.B,s string)  {
+func benchmarkBase62Decode(b *testing.B, s string) {
 	for i := 0; i < b.N; i++ {
 		Base62Decode(s)
 	}
 }
 
-func BenchmarkBase62Decode2(b *testing.B)  { benchmarkBase62Decode(b, "1") }
-func BenchmarkBase62Decode3(b *testing.B)  { benchmarkBase62Decode(b, "0") }
-func BenchmarkBase62Decode4(b *testing.B)  { benchmarkBase62Decode(b, "4GFfc3") }
+func BenchmarkBase62Decode2(b *testing.B) { benchmarkBase62Decode(b, "1") }
+func BenchmarkBase62Decode3(b *testing.B) { benchmarkBase62Decode(b, "0") }
+func BenchmarkBase62Decode4(b *testing.B) { benchmarkBase62Decode(b, "4GFfc3") }
 func BenchmarkBase62Decode5(b *testing.B) { benchmarkBase62Decode(b, "@#¥") }
 func BenchmarkBase62Decode6(b *testing.B) { benchmarkBase62Decode(b, "你好") }
 
@@ -285,13 +285,13 @@ func TestDisposeUrlProto(t *testing.T) {
 		want string
 	}{
 		// TODO: Add test cases.
-		{"数字字符",args{"123.com"},"http://123.com"},
-		{"特殊字符",args{"！@#REhttps://"},"http://！@#REhttps://"},
-		{"中文",args{"你好"},"http://你好"},
-		{"https://",args{"https://"},"https://"},
-		{"http://",args{"http://"},"http://"},
-		{"http:",args{"http:"},"http://http:"},
-		{"重复",args{"http://https://http://"},"http://https://http://"},
+		{"数字字符", args{"123.com"}, "http://123.com"},
+		{"特殊字符", args{"！@#REhttps://"}, "http://！@#REhttps://"},
+		{"中文", args{"你好"}, "http://你好"},
+		{"https://", args{"https://"}, "https://"},
+		{"http://", args{"http://"}, "http://"},
+		{"http:", args{"http:"}, "http://http:"},
+		{"重复", args{"http://https://http://"}, "http://https://http://"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -327,15 +327,15 @@ func BenchmarkDisposeUrlProto(b *testing.B) {
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/12/31 10:30 上午 #
-func benchmarkDisposeUrlProto(b *testing.B,s string)  {
+func benchmarkDisposeUrlProto(b *testing.B, s string) {
 	for i := 0; i < b.N; i++ {
 		DisposeUrlProto(s)
 	}
 }
 
-func BenchmarkDisposeUrlProto2(b *testing.B)  { benchmarkDisposeUrlProto(b, "1") }
-func BenchmarkDisposeUrlProto3(b *testing.B)  { benchmarkDisposeUrlProto(b, "0") }
-func BenchmarkDisposeUrlProto4(b *testing.B)  { benchmarkDisposeUrlProto(b, "4GFfc3http://") }
+func BenchmarkDisposeUrlProto2(b *testing.B) { benchmarkDisposeUrlProto(b, "1") }
+func BenchmarkDisposeUrlProto3(b *testing.B) { benchmarkDisposeUrlProto(b, "0") }
+func BenchmarkDisposeUrlProto4(b *testing.B) { benchmarkDisposeUrlProto(b, "4GFfc3http://") }
 func BenchmarkDisposeUrlProto5(b *testing.B) { benchmarkDisposeUrlProto(b, "@#¥") }
 func BenchmarkDisposeUrlProto6(b *testing.B) { benchmarkDisposeUrlProto(b, "你好") }
 
@@ -373,13 +373,13 @@ func TestDisposeShortKey(t *testing.T) {
 		want bool
 	}{
 		// TODO: Add test cases.
-		{"1",args{"1"},true},
-		{"空",args{},false},
-		{"0",args{"0"},true},
-		{"最大值",args{"4GFfc3"},true},
-		{"5.",args{"5"},true},
-		{"符号",args{"@#¥"},false},
-		{"中文",args{"你好"},false},
+		{"1", args{"1"}, true},
+		{"空", args{}, false},
+		{"0", args{"0"}, true},
+		{"最大值", args{"4GFfc3"}, true},
+		{"5.", args{"5"}, true},
+		{"符号", args{"@#¥"}, false},
+		{"中文", args{"你好"}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -415,15 +415,15 @@ func BenchmarkDisposeShortKey(b *testing.B) {
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/12/31 10:30 上午 #
-func benchmarkDisposeShortKey(b *testing.B,s string)  {
+func benchmarkDisposeShortKey(b *testing.B, s string) {
 	for i := 0; i < b.N; i++ {
 		DisposeShortKey(s)
 	}
 }
 
-func BenchmarkDisposeShortKey2(b *testing.B)  { benchmarkDisposeShortKey(b, "1") }
-func BenchmarkDisposeShortKey3(b *testing.B)  { benchmarkDisposeShortKey(b, "0") }
-func BenchmarkDisposeShortKey4(b *testing.B)  { benchmarkDisposeShortKey(b, "4GFfc3http://") }
+func BenchmarkDisposeShortKey2(b *testing.B) { benchmarkDisposeShortKey(b, "1") }
+func BenchmarkDisposeShortKey3(b *testing.B) { benchmarkDisposeShortKey(b, "0") }
+func BenchmarkDisposeShortKey4(b *testing.B) { benchmarkDisposeShortKey(b, "4GFfc3http://") }
 func BenchmarkDisposeShortKey5(b *testing.B) { benchmarkDisposeShortKey(b, "@#¥") }
 func BenchmarkDisposeShortKey6(b *testing.B) { benchmarkDisposeShortKey(b, "你好") }
 
@@ -448,7 +448,7 @@ func TestTimeNowUnix(t *testing.T) {
 		want int64
 	}{
 		// TODO: Add test cases.
-		{"now",time.Now().Unix()},
+		{"now", time.Now().Unix()},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

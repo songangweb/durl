@@ -13,12 +13,12 @@ import (
 
 type setShortUrlReq struct {
 	Url            string `form:"url" valid:"Required"`
-	ExpirationTime uint32    `form:"expirationTime"`
+	ExpirationTime uint32 `form:"expirationTime"`
 }
 
 type setShortUrlDataResp struct {
 	ShortKey       string `json:"shortKey"`
-	ExpirationTime uint32    `json:"expirationTime"`
+	ExpirationTime uint32 `json:"expirationTime"`
 }
 
 // 函数名称: setShortUrlParam

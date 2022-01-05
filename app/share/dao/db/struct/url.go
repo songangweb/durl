@@ -48,7 +48,7 @@ func GetCacheUrlAllByLimit(engine *xorm.EngineGroup, limit int) ([]UrlStruct, er
 
 	err := engine.
 		Where(" is_del = ? and (expiration_time > ? or expiration_time = ?) ",
-		UrlIsDelNo, tool.TimeNowUnix(), UrlIsDelNo).
+			UrlIsDelNo, tool.TimeNowUnix(), UrlIsDelNo).
 		Limit(limit, 0).
 		Find(&urlList)
 	return urlList, err
@@ -271,6 +271,16 @@ func GetShortUrlListTotal(engine *xorm.EngineGroup, fields map[string]interface{
 	q := engine.Where("is_del = ? ", UrlIsDelNo)
 	if fields["fullUrl"] != nil {
 		q.And(builder.Like{"full_url", fields["fullUrl"].(string)})
+	}
+	if fields["shortKey"] != nil {
+		// 格式转换
+		shortNum := tool.Base62Decode(fields["shortKey"].(string))
+		uint32ShortNum := uint32(shortNum)
+		q.And(builder.Eq{"short_num": uint32ShortNum})
+	}
+	if fields["shortNum"] != nil {
+		// 格式转换
+		q.And(builder.Eq{"short_num": fields["shortNum"]})
 	}
 	if fields["isFrozen"] != nil {
 		q.And(builder.Eq{"is_frozen": fields["isFrozen"]})

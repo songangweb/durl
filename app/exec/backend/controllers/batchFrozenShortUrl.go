@@ -7,7 +7,7 @@ import (
 
 type BatchFrozenShortUrlReq struct {
 	Ids      []uint32 `from:"ids" valid:"Required"`
-	IsFrozen uint8   `from:"isFrozen" valid:"Range(0,1)"`
+	IsFrozen uint8    `from:"isFrozen" valid:"Range(0,1)"`
 }
 
 type BatchFrozenShortUrlRes struct {

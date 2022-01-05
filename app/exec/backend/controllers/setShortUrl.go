@@ -10,13 +10,13 @@ import (
 
 type setShortUrlReq struct {
 	FullUrl        string `form:"fullUrl" valid:"Required"`
-	ExpirationTime uint32    `form:"expirationTime" valid:"Match(/([0-9]{10}$)|([0])/);Max(9999999999)"`
+	ExpirationTime uint32 `form:"expirationTime" valid:"Match(/([0-9]{10}$)|([0])/);Max(9999999999)"`
 }
 
 type setShortUrlDataResp struct {
 	ShortKey       string `json:"shortKey"`
 	FullUrl        string `json:"fullUrl"`
-	ExpirationTime uint32    `json:"expirationTime"`
+	ExpirationTime uint32 `json:"expirationTime"`
 }
 
 // 函数名称: SetShortUrl

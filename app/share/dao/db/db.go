@@ -120,13 +120,13 @@ func (s *dbService) GetQueueListById(id uint32) []*GetQueueListByIdRe {
 
 type GetQueueListByIdRe struct {
 	Id       uint32 `json:"id"`
-	ShortNum uint32         `json:"shortNum"`
+	ShortNum uint32 `json:"shortNum"`
 }
 
 type GetCacheUrlAllByLimitRe struct {
-	ShortNum       uint32    `json:"shortNum"`
+	ShortNum       uint32 `json:"shortNum"`
 	FullUrl        string `json:"fullUrl"`
-	ExpirationTime uint32    `json:"expirationTime"`
+	ExpirationTime uint32 `json:"expirationTime"`
 }
 
 // GetCacheUrlAllByLimit 查询出符合条件的全部url
@@ -171,9 +171,9 @@ func (s *dbService) ReturnShortNumPeriod() (Step uint32, MaxNum uint32, err erro
 }
 
 type InsertUrlOneReq struct {
-	ShortNum       uint32    `json:"shortNum"`
+	ShortNum       uint32 `json:"shortNum"`
 	FullUrl        string `json:"fullUrl"`
-	ExpirationTime uint32    `json:"expirationTime"`
+	ExpirationTime uint32 `json:"expirationTime"`
 }
 
 // InsertUrlOne 插入一条数据 shortUrl
@@ -281,13 +281,13 @@ func (s *dbService) GetFullUrlByShortNum(shortNum uint32) *getFullUrlByShortNumR
 
 // GetShortUrlListRes url列表结构体
 type GetShortUrlListRes struct {
-	Id             uint32    `json:"id"`
+	Id             uint32 `json:"id"`
 	ShortNum       uint32 `json:"shortNum"`
 	FullUrl        string `json:"fullUrl"`
-	ExpirationTime uint32    `json:"expirationTime"`
-	IsFrozen       uint8   `json:"isFrozen"`
-	CreateTime     uint32    `json:"createTime"`
-	UpdateTime     uint32    `json:"updateTime"`
+	ExpirationTime uint32 `json:"expirationTime"`
+	IsFrozen       uint8  `json:"isFrozen"`
+	CreateTime     uint32 `json:"createTime"`
+	UpdateTime     uint32 `json:"updateTime"`
 }
 
 // 函数名称: GetShortUrlList

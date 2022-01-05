@@ -78,7 +78,6 @@ func InitBlacklist() {
 	go taskBlacklist()
 }
 
-
 // 循环获取黑名单数据时间 s
 const taskBlacklistTime = 300
 

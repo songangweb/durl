@@ -22,12 +22,12 @@ type InterfaceResp struct {
 }
 
 type BaseResp struct {
-	Code    int `json:"code"`    // 返回码
+	Code    int    `json:"code"`    // 返回码
 	Message string `json:"message"` // 错误描述
 }
 
 type BaseListResp struct {
-	Len  uint32       `json:"len"`
+	Len  uint32      `json:"len"`
 	List interface{} `json:"list"`
 }
 

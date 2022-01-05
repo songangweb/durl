@@ -20,7 +20,7 @@ type UrlListCache interface {
 func NewUrlListCache() UrlListCache {
 	return &ulServer{
 		GoodUrlCache: GoodUrlCache,
-		BedUrlCache: BedUrlCache,
+		BedUrlCache:  BedUrlCache,
 	}
 }
 
@@ -30,7 +30,7 @@ type ulServer struct {
 }
 
 var GoodUrlCache *mcache.ARCCache
-var BedUrlCache  *mcache.LruCache
+var BedUrlCache *mcache.LruCache
 
 type Conf struct {
 	GoodUrlLen int
