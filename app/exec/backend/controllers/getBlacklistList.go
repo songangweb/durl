@@ -6,11 +6,11 @@ import (
 )
 
 type getBlacklistListReq struct {
-	Ip          string `form:"ip" valid:"IP"`
+	Ip          string `form:"ip"`
 	Page        int    `form:"page" valid:"Min(1)"`
 	Size        int    `form:"size" valid:"Range(1,500)"`
-	CreateTimeL uint32 `form:"createTimeL" valid:"MaxSize(10)"`
-	CreateTimeR uint32 `form:"createTimeR" valid:"MaxSize(10)"`
+	CreateTimeL uint32 `form:"createTimeL"`
+	CreateTimeR uint32 `form:"createTimeR"`
 }
 
 // 函数名称: GetBlacklistList
