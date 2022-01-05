@@ -6,7 +6,7 @@ import (
 )
 
 type getBlacklistListReq struct {
-	Ip          string `form:"ip"`
+	Ip          string `form:"ip" valid:"IP"`
 	Page        int    `form:"page" valid:"Min(1)"`
 	Size        int    `form:"size" valid:"Range(1,500)"`
 	CreateTimeL uint32 `form:"createTimeL" valid:"MaxSize(10)"`

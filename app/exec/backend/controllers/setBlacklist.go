@@ -8,7 +8,7 @@ import (
 )
 
 type setBlacklistReq struct {
-	Ip string `valid:"IP"`
+	Ip string `form:"ip" valid:"IP"`
 }
 
 // 函数名称: SetBlacklist

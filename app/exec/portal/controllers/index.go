@@ -15,5 +15,12 @@ func (c *Controller) Index() {
 	if sConf != "" {
 		c.Data["Statistical_Baidu_Key"] = sConf
 	}
+
+	// jump服务域名
+	jumpUrlConf, _ := config.String("jumpUrl")
+	if jumpUrlConf != "" {
+		c.Data["JumpUrl"] = jumpUrlConf
+	}
+
 	c.TplName = "index.html"
 }
