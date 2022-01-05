@@ -10,7 +10,8 @@ import (
 
 type setShortUrlReq struct {
 	FullUrl        string `form:"fullUrl" valid:"Required"`
-	ExpirationTime uint32 `form:"expirationTime" valid:"Match(/([0-9]{10}$)|([0])/);Max(9999999999)"`
+	IsFrozen       uint8  `form:"isFrozen"`
+	ExpirationTime uint32 `form:"expirationTime"`
 }
 
 type setShortUrlDataResp struct {

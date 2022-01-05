@@ -8,8 +8,8 @@ import (
 
 type updateShortUrlReq struct {
 	FullUrl        string `form:"fullUrl" valid:"Required"`
-	IsFrozen       uint8  `form:"isFrozen" valid:"Range(0,1)"`
-	ExpirationTime uint32 `form:"expirationTime" valid:"Match(/([0-9]{10}$)|([0])/);Max(9999999999)"`
+	IsFrozen       uint8  `form:"isFrozen"`
+	ExpirationTime uint32 `form:"expirationTime"`
 }
 
 // 函数名称: UpdateShortUrl
