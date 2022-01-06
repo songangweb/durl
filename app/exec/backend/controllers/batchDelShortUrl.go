@@ -7,13 +7,13 @@ import (
 )
 
 type BatchDelShortUrlReq struct {
-	Ids []uint32 `from:"ids" valid:"Required"`
+	Ids []int `from:"ids" valid:"Required"`
 }
 
 type BatchDelShortUrlRes struct {
-	RequestCount uint32   `json:"requestCount"`
-	DelCount     uint32   `json:"delCount"`
-	ErrIds       []uint32 `json:"errIds"`
+	RequestCount int   `json:"requestCount"`
+	DelCount     int   `json:"delCount"`
+	ErrIds       []int `json:"errIds"`
 }
 
 // 函数名称: BatchDelShortUrl
@@ -42,17 +42,17 @@ func (c *BackendController) BatchDelShortUrl() {
 		return
 	}
 
-	var updateIds []uint32
-	errIds := make([]uint32, 0)
-	var insertShortNum []uint32
+	var updateIds []int
+	errIds := make([]int, 0)
+	var insertShortNum []int
 	// 提交id数量与查询出的数据量不一致
 	// 需要以数据库数据为准筛选出差集，准备进行错误返回
-	requestCount := uint32(len(req.Ids))
-	updateCount := uint32(len(data))
+	requestCount := len(req.Ids)
+	updateCount := len(data)
 	if updateCount != requestCount {
 
 		// 将请求操作的id 提为key
-		mapData := make(map[uint32]interface{})
+		mapData := make(map[int]interface{})
 		for _, v := range data {
 			mapData[v.Id] = v.ShortNum
 		}
@@ -60,7 +60,7 @@ func (c *BackendController) BatchDelShortUrl() {
 		for _, v := range req.Ids {
 			if mapData[v] != nil {
 				updateIds = append(updateIds, v)
-				insertShortNum = append(insertShortNum, mapData[v].(uint32))
+				insertShortNum = append(insertShortNum, mapData[v].(int))
 			} else {
 				errIds = append(errIds, v)
 			}

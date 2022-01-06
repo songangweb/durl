@@ -14,10 +14,9 @@ func (c *Controller) Jump() {
 
 	shortKey := c.Ctx.Input.Param(":jump")
 	shortNum := tool.Base62Decode(shortKey)
-	uint32ShortNum := uint32(shortNum)
 
 	// 判断缓存是否存在数据
-	if fullUrl, ok := cache.NewUrlListCache().Gget(uint32ShortNum); ok {
+	if fullUrl, ok := cache.NewUrlListCache().Gget(shortNum); ok {
 		reStatusFound(c, fmt.Sprint(fullUrl))
 		return
 	}
@@ -30,7 +29,7 @@ func (c *Controller) Jump() {
 	}
 
 	// 查询数据库
-	urlDetail := db.NewDbService().GetFullUrlByShortNum(uint32ShortNum)
+	urlDetail := db.NewDbService().GetFullUrlByShortNum(shortNum)
 	// 跳转到 404 页面
 	if urlDetail == nil {
 		cache.NewUrlListCache().Badd(shortKey, "", (tool.TimeNowUnix()+600)*1000)

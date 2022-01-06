@@ -8,8 +8,8 @@ import (
 
 type updateShortUrlReq struct {
 	FullUrl        string `form:"fullUrl" valid:"Required"`
-	IsFrozen       uint8  `form:"isFrozen"`
-	ExpirationTime uint32 `form:"expirationTime"`
+	IsFrozen       int    `form:"isFrozen"`
+	ExpirationTime int    `form:"expirationTime"`
 }
 
 // 函数名称: UpdateShortUrl
@@ -31,11 +31,10 @@ func (c *BackendController) UpdateShortUrl() {
 	c.BaseCheckParams(&req)
 
 	id := c.Ctx.Input.Param(":id")
-	intId, _ := strconv.ParseUint(id, 10, 32)
-	uint32Id := uint32(intId)
+	intId, _ := strconv.Atoi(id)
 
 	// 查询此短链
-	fields := map[string]interface{}{"id": uint32Id}
+	fields := map[string]interface{}{"id": intId}
 	engine := db.NewDbService()
 	urlInfo := engine.GetShortUrlInfo(fields)
 	if urlInfo.ShortNum == 0 {
@@ -50,7 +49,7 @@ func (c *BackendController) UpdateShortUrl() {
 	updateData["is_frozen"] = req.IsFrozen
 
 	// 修改此短链信息
-	_, err := engine.UpdateUrlById(uint32Id, urlInfo.ShortNum, updateData)
+	_, err := engine.UpdateUrlById(intId, urlInfo.ShortNum, updateData)
 	if err != nil {
 		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)
 		return

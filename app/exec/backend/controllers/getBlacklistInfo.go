@@ -7,10 +7,10 @@ import (
 )
 
 type BlacklistInfoRes struct {
-	Id         uint32 `json:"id"`
+	Id         int    `json:"id"`
 	Ip         string `json:"ip"`
-	CreateTime uint32 `json:"createTime"`
-	UpdateTime uint32 `json:"updateTime"`
+	CreateTime int    `json:"createTime"`
+	UpdateTime int    `json:"updateTime"`
 }
 
 // 函数名称: GetBlacklistInfo
@@ -25,10 +25,9 @@ type BlacklistInfoRes struct {
 
 func (c *BackendController) GetBlacklistInfo() {
 	id := c.Ctx.Input.Param(":id")
-	intId, _ := strconv.ParseUint(id, 10, 32)
-	uint32Id := uint32(intId)
+	intId, _ := strconv.Atoi(id)
 
-	fields := map[string]interface{}{"id": uint32Id}
+	fields := map[string]interface{}{"id": intId}
 	BlacklistInfo := db.NewDbService().GetBlacklistInfo(fields)
 	if BlacklistInfo.Ip == "" {
 		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)

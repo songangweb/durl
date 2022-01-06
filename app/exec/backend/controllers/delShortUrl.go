@@ -21,11 +21,10 @@ import (
 func (c *BackendController) DelShortUrl() {
 
 	id := c.Ctx.Input.Param(":id")
-	intId, _ := strconv.ParseUint(id, 10, 32)
-	uint32Id := uint32(intId)
+	intId, _ := strconv.Atoi(id)
 
 	// 查询此短链
-	fields := map[string]interface{}{"id": uint32Id}
+	fields := map[string]interface{}{"id": intId}
 	engine := db.NewDbService()
 	urlInfo := engine.GetShortUrlInfo(fields)
 	if urlInfo.ShortNum == 0 {
@@ -34,7 +33,7 @@ func (c *BackendController) DelShortUrl() {
 	}
 
 	// 删除此短链
-	_, err := engine.DelUrlById(uint32Id, urlInfo.ShortNum)
+	_, err := engine.DelUrlById(intId, urlInfo.ShortNum)
 	if err != nil {
 		logs.Error("Action DelShortKey, err: ", err.Error())
 		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)

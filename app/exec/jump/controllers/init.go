@@ -56,7 +56,7 @@ func InitUrlCache(c cache.Conf) {
 const taskQueueTime = 30
 
 // taskDisposalQueue 获取需要处理的数据
-func taskDisposalQueue(queueId uint32) {
+func taskDisposalQueue(queueId int) {
 	engine := db.NewDbService()
 	for {
 		list := engine.GetQueueListById(queueId)

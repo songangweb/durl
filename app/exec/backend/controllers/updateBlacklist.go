@@ -29,11 +29,10 @@ func (c *BackendController) UpdateBlacklist() {
 	c.BaseCheckParams(&req)
 
 	id := c.Ctx.Input.Param(":id")
-	intId, _ := strconv.ParseUint(id, 10, 32)
-	uint32Id := uint32(intId)
+	intId, _ := strconv.Atoi(id)
 
 	// 查询此短链
-	fields := map[string]interface{}{"id": uint32Id}
+	fields := map[string]interface{}{"id": intId}
 	engine := db.NewDbService()
 	urlInfo := engine.GetBlacklistInfo(fields)
 	if urlInfo.Id == 0 {
@@ -46,7 +45,7 @@ func (c *BackendController) UpdateBlacklist() {
 	updateData["ip"] = req.Ip
 
 	// 修改此短链信息
-	_, err := engine.UpdateBlacklistById(id, updateData)
+	_, err := engine.UpdateBlacklistById(intId, updateData)
 	if err != nil {
 		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)
 		return

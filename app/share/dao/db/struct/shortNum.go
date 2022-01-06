@@ -5,11 +5,11 @@ import (
 )
 
 type ShortNumStruct struct {
-	Id         uint8  `xorm:" int pk notnull autoincr"`
-	MaxNum     uint32 `xorm:" int notnull default(100)"`
-	Step       uint32 `xorm:" int notnull default(100)"`
-	Version    uint32 `xorm:" version int notnull default(1)"`
-	UpdateTime uint32 `xorm:" updated int notnull default(0)"`
+	Id         int `xorm:" int pk notnull autoincr"`
+	MaxNum     int `xorm:" int notnull default(100)"`
+	Step       int `xorm:" int notnull default(100)"`
+	Version    int `xorm:" version int notnull default(1)"`
+	UpdateTime int `xorm:" updated int notnull default(0)"`
 }
 
 func (I *ShortNumStruct) TableName() string {
@@ -17,12 +17,23 @@ func (I *ShortNumStruct) TableName() string {
 }
 
 const (
-	ShortNumIsDelYes uint8 = 1
-	ShortNumIsDelNo  uint8 = 0
+	ShortNumIsDelYes = 1
+	ShortNumIsDelNo  = 0
 )
 
-// ReturnShortNumPeriod 获取号码段
-func ReturnShortNumPeriod(engine *xorm.EngineGroup) (uint32, uint32, error) {
+// 函数名称: ReturnShortNumPeriod
+// 功能: 获取号码段
+// 输入参数:
+//		id
+// 输出参数:
+//		Step: 步长
+//		MaxNum: 号码段开始值
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2020/12/07 20:44 下午 #
+
+func ReturnShortNumPeriod(engine *xorm.EngineGroup) (int, int, error) {
 	var shortNumDetail ShortNumStruct
 
 	// 获取数据
@@ -47,7 +58,18 @@ func ReturnShortNumPeriod(engine *xorm.EngineGroup) (uint32, uint32, error) {
 	return shortNumDetail.Step, shortNumDetail.MaxNum, nil
 }
 
-// InsertFirst 插入第一条默认数据
+// 函数名称: InsertFirst
+// 功能: 插入号码段第一条默认数据
+// 输入参数:
+//		id
+// 输出参数:
+//		Step: 步长
+//		MaxNum: 号码段开始值
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2020/12/07 20:44 下午 #
+
 func InsertFirst(engine *xorm.EngineGroup) error {
 	var shortNumDetail ShortNumStruct
 	shortNumDetail.Id = 1
