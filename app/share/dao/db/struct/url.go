@@ -2,7 +2,6 @@ package dbstruct
 
 import (
 	"durl/app/share/tool"
-
 	"github.com/xormplus/builder"
 	"github.com/xormplus/xorm"
 )
@@ -250,14 +249,13 @@ func UpdateUrlByShortNum(engine *xorm.EngineGroup, shortNum int, data *map[strin
 // 作者: # ang.song # 2020/12/07 20:44 下午 #
 
 func UpdateUrlById(engine *xorm.EngineGroup, id int, shortNum int, data *map[string]interface{}) (bool, error) {
-
 	session := engine.NewSession()
 	defer session.Close()
 
 	err := session.Begin()
 
 	// 修改数据
-	_, err = session.Table(new(UrlStruct)).Where("id = ?", id).Update(&data)
+	_, err = session.Table(new(UrlStruct)).Where("id = ?", id).Update(data)
 	if err != nil {
 		_ = session.Rollback()
 		return false, err

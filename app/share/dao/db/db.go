@@ -306,7 +306,6 @@ func (s *dbService) UpdateUrlByShortNum(shortNum int, data *map[string]interface
 // 作者: # leon # 2021/11/25 4:53 下午 #
 
 func (s *dbService) UpdateUrlById(id int, shortNum int, data map[string]interface{}) (reBool bool, err error) {
-
 	reBool, err = dbstruct.UpdateUrlById(s.EngineGroup, id, shortNum, &data)
 	if err != nil {
 		logs.Error("Action dbStruct.UpdateUrlById, err: ", err.Error())
@@ -376,7 +375,6 @@ func (s *dbService) GetShortUrlList(fields map[string]interface{}, page, size in
 	var returnList []*GetShortUrlListRes
 
 	list, err := dbstruct.GetShortUrlList(s.EngineGroup, fields, page, size)
-	fmt.Println("list: ", list)
 	if err != nil {
 		logs.Error("Action dbStruct.GetShortUrlList, err: ", err.Error())
 	} else {
@@ -567,7 +565,7 @@ func (s *dbService) GetBlacklistInfo(fields map[string]interface{}) *GetBlacklis
 
 func (s *dbService) UpdateBlacklistById(id int, data map[string]interface{}) (reBool bool, err error) {
 
-	reBool, err = dbstruct.UpdateBlacklistById(s.EngineGroup, id, data)
+	reBool, err = dbstruct.UpdateBlacklistById(s.EngineGroup, id, &data)
 	if err != nil {
 		logs.Error("Action dbStruct.UpdateBlacklistById, err: ", err.Error())
 	}

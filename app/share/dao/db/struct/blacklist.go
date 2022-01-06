@@ -86,7 +86,7 @@ func DelBlacklistById(engine *xorm.EngineGroup, id int) (bool, error) {
 // 注意事项:
 // 作者: # ang.song # 2021/11/07 20:44 下午 #
 
-func UpdateBlacklistById(engine *xorm.EngineGroup, id int, data map[string]interface{}) (bool, error) {
+func UpdateBlacklistById(engine *xorm.EngineGroup, id int, data *map[string]interface{}) (bool, error) {
 
 	session := engine.NewSession()
 	defer session.Close()
@@ -94,7 +94,7 @@ func UpdateBlacklistById(engine *xorm.EngineGroup, id int, data map[string]inter
 	err := session.Begin()
 
 	// 修改数据
-	_, err = session.Table(new(BlacklistStruct)).Where("id = ?", id).Update(&data)
+	_, err = session.Table(new(BlacklistStruct)).Where("id = ?", id).Update(data)
 	if err != nil {
 		_ = session.Rollback()
 		return false, err

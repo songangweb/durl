@@ -44,6 +44,13 @@ func (c *BackendController) UpdateBlacklist() {
 	updateData := make(map[string]interface{})
 	updateData["ip"] = req.Ip
 
+	// 统计结果总条数
+	total := engine.GetBlacklistListTotal(updateData)
+	if total > 0 {
+		c.ErrorMessage(comm.ErrRepeatCommit, comm.MsgRepeatCommitErr)
+		return
+	}
+
 	// 修改此短链信息
 	_, err := engine.UpdateBlacklistById(intId, updateData)
 	if err != nil {
