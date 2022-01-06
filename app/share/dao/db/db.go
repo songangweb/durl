@@ -368,6 +368,7 @@ func (s *dbService) GetShortUrlInfo(fields map[string]interface{}) *GetShortUrlL
 		returnRes.ShortNum = detail.ShortNum
 		returnRes.FullUrl = detail.FullUrl
 		returnRes.IsFrozen = detail.IsFrozen
+		returnRes.ExpirationTime = detail.ExpirationTime
 		returnRes.CreateTime = detail.CreateTime
 		returnRes.UpdateTime = detail.UpdateTime
 	}
