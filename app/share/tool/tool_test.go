@@ -442,6 +442,15 @@ func ExampleDisposeShortKey() {
 	// true
 }
 
+// 函数名称: TestTimeNowUnix
+// 功能: TimeNowUnix 函数 基础测试函数
+// 输入参数:
+//     t *testing.T
+// 输出参数:
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2022/1/5 10:57 上午 #
 func TestTimeNowUnix(t *testing.T) {
 	tests := []struct {
 		name string
@@ -454,6 +463,41 @@ func TestTimeNowUnix(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := TimeNowUnix(); got != tt.want {
 				t.Errorf("TimeNowUnix() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+// 函数名称: TestBase62Encode2Decode
+// 功能:  测试 Base62Encode=>Base62Decode 函数 加码解码结果是否一致
+// 输入参数:
+//     t *testing.T
+// 输出参数:
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # leon # 2022/1/5 11:18 上午 #
+func TestBase62Encode2Decode(t *testing.T) {
+	type args struct {
+		number uint32
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		// TODO: Add test cases.
+		{"1", args{1}},
+		{"空", args{}},
+		{"0", args{0}},
+		{"最大值", args{4294967295}},
+		{"5.", args{5.}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := Base62Encode(tt.args.number)
+			decode := Base62Decode(got)
+			if int(tt.args.number) != decode {
+				t.Errorf("Base62Encode() = %v, Base62Decode() =  %v", got, decode)
 			}
 		})
 	}
