@@ -3,6 +3,7 @@ package controllers
 import (
 	"durl/app/share/comm"
 	"durl/app/share/dao/db"
+	"strconv"
 
 	"github.com/beego/beego/v2/core/logs"
 )
@@ -20,8 +21,9 @@ import (
 func (c *BackendController) DelBlacklist() {
 
 	id := c.Ctx.Input.Param(":id")
+	intId, _ := strconv.Atoi(id)
 
-	fields := map[string]interface{}{"id": id}
+	fields := map[string]interface{}{"id": intId}
 	engine := db.NewDbService()
 	urlInfo := engine.GetBlacklistInfo(fields)
 	if urlInfo.Id == 0 {
@@ -29,7 +31,7 @@ func (c *BackendController) DelBlacklist() {
 		return
 	}
 
-	_, err := engine.DelBlacklistById(id)
+	_, err := engine.DelBlacklistById(intId)
 	if err != nil {
 		logs.Error("Action DelBlacklist, err: ", err.Error())
 		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)

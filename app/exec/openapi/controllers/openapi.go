@@ -11,7 +11,7 @@ import (
 
 type setShortUrlReq struct {
 	Url            string `form:"shortUrl" valid:"Required"`
-	ExpirationTime uint32    `form:"expirationTime"`
+	ExpirationTime int    `form:"expirationTime"`
 }
 
 type setShortUrlResp struct {
@@ -24,7 +24,7 @@ type setShortUrlDataResp struct {
 	Key            string `json:"key"`
 	Durl           string `json:"durl"`
 	Url            string `json:"shortUrl"`
-	ExpirationTime uint32    `json:"expirationTime"`
+	ExpirationTime int    `json:"expirationTime"`
 }
 
 // 效验请求过来的参数
@@ -177,10 +177,9 @@ func (c *Controller) DelShortKey() {
 	}
 
 	shortNum := tool.Base62Decode(shortKey)
-	uint32ShortNum := uint32(shortNum)
 
 	// 删除此短链
-	_, err := db.NewDbService().DelUrlByShortNum(uint32ShortNum)
+	_, err := db.NewDbService().DelUrlByShortNum(shortNum)
 	if err != nil {
 		logs.Error("Action DelShortKey, err: ", err.Error())
 		c.Data["json"] = &delShortKeyResp{
@@ -203,7 +202,7 @@ type updateShortUrlReq struct {
 	Key            string `form:"key"  valid:"Required"`
 	Url            string `form:"shortUrl"`
 	IsFrozen       int    `form:"isFrozen"`
-	ExpirationTime int64  `form:"expirationTime"`
+	ExpirationTime int    `form:"expirationTime"`
 }
 
 type updateShortUrlResp struct {
@@ -266,7 +265,6 @@ func (c *Controller) UpdateShortUrl() {
 		return
 	}
 	shortNum := tool.Base62Decode(shortKey)
-	uint32ShortNum := uint32(shortNum)
 
 	// 初始化需要更新的内容
 	updateData := make(map[string]interface{})
@@ -297,7 +295,7 @@ func (c *Controller) UpdateShortUrl() {
 	}
 
 	// 修改此短链信息
-	_, err = db.NewDbService().UpdateUrlByShortNum(uint32ShortNum, &updateData)
+	_, err = db.NewDbService().UpdateUrlByShortNum(shortNum, &updateData)
 	if err != nil {
 		c.Data["json"] = &updateShortUrlResp{
 			Code: comm.ErrSysDb,

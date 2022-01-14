@@ -63,8 +63,8 @@
                     <el-table-column fixed="right" label="操作" width="120">
                         <template slot-scope="scope">
                             <el-button type="text" size="small" @click="operation('编辑', scope.row)">编辑</el-button>
-                            <el-button type="text" size="small">冻结</el-button>
-                            <el-button @click="theDeleteValue(scope.row.id)" type="text" size="small">删除</el-button>
+                            <el-button type="text" size="small" @click="deleteOrFreezeValue(scope.row.id, '冻结')">冻结</el-button>
+                            <el-button @click="deleteOrFreezeValue(scope.row.id, '删除')" type="text" size="small">删除</el-button>
                         </template>
                     </el-table-column>
                     <template slot="empty">
@@ -97,12 +97,12 @@
                             <el-radio :label="0">否</el-radio>
                         </el-radio-group>
                     </el-form-item>
-                    <el-form-item label="过期时间:" class="demo-input" v-if="formValue.perpetual === 0 ? true : false" prop="expirationTime">
+                    <el-form-item label="过期时间:" class="demo-input" v-show="formValue.perpetual === 0 ? true : false" prop="expirationTime">
                         <el-date-picker v-model="formValue.expirationTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
                     </el-form-item>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
-                    <el-button>取消</el-button>
+                    <el-button @click="clearData">取消</el-button>
                     <el-button class="save-btn" @click="sendParams">保存</el-button>
                 </span>
             </el-dialog>
@@ -110,7 +110,7 @@
     </div>
 </template>
 <script>
-import { getShortChainArr, addShortChainValue, changeShortChainValue, batchFreezeArr, batchDeleteArr, deleteValue } from '@/api/request-data.js';
+import { getShortChainArr, addShortChainValue, changeShortChainValue, batchFreezeArr, batchDeleteArr, deleteValue, freezeValue } from '@/api/request-data.js';
 import { dateFormat, todDateFormat } from '@/utils/date-format.js';
 export default {
     data() {
@@ -163,18 +163,21 @@ export default {
                 shortKey: '',
                 isFrozen: 0,
                 perpetual: 1,
-                expirationTime: {},
+                expirationTime: null,
                 id: 0,
             },
+            // 时间范围规则时都开启
             expirationTimeRules: false,
+            // 新增/修改
             formRules: {
-                fullUrl: [{ required: this.amendOrAdd === '新增短链接', message: '请输入链接地址', trigger: 'blur' }],
+                fullUrl: [{ required: true, message: '请输入链接地址', trigger: 'blur' }],
                 isFrozen: [{ required: true, message: '请选择是否冻结', trigger: 'blur' }],
                 perpetual: [{ required: true, message: '请选择是否永久', trigger: 'blur' }],
                 expirationTime: [{ required: true, message: '请选择过期时间', trigger: 'blur' }],
             },
             // 弹框显示
             theVisible: false,
+            // 多选数组
             multipleSelection: [],
             amendOrAdd: '新增',
             //列表总数
@@ -190,6 +193,7 @@ export default {
         this.getTableData();
     },
     watch: {
+        // 新增多选框内时间范围的表单验证是否启用
         perpetual(newV) {
             this.expirationTimeRules = newV === 0 ? true : false;
         },
@@ -199,15 +203,12 @@ export default {
         filterData() {
             this.pageNum = 1;
             this.filterModel = {};
-            // if (this.searchTermsValue.shortKey !== '') {
-            //     this.filterModel.shortKey = this.searchTermsValue.shortKey;
-            // }
-            if (this.searchTermsValue.fullUrl !== '') {
-                this.filterModel.url = this.searchTermsValue.fullUrl;
+            if (this.searchTermsValue.shortKey !== '') {
+                this.filterModel.shortKey = this.searchTermsValue.shortKey;
             }
-            // if (this.searchTermsValue.isFrozen !== '') {
-            //     this.filterModel.isFrozen = this.searchTermsValue.isFrozen;
-            // }
+            if (this.searchTermsValue.fullUrl !== '') {
+                this.filterModel.fullUrl = this.searchTermsValue.fullUrl;
+            }
             if (this.searchTermsValue.temporalInterval !== null) {
                 this.filterModel.createTimeL = parseInt(this.searchTermsValue.temporalInterval[0].getTime() / 1000);
                 this.filterModel.createTimeR = parseInt(this.searchTermsValue.temporalInterval[1].getTime() / 1000);
@@ -239,14 +240,13 @@ export default {
                 };
             });
             this.$refs.content.scrollTo({ top: 0, behavior: 'smooth' });
-            // console.log(this.tableData);
         },
-        //监听页数
+        //监听页数改变发送请求刷新数据
         onPageNumChange(v) {
             this.pageNum = v;
             this.getTableData();
         },
-        // 监听每页显示的条数
+        // 监听每页显示的条数改变发送请求刷新数据
         onPageSizeChange(v) {
             this.pageSize = v;
             this.getTableData();
@@ -261,7 +261,7 @@ export default {
         // 弹窗事件
         operation(value, msg) {
             this.amendOrAdd = value + '短链接';
-            console.log(msg);
+            // console.log(msg);
             if (msg) {
                 this.formValue = {
                     shortKey: msg.shortKey,
@@ -271,7 +271,7 @@ export default {
                     id: msg.id,
                 };
                 if (msg.expirationTime !== '永久') {
-                    this.formValue.perpetual = todDateFormat(msg.expirationTime)._d.getTime();
+                    this.formValue.expirationTime = todDateFormat(msg.expirationTime).unix() * 1000;
                 }
             }
             this.theVisible = true;
@@ -279,29 +279,60 @@ export default {
         // 批量冻结/解冻/删除 事件
         async bulkOperation(v) {
             if (this.multipleSelection.length > 0) {
-                if (v === 0 || v === 1) {
-                    const params = { ids: this.multipleSelection, isFrozen: v };
-                    console.log(params);
-                    try {
-                        const requestData = await batchFreezeArr(params);
-                        if (requestData.code === 200) {
-                            this.getTableData();
-                        }
-                    } catch (error) {
-                        console.log('请求失败');
-                    }
-                } else {
-                    const params = { ids: this.multipleSelection };
-                    console.log(params, 111);
-                    try {
-                        const requestData = await batchDeleteArr(params);
-                        if (requestData.code === 200) {
-                            this.getTableData();
-                        }
-                    } catch (error) {
-                        console.log('请求失败');
-                    }
+                let operate;
+                switch (v) {
+                    case 1:
+                        operate = '冻结';
+                        break;
+                    case 0:
+                        operate = '解冻';
+                        break;
+                    default:
+                        operate = '删除';
+                        break;
                 }
+                this.$confirm(`此操作将批量${operate}该链接, 是否继续?`, '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                })
+                    .then(async () => {
+                        let requestData;
+                        try {
+                            if (v === 0 || v === 1) {
+                                const params = { ids: this.multipleSelection, isFrozen: v };
+                                console.log(params);
+                                requestData = await batchFreezeArr(params);
+                            } else {
+                                const params = { ids: this.multipleSelection };
+                                requestData = await batchDeleteArr(params);
+                            }
+                            console.log(requestData.code);
+                            if (requestData.code === 200) {
+                                console.log(11);
+                                this.$message({
+                                    type: 'success',
+                                    message: `批量${operate}成功!`,
+                                });
+                                this.multipleSelection = [];
+                                this.getTableData();
+                            }
+                        } catch (error) {
+                            console.log('请求失败');
+                            console.log(error);
+                        }
+                    })
+                    .catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: `已取消${operate}`,
+                        });
+                    });
+            } else {
+                this.$message({
+                    type: 'info ',
+                    message: `无勾选内容!`,
+                });
             }
         },
         clearData() {
@@ -330,6 +361,10 @@ export default {
                 const requestData = await addShortChainValue(params);
                 if (requestData.code === 200) {
                     this.pageNum = 1;
+                    this.$message({
+                        type: 'success',
+                        message: `新增成功!`,
+                    });
                     this.getTableData();
                 } else {
                     console.log('新增失败');
@@ -338,31 +373,51 @@ export default {
                 console.log(params, this.formValue.id);
                 const requestData = await changeShortChainValue(params, this.formValue.id);
                 if (requestData.code === 200) {
+                    this.$message({
+                        type: 'success',
+                        message: `修改成功!`,
+                    });
                     this.getTableData();
                 } else {
                     console.log('修改失败');
                 }
             }
-            this.formValue = {
-                fullUrl: '',
-                shortKey: '',
-                isFrozen: 0,
-                perpetual: 1,
-                expirationTime: {},
-            };
-            this.theVisible = false;
+            this.clearData();
         },
-        async theDeleteValue(id) {
-            const requestData = await deleteValue(id);
-            if (requestData.code === 200) {
-                console.log(11);
-                this.getTableData();
-            }
-            // try {
-
-            // } catch (error) {
-            //     console.log('请求失败...');
-            // }
+        async deleteOrFreezeValue(id, operate) {
+            this.$confirm(`此操作将${operate}该链接, 是否继续?`, '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+            })
+                .then(async () => {
+                    let requestData;
+                    try {
+                        if (operate === '删除') {
+                            requestData = await deleteValue(id);
+                        } else if (operate === '冻结') {
+                            requestData = await freezeValue(id);
+                        }
+                        console.log(requestData.code);
+                        if (requestData.code === 200) {
+                            console.log(11);
+                            this.$message({
+                                type: 'success',
+                                message: `${operate}成功!`,
+                            });
+                            this.getTableData();
+                        }
+                    } catch (error) {
+                        console.log('请求失败');
+                        console.log(error);
+                    }
+                })
+                .catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: `已取消${operate}`,
+                    });
+                });
         },
     },
 };

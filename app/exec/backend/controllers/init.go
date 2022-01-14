@@ -13,7 +13,7 @@ type BackendController struct {
 }
 
 type Pool struct {
-	step    uint32
+	step    int
 	numList *list.List
 	lock    sync.Mutex
 }
@@ -37,16 +37,15 @@ func (p *Pool) ProducerKey() {
 		defer p.lock.Unlock()
 
 		p.step = Step
-		var i uint32
 		// 放入到短链池中
-		for i = 0; i < Step; i++ {
+		for i := 0; i < Step; i++ {
 			p.numList.PushBack(MaxNum - i)
 		}
 	}
 }
 
 // ReturnShortNumOne 获取单个short_num
-func ReturnShortNumOne() (ShortNum uint32) {
+func ReturnShortNumOne() (ShortNum int) {
 
 	KeyPool.lock.Lock()
 
@@ -55,9 +54,9 @@ func ReturnShortNumOne() (ShortNum uint32) {
 
 	KeyPool.lock.Unlock()
 
-	ShortNum, _ = ent.Value.(uint32)
+	ShortNum, _ = ent.Value.(int)
 	// 判断是否需要申请新的号码段
-	if uint32(KeyPool.numList.Len()) < KeyPool.step {
+	if KeyPool.numList.Len() < KeyPool.step {
 		// 申请号码段 放入缓存里
 		KeyPool.ProducerKey()
 	}

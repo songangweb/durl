@@ -11,6 +11,14 @@ func RouterHandler() {
 
 	// backendapi初始化
 	controllers.InitCon()
+	// 首页
+	web.Router("/", &controllers.BackendController{}, "get:Index")
+	web.Router("/index", &controllers.BackendController{}, "get:Index")
+
+	web.SetStaticPath("/static/css", "./views/dist/static/css")
+	web.SetStaticPath("/static/js", "./views/dist/static/js")
+	web.SetStaticPath("/static/fonts", "./views/dist/static/fonts")
+	web.SetStaticPath("/static/img", "./views/dist/static/img")
 
 	// 设置短链
 	web.Router("/url", &controllers.BackendController{}, "post:SetShortUrl")

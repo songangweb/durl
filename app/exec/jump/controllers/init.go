@@ -56,7 +56,7 @@ func InitUrlCache(c cache.Conf) {
 const taskQueueTime = 30
 
 // taskDisposalQueue 获取需要处理的数据
-func taskDisposalQueue(queueId uint32) {
+func taskDisposalQueue(queueId int) {
 	engine := db.NewDbService()
 	for {
 		list := engine.GetQueueListById(queueId)
@@ -77,7 +77,6 @@ func InitBlacklist() {
 	// 开启定时任务获取黑名单列表
 	go taskBlacklist()
 }
-
 
 // 循环获取黑名单数据时间 s
 const taskBlacklistTime = 300

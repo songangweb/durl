@@ -8,7 +8,7 @@ import (
 )
 
 type setBlacklistReq struct {
-	Ip string `valid:"IP"`
+	Ip string `form:"ip" valid:"IP"`
 }
 
 // 函数名称: SetBlacklist
@@ -26,10 +26,22 @@ func (c *BackendController) SetBlacklist() {
 	// 效验请求参数格式
 	c.BaseCheckParams(&req)
 
+	fields := make(map[string]interface{})
+	if req.Ip != "" {
+		fields["ip"] = req.Ip
+	}
+	engine := db.NewDbService()
+	// 统计结果总条数
+	total := engine.GetBlacklistListTotal(fields)
+	if total > 0 {
+		c.ErrorMessage(comm.ErrRepeatCommit, comm.MsgRepeatCommitErr)
+		return
+	}
+
 	// 数据放入数据库
 	var BlacklistOne db.InsertBlacklistOneReq
 	BlacklistOne.Ip = req.Ip
-	err := db.NewDbService().InsertBlacklistOne(&BlacklistOne)
+	err := engine.InsertBlacklistOne(&BlacklistOne)
 	if err != nil {
 		logs.Error("Action SetBlacklist, err: ", err.Error())
 		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)

@@ -7,22 +7,23 @@ import (
 )
 
 type getShortUrlListReq struct {
-	Url         string `form:"shortUrl"`
-	IsFrozen    uint8  `form:"isFrozen"`
+	FullUrl     string `form:"fullUrl"`
+	ShortKey    string `form:"shortKey"`
+	IsFrozen    int    `form:"isFrozen" valid:"Range(-1,1)"`
 	Page        int    `form:"page" valid:"Min(1)"`
 	Size        int    `form:"size" valid:"Range(1,500)"`
-	CreateTimeL uint32 `form:"createTimeL"`
-	CreateTimeR uint32 `form:"createTimeR"`
+	CreateTimeL int    `form:"createTimeL" valid:"Match(/([0-9]{10}$)|([0])/);Max(9999999999)"`
+	CreateTimeR int    `form:"createTimeR" valid:"Match(/([0-9]{10}$)|([0])/);Max(9999999999)"`
 }
 
 type getShortUrlListDataResp struct {
-	Id             uint32 `json:"id"`
+	Id             int    `json:"id"`
 	ShortKey       string `json:"shortKey"`
 	FullUrl        string `json:"fullUrl"`
-	ExpirationTime uint32 `json:"expirationTime"`
-	IsFrozen       uint8  `json:"isFrozen"`
-	CreateTime     uint32 `json:"createTime"`
-	UpdateTime     uint32 `json:"updateTime"`
+	ExpirationTime int    `json:"expirationTime"`
+	IsFrozen       int    `json:"isFrozen"`
+	CreateTime     int    `json:"createTime"`
+	UpdateTime     int    `json:"updateTime"`
 }
 
 // 函数名称: GetShortUrlList
@@ -44,13 +45,16 @@ func (c *BackendController) GetShortUrlList() {
 
 	// 透传业务搜索字段
 	fields := make(map[string]interface{})
-	if req.Url != "" {
-		fields["fullUrl"] = req.Url
+	if req.FullUrl != "" {
+		fields["fullUrl"] = req.FullUrl
 	}
-	if req.Url != "" {
-		fields["fullUrl"] = req.Url
+	if req.ShortKey != "" {
+		fields["shortKey"] = req.ShortKey
 	}
-	if req.IsFrozen == 0 || req.IsFrozen == 1 {
+	if req.IsFrozen != 0 {
+		if req.IsFrozen == -1 {
+			fields["isFrozen"] = 0
+		}
 		fields["isFrozen"] = req.IsFrozen
 	}
 	if req.CreateTimeL != 0 {
@@ -59,9 +63,10 @@ func (c *BackendController) GetShortUrlList() {
 	if req.CreateTimeR != 0 {
 		fields["createTimeR"] = req.CreateTimeR
 	}
+
 	engine := db.NewDbService()
 
-	var total uint32
+	var total int
 	// 统计结果总条数
 	total = engine.GetShortUrlListTotal(fields)
 
@@ -83,5 +88,4 @@ func (c *BackendController) GetShortUrlList() {
 
 	c.FormatInterfaceListResp(comm.OK, comm.OK, total, comm.MsgOk, list)
 	return
-
 }

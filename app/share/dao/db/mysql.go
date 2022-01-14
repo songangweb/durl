@@ -16,6 +16,15 @@ type MysqlConf struct {
 	SetMaxIdle int
 }
 
+// 函数名称: InitMysql
+// 功能: 初始化mysql
+// 输入参数:
+// 输出参数:
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2020/12/07 20:44 下午 #
+
 func InitMysql(m MysqlConf) {
 	var err error
 

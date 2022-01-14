@@ -16,22 +16,16 @@ const (
 
 	MsgInitDbMysqlTable = "数据表创建失败!!"
 	MsgInitDbMysqlData  = "初始化数据创建失败!!"
-
-	MsgDbMongoConfError = "mongo数据库配置错误"
-	MsgCheckDbMongoConf = "请检查mongo数据库配置是否正确!!"
-
-	MsgInitDbMongoTable = "数据表创建失败!!"
-	MsgInitDbMongoData  = "初始化数据创建失败!!"
 )
 
-// MsgCacheError 内存缓存相关提示
 const (
 	MsgInitializeCacheError = "初始化内存缓存数据池错误"
 )
 
 // openapi相关提示
 const (
-	MsgOk           = "请求成功"
-	MsgNotOk        = "请求失败"
-	MsgParseFormErr = "请求参数错误"
+	MsgOk              = "请求成功"
+	MsgNotOk           = "请求失败"
+	MsgParseFormErr    = "请求参数错误"
+	MsgRepeatCommitErr = "重复提交"
 )

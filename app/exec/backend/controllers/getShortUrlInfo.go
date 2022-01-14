@@ -8,13 +8,13 @@ import (
 )
 
 type ShortUrlInfoRes struct {
-	Id             uint32    `json:"id"`
+	Id             int    `json:"id"`
 	ShortKey       string `json:"shortKey"`
 	FullUrl        string `json:"fullUrl"`
-	ExpirationTime uint32    `json:"expirationTime"`
-	IsFrozen       uint8   `json:"isFrozen"`
-	CreateTime     uint32    `json:"createTime"`
-	UpdateTime     uint32    `json:"updateTime"`
+	ExpirationTime int    `json:"expirationTime"`
+	IsFrozen       int    `json:"isFrozen"`
+	CreateTime     int    `json:"createTime"`
+	UpdateTime     int    `json:"updateTime"`
 }
 
 // 函数名称: GetShortUrlInfo
@@ -29,11 +29,10 @@ type ShortUrlInfoRes struct {
 
 func (c *BackendController) GetShortUrlInfo() {
 	id := c.Ctx.Input.Param(":id")
-	intId, _ := strconv.ParseUint(id, 10, 32)
-	uint32Id := uint32(intId)
+	intId, _ := strconv.Atoi(id)
 
 	// 查询此短链
-	fields := map[string]interface{}{"id": uint32Id}
+	fields := map[string]interface{}{"id": intId}
 
 	urlInfo := db.NewDbService().GetShortUrlInfo(fields)
 	if urlInfo.ShortNum == 0 {
