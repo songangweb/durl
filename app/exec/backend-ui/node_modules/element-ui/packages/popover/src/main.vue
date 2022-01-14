@@ -18,9 +18,7 @@
         <slot>{{ content }}</slot>
       </div>
     </transition>
-    <span class="el-popover__reference-wrapper" ref="wrapper" >
-      <slot name="reference"></slot>
-    </span>
+    <slot name="reference"></slot>
   </span>
 </template>
 <script>
@@ -89,8 +87,8 @@ export default {
     let reference = this.referenceElm = this.reference || this.$refs.reference;
     const popper = this.popper || this.$refs.popper;
 
-    if (!reference && this.$refs.wrapper.children) {
-      reference = this.referenceElm = this.$refs.wrapper.children[0];
+    if (!reference && this.$slots.reference && this.$slots.reference[0]) {
+      reference = this.referenceElm = this.$slots.reference[0].elm;
     }
     // 可访问性
     if (reference) {
@@ -194,8 +192,8 @@ export default {
       let reference = this.reference || this.$refs.reference;
       const popper = this.popper || this.$refs.popper;
 
-      if (!reference && this.$refs.wrapper.children) {
-        reference = this.referenceElm = this.$refs.wrapper.children[0];
+      if (!reference && this.$slots.reference && this.$slots.reference[0]) {
+        reference = this.referenceElm = this.$slots.reference[0].elm;
       }
       if (!this.$el ||
         !reference ||

@@ -14,7 +14,10 @@ export default {
       type: String,
       default: 'start'
     },
-    align: String
+    align: {
+      type: String,
+      default: 'top'
+    }
   },
 
   computed: {
@@ -35,7 +38,7 @@ export default {
       class: [
         'el-row',
         this.justify !== 'start' ? `is-justify-${this.justify}` : '',
-        this.align ? `is-align-${this.align}` : '',
+        this.align !== 'top' ? `is-align-${this.align}` : '',
         { 'el-row--flex': this.type === 'flex' }
       ],
       style: this.style

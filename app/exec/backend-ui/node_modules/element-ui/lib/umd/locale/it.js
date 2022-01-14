@@ -37,7 +37,7 @@
         nextYear: 'Anno successivo',
         prevMonth: 'Mese precedente',
         nextMonth: 'Mese successivo',
-        year: 'anno',
+        year: '',
         month1: 'Gennaio',
         month2: 'Febbraio',
         month3: 'Marzo',
@@ -89,13 +89,13 @@
       },
       pagination: {
         goto: 'Vai a',
-        pagesize: '/pagina',
+        pagesize: '/page',
         total: 'Totale {total}',
         pageClassifier: ''
       },
       messagebox: {
         confirm: 'OK',
-        cancel: 'Annulla',
+        cancel: 'Cancella',
         error: 'Input non valido'
       },
       upload: {
@@ -123,17 +123,14 @@
         hasCheckedFormat: '{checked}/{total} selezionati'
       },
       image: {
-        error: 'ERRORE'
+        error: 'FAILED' // to be translated
       },
       pageHeader: {
-        title: 'Indietro'
+        title: 'Back' // to be translated
       },
       popconfirm: {
-        confirmButtonText: 'Sì',
-        cancelButtonText: 'No'
-      },
-      empty: {
-        description: 'Nessun dato'
+        confirmButtonText: 'Yes', // to be translated
+        cancelButtonText: 'No' // to be translated
       }
     }
   };

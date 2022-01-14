@@ -89,7 +89,7 @@
     border-right: 0;
     border-bottom: 0;
 
-    .el-table__cell.gutter {
+    th.gutter, td.gutter {
       border-right-width: 1px;
     }
   }
@@ -111,13 +111,13 @@
     font-weight: 500;
 
     &.is-group {
-      th.el-table__cell {
+      th {
         background: $--background-color-base;
       }
     }
   }
 
-  .el-table__cell {
+  th, td {
     padding: 12px 0;
     min-width: 0;
     box-sizing: border-box;
@@ -149,21 +149,21 @@
   }
 
   @include m(medium) {
-    .el-table__cell {
+    th, td {
       padding: 10px 0;
     }
   }
 
   @include m(small) {
     font-size: 12px;
-    .el-table__cell {
+    th, td {
       padding: 8px 0;
     }
   }
 
   @include m(mini) {
     font-size: 12px;
-    .el-table__cell {
+    th, td {
       padding: 6px 0;
     }
   }
@@ -176,16 +176,15 @@
     }
   }
 
-  th.el-table__cell.is-leaf,
-  td.el-table__cell {
+  th.is-leaf, td {
     border-bottom: $--table-border;
   }
 
-  th.el-table__cell.is-sortable {
+  th.is-sortable {
     cursor: pointer;
   }
 
-  th.el-table__cell {
+  th {
     overflow: hidden;
     user-select: none;
     background-color: $--table-header-background-color;
@@ -216,7 +215,7 @@
     }
   }
 
-  td.el-table__cell {
+  td {
     div {
       box-sizing: border-box;
     }
@@ -281,7 +280,7 @@
       border-color: transparent;
     }
 
-    .el-table__cell {
+    th, td {
       border-right: $--table-border;
 
       &:first-child .cell {
@@ -289,12 +288,12 @@
       }
     }
 
-    th.el-table__cell.gutter:last-of-type {
+    th.gutter:last-of-type {
       border-bottom: $--table-border;
       border-bottom-width: 1px;
     }
 
-    & th.el-table__cell {
+    & th {
       border-bottom: $--table-border;
     }
   }
@@ -357,7 +356,7 @@
     bottom: 0;
     z-index: 3;
 
-    & tbody td.el-table__cell {
+    & tbody td {
       border-top: $--table-border;
       background-color: $--table-row-hover-background-color;
       color: $--table-font-color;
@@ -378,7 +377,7 @@
 
   @include e(footer-wrapper) {
     margin-top: -1px;
-    td.el-table__cell {
+    td {
       border-top: $--table-border;
     }
   }
@@ -391,7 +390,7 @@
   @include e((header-wrapper, footer-wrapper)) {
     overflow: hidden;
 
-    & tbody td.el-table__cell {
+    & tbody td {
       background-color: $--table-row-hover-background-color;
       color: $--table-font-color;
     }
@@ -482,11 +481,11 @@
   @include m(striped) {
     & .el-table__body {
       & tr.el-table__row--striped {
-        td.el-table__cell {
+        td {
           background: #FAFAFA;
         }
 
-        &.current-row td.el-table__cell {
+        &.current-row td {
           background-color: $--table-current-row-background-color;
         }
       }
@@ -497,14 +496,14 @@
     tr.hover-row {
       &, &.el-table__row--striped {
         &, &.current-row {
-          > td.el-table__cell {
+          > td {
             background-color: $--table-row-hover-background-color;
           }
         }
       }
     }
 
-    tr.current-row > td.el-table__cell {
+    tr.current-row > td {
       background-color: $--table-current-row-background-color;
     }
   }
@@ -532,13 +531,13 @@
   }
 
   @include m(enable-row-transition) {
-    .el-table__body td.el-table__cell {
+    .el-table__body td {
       transition: background-color .25s ease;
     }
   }
 
   @include m(enable-row-hover) {
-    .el-table__body tr:hover > td.el-table__cell {
+    .el-table__body tr:hover > td {
       background-color: $--table-row-hover-background-color;
     }
   }

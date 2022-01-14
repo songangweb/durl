@@ -91,7 +91,7 @@ export function addClass(el, cls) {
     }
   }
   if (!el.classList) {
-    el.setAttribute('class', curClass);
+    el.className = curClass;
   }
 };
 
@@ -112,7 +112,7 @@ export function removeClass(el, cls) {
     }
   }
   if (!el.classList) {
-    el.setAttribute('class', trim(curClass));
+    el.className = trim(curClass);
   }
 };
 
@@ -176,14 +176,14 @@ export function setStyle(element, styleName, value) {
 export const isScroll = (el, vertical) => {
   if (isServer) return;
 
-  const determinedDirection = vertical !== null && vertical !== undefined;
+  const determinedDirection = vertical !== null || vertical !== undefined;
   const overflow = determinedDirection
     ? vertical
       ? getStyle(el, 'overflow-y')
       : getStyle(el, 'overflow-x')
     : getStyle(el, 'overflow');
 
-  return overflow.match(/(scroll|auto|overlay)/);
+  return overflow.match(/(scroll|auto)/);
 };
 
 export const getScrollContainer = (el, vertical) => {

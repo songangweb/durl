@@ -19,14 +19,14 @@
           :aria-label="title"
           class="el-drawer"
           :class="[direction, customClass]"
-          :style="isHorizontal ? `width: ${drawerSize}` : `height: ${drawerSize}`"
+          :style="isHorizontal ? `width: ${size}` : `height: ${size}`"
           ref="drawer"
           role="dialog"
           tabindex="-1"
           >
           <header class="el-drawer__header" id="el-drawer__title" v-if="withHeader">
             <slot name="title">
-              <span role="heading" :title="title">{{ title }}</span>
+              <span role="heading" tabindex="0" :title="title">{{ title }}</span>
             </slot>
             <button
               :aria-label="`close ${title || 'drawer'}`"
@@ -49,6 +49,7 @@
 <script>
 import Popup from 'element-ui/src/utils/popup';
 import emitter from 'element-ui/src/mixins/emitter';
+import Utils from 'element-ui/src/utils/aria-utils';
 
 export default {
   name: 'ElDrawer',
@@ -93,7 +94,7 @@ export default {
       default: true
     },
     size: {
-      type: [Number, String],
+      type: String,
       default: '30%'
     },
     title: {
@@ -115,9 +116,6 @@ export default {
   computed: {
     isHorizontal() {
       return this.direction === 'rtl' || this.direction === 'ltr';
-    },
-    drawerSize() {
-      return typeof this.size === 'number' ? `${this.size}px` : this.size;
     }
   },
   data() {
@@ -135,13 +133,11 @@ export default {
           document.body.appendChild(this.$el);
         }
         this.prevActiveElement = document.activeElement;
+        this.$nextTick(() => {
+          Utils.focusFirstDescendant(this.$refs.drawer);
+        });
       } else {
-        if (!this.closed) {
-          this.$emit('close');
-          if (this.destroyOnClose === true) {
-            this.rendered = false;
-          }
-        }
+        if (!this.closed) this.$emit('close');
         this.$nextTick(() => {
           if (this.prevActiveElement) {
             this.prevActiveElement.focus();
@@ -190,9 +186,6 @@ export default {
     if (this.visible) {
       this.rendered = true;
       this.open();
-      if (this.appendToBody) {
-        document.body.appendChild(this.$el);
-      }
     }
   },
   destroyed() {

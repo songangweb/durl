@@ -115,11 +115,8 @@ exports.default = {
       title: 'عودة'
     },
     popconfirm: {
-      confirmButtonText: 'تأكيد',
-      cancelButtonText: 'إلغاء'
-    },
-    empty: {
-      description: 'لايوجد بيانات'
+      confirmButtonText: 'Yes', // to be translated
+      cancelButtonText: 'No' // to be translated
     }
   }
 };

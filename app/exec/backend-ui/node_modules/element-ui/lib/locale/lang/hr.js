@@ -38,13 +38,13 @@ exports.default = {
       month12: 'Prosinac',
       week: 'tjedan',
       weeks: {
-        sun: 'Ned',
-        mon: 'Pon',
-        tue: 'Uto',
-        wed: 'Sri',
-        thu: 'Čet',
-        fri: 'Pet',
-        sat: 'Sub'
+        sun: 'Pon',
+        mon: 'Uto',
+        tue: 'Sri',
+        wed: 'Čet',
+        thu: 'Pet',
+        fri: 'Sub',
+        sat: 'Ned'
       },
       months: {
         jan: 'Jan',
@@ -118,9 +118,6 @@ exports.default = {
     popconfirm: {
       confirmButtonText: 'Yes', // to be translated
       cancelButtonText: 'No' // to be translated
-    },
-    empty: {
-      description: 'Nema podataka'
     }
   }
 };

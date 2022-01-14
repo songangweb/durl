@@ -132,9 +132,6 @@
       popconfirm: {
         confirmButtonText: 'Ja',
         cancelButtonText: 'Nej'
-      },
-      empty: {
-        description: 'Inga Data'
       }
     }
   };

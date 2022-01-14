@@ -1,4 +1,4 @@
-import { validate, isJS, getAssetName, onEmit } from './util'
+import { validate, isJS, onEmit } from './util'
 
 export default class VueSSRServerPlugin {
   constructor (options = {}) {
@@ -10,8 +10,7 @@ export default class VueSSRServerPlugin {
   apply (compiler) {
     validate(compiler)
 
-    const stage = 'PROCESS_ASSETS_STAGE_OPTIMIZE_TRANSFER'
-    onEmit(compiler, 'vue-server-plugin', stage, (compilation, cb) => {
+    onEmit(compiler, 'vue-server-plugin', (compilation, cb) => {
       const stats = compilation.getStats().toJson()
       const entryName = Object.keys(stats.entrypoints)[0]
       const entryInfo = stats.entrypoints[entryName]
@@ -21,9 +20,7 @@ export default class VueSSRServerPlugin {
         return cb()
       }
 
-      const entryAssets = entryInfo.assets
-        .map(getAssetName)
-        .filter(isJS)
+      const entryAssets = entryInfo.assets.filter(isJS)
 
       if (entryAssets.length > 1) {
         throw new Error(
@@ -45,14 +42,14 @@ export default class VueSSRServerPlugin {
         maps: {}
       }
 
-      Object.keys(compilation.assets).forEach(name => {
-        if (isJS(name)) {
-          bundle.files[name] = compilation.assets[name].source()
-        } else if (name.match(/\.js\.map$/)) {
-          bundle.maps[name.replace(/\.map$/, '')] = JSON.parse(compilation.assets[name].source())
+      stats.assets.forEach(asset => {
+        if (isJS(asset.name)) {
+          bundle.files[asset.name] = compilation.assets[asset.name].source()
+        } else if (asset.name.match(/\.js\.map$/)) {
+          bundle.maps[asset.name.replace(/\.map$/, '')] = JSON.parse(compilation.assets[asset.name].source())
         }
         // do not emit anything else for server
-        delete compilation.assets[name]
+        delete compilation.assets[asset.name]
       })
 
       const json = JSON.stringify(bundle, null, 2)

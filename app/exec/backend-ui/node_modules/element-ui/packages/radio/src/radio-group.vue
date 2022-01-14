@@ -43,9 +43,7 @@
         return (this.elFormItem || {}).elFormItemSize;
       },
       _elTag() {
-        let tag = (this.$vnode.data || {}).tag;
-        if (!tag || tag === 'component') tag = 'div';
-        return tag;
+        return (this.$vnode.data || {}).tag || 'div';
       },
       radioGroupSize() {
         return this.size || this._elFormItemSize || (this.$ELEMENT || {}).size;

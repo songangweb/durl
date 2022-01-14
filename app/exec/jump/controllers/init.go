@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"time"
 
 	"durl/app/share/dao/cache"
@@ -16,7 +17,13 @@ type Controller struct {
 func (c *Controller) Prepare() {
 	// 过滤黑名单
 	ip := c.Ctx.Input.IP()
-	if cache.NewBlackListCache().Search(ip) {
+	fmt.Println("请求ip: ", ip)
+
+	cache.BlacklistConnLock.RLock()
+
+	if cache.Blacklist.Search(ip) {
+		cache.BlacklistConnLock.RUnlock()
+
 		reStatusNotFound(c)
 		return
 	}
@@ -79,21 +86,25 @@ func InitBlacklist() {
 }
 
 // 循环获取黑名单数据时间 s
-const taskBlacklistTime = 300
+const taskBlacklistTime = 3
 
 // taskBlacklist 开启定时任务获取黑名单列表
 func taskBlacklist() {
 	engine := db.NewDbService()
 
 	// 初始化缓存
-	cache.InitBlacklist()
-	c := cache.NewBlackListCache()
 	for {
+		blacklist := cache.InitBlacklist()
 		// 获取所有黑名单列表
 		list := engine.GetBlacklistAll()
 		for _, val := range list {
-			c.Add(val.Ip)
+			blacklist.Add(val.Ip)
 		}
+
+		cache.BlacklistConnLock.Lock()
+		cache.Blacklist = blacklist
+		cache.BlacklistConnLock.Unlock()
+
 		time.Sleep(taskBlacklistTime * time.Second)
 	}
 }

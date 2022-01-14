@@ -17,16 +17,16 @@ type UrlListCache interface {
 	Badd(key, value interface{}, expirationTime int64)
 }
 
+type ulServer struct {
+	GoodUrlCache *mcache.ARCCache
+	BedUrlCache  *mcache.LruCache
+}
+
 func NewUrlListCache() UrlListCache {
 	return &ulServer{
 		GoodUrlCache: GoodUrlCache,
 		BedUrlCache:  BedUrlCache,
 	}
-}
-
-type ulServer struct {
-	GoodUrlCache *mcache.ARCCache
-	BedUrlCache  *mcache.LruCache
 }
 
 var GoodUrlCache *mcache.ARCCache

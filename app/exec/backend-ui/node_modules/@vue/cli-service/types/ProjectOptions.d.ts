@@ -1,5 +1,5 @@
-import ChainableWebpackConfig = require('webpack-chain')
-import { Configuration as WebpackOptions } from 'webpack'
+import ChainableWebpackConfig from 'webpack-chain'
+import { WebpackOptions } from 'webpack/declarations/WebpackOptions'
 
 type PageEntry = string | string[];
 
@@ -29,7 +29,7 @@ interface CSSOptions {
   loaderOptions?: LoaderOptions;
 }
 
-interface ProjectOptions {
+export interface ProjectOptions {
   publicPath?: string;
   outputDir?: string;
   assetsDir?: string;
@@ -57,6 +57,4 @@ interface ProjectOptions {
   pluginOptions?: object;
 }
 
-type ConfigFunction = () => ProjectOptions
-
-export { ProjectOptions, ConfigFunction }
+export type ConfigFunction = () => ProjectOptions

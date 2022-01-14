@@ -7,28 +7,26 @@ import { extend, warn, isObject } from 'core/util/index'
  */
 export function renderSlot (
   name: string,
-  fallbackRender: ?((() => Array<VNode>) | Array<VNode>),
+  fallback: ?Array<VNode>,
   props: ?Object,
   bindObject: ?Object
 ): ?Array<VNode> {
   const scopedSlotFn = this.$scopedSlots[name]
   let nodes
-  if (scopedSlotFn) {
-    // scoped slot
+  if (scopedSlotFn) { // scoped slot
     props = props || {}
     if (bindObject) {
       if (process.env.NODE_ENV !== 'production' && !isObject(bindObject)) {
-        warn('slot v-bind without argument expects an Object', this)
+        warn(
+          'slot v-bind without argument expects an Object',
+          this
+        )
       }
       props = extend(extend({}, bindObject), props)
     }
-    nodes =
-      scopedSlotFn(props) ||
-      (typeof fallbackRender === 'function' ? fallbackRender() : fallbackRender)
+    nodes = scopedSlotFn(props) || fallback
   } else {
-    nodes =
-      this.$slots[name] ||
-      (typeof fallbackRender === 'function' ? fallbackRender() : fallbackRender)
+    nodes = this.$slots[name] || fallback
   }
 
   const target = props && props.slot

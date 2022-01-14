@@ -187,14 +187,13 @@ export default {
 
     loadData(row, key, treeNode) {
       const { load } = this.table;
-      const { treeData: rawTreeData } = this.states;
-      if (load && !rawTreeData[key].loaded) {
-        rawTreeData[key].loading = true;
+      const { lazyTreeNodeMap, treeData } = this.states;
+      if (load && !treeData[key].loaded) {
+        treeData[key].loading = true;
         load(row, treeNode, data => {
           if (!Array.isArray(data)) {
             throw new Error('[ElTable] data must be an array');
           }
-          const { lazyTreeNodeMap, treeData } = this.states;
           treeData[key].loading = false;
           treeData[key].loaded = true;
           treeData[key].expanded = true;

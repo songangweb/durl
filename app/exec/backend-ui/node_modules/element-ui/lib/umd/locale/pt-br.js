@@ -132,9 +132,6 @@
       popconfirm: {
         confirmButtonText: 'Sim',
         cancelButtonText: 'Não'
-      },
-      empty: {
-        description: 'Sem dados'
       }
     }
   };
