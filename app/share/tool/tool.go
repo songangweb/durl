@@ -79,7 +79,7 @@ func Base62Decode(str string) int {
 // 作者: # songang # 2020/11/26 10:59 上午 #
 
 func DisposeUrlProto(url string) string {
-	if !strings.HasPrefix(url, "http://")  && !strings.HasPrefix(url, "https://"){
+	if !strings.HasPrefix(url, "http://") && !strings.HasPrefix(url, "https://") {
 		url = "http://" + url
 	}
 	return url
