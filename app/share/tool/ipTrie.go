@@ -1,6 +1,7 @@
 package tool
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 )
@@ -13,8 +14,11 @@ func Constructor() Trie {
 	return Trie{}
 }
 
-func (t *Trie) Add(ip string) {
-	byteList := ipv4ToByte(ip)
+func (t *Trie) Add(ip string) error {
+	byteList, err := ipv4ToByte(ip)
+	if err != nil {
+		return err
+	}
 	cur := t
 	for _, c := range byteList {
 		if cur.children[c] == nil {
@@ -22,10 +26,14 @@ func (t *Trie) Add(ip string) {
 		}
 		cur = cur.children[c]
 	}
+	return nil
 }
 
 func (t *Trie) Search(ip string) bool {
-	byteList := ipv4ToByte(ip)
+	byteList, err := ipv4ToByte(ip)
+	if err != nil {
+		return false
+	}
 	cur := t
 	for _, c := range byteList {
 		if cur.children[c] == nil {
@@ -36,11 +44,14 @@ func (t *Trie) Search(ip string) bool {
 	return true
 }
 
-func ipv4ToByte(ipAddr string) []byte {
+func ipv4ToByte(ipAddr string) ([]byte, error) {
 	if ipAddr == "::1" {
 		ipAddr = "127.0.0.1"
 	}
 	bits := strings.Split(ipAddr, ".")
+	if len(bits) != 4 {
+		return nil, errors.New("format error")
+	}
 	b0, _ := strconv.Atoi(bits[0])
 	b1, _ := strconv.Atoi(bits[1])
 	b2, _ := strconv.Atoi(bits[2])
@@ -52,5 +63,5 @@ func ipv4ToByte(ipAddr string) []byte {
 	b = append(b, byte(uint32(b2)))
 	b = append(b, byte(uint32(b3)))
 
-	return b
+	return b, nil
 }
