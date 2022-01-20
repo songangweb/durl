@@ -24,7 +24,7 @@ COPY --from=builder /go/src/durl-backend/app/exec/backend/backend.tar.gz .
 RUN tar -zxvf backend.tar.gz \
     && rm -f backend.tar.gz
 
-EXPOSE 8083
+EXPOSE [8083,9083]
 CMD ["/durl/durl-backend/backend"]
 
 ## 在根目录执行

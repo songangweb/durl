@@ -1,50 +1,50 @@
 <template>
   <el-dialog
-    :title="amendOrAdd"
-    width="520px"
-    class="dialog"
-    :visible.sync="theVisible"
     :before-close="clearData"
+    :title="amendOrAdd"
+    :visible.sync="theVisible"
+    class="dialog"
+    width="520px"
   >
     <el-form
+      ref="formValue"
       :model="formValue"
       :rules="formRules"
-      ref="formValue"
-      label-width="100px"
       class="demo-addunit"
+      label-width="100px"
     >
-      <el-form-item :label="'短链接:'" class="demo-input" v-if="model.id">
+      <el-form-item v-if="model.id" :label="'短链接:'" class="demo-input">
         <el-input
           v-model="formValue.shortKey"
-          placeholder="请输入"
           :disabled="true"
+          placeholder="请输入"
         ></el-input>
       </el-form-item>
       <el-form-item :label="'原始链接'" class="demo-input" prop="fullUrl">
         <el-input v-model="formValue.fullUrl"></el-input>
       </el-form-item>
-      <el-form-item label="冻结:" class="demo-input" prop="isFrozen">
+      <el-form-item class="demo-input" label="冻结:" prop="isFrozen">
         <el-radio-group v-model="formValue.isFrozen">
           <el-radio :label="1">是</el-radio>
           <el-radio :label="0">否</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="是否永久:" class="demo-input" prop="perpetual">
+      <el-form-item class="demo-input" label="是否永久:" prop="perpetual">
         <el-radio-group v-model="formValue.perpetual">
           <el-radio :label="1">是</el-radio>
           <el-radio :label="0">否</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item
-        label="过期时间:"
-        class="demo-input"
         v-if="formValue.perpetual === 0 ? true : false"
+        class="demo-input"
+        label="过期时间:"
         prop="expirationTime"
       >
         <el-date-picker
           v-model="formValue.expirationTime"
-          type="datetime"
           placeholder="选择日期时间"
+          type="datetime"
         ></el-date-picker>
       </el-form-item>
     </el-form>
@@ -57,7 +57,7 @@
   </el-dialog>
 </template>
 <script>
-import { urlInfo, changeUrl, addUrl } from "@/api/request-data";
+import { urlInfo, changeShortUrl, addShortUrl } from "@/api/request-data";
 import { dateFormat } from "@/utils/date-format";
 export default {
   data() {
@@ -129,7 +129,7 @@ export default {
           }
 
           if (!this.model.id) {
-            const requestData = await addUrl(params);
+            const requestData = await addShortUrl(params);
             if (requestData.code === 200) {
               this.pageNum = 1;
               this.$message({
@@ -142,7 +142,7 @@ export default {
               console.log("新增失败");
             }
           } else {
-            const requestData = await changeUrl(params, this.model.id);
+            const requestData = await changeShortUrl(params, this.model.id);
             if (requestData.code === 200) {
               this.$message({
                 type: "success",
@@ -159,44 +159,6 @@ export default {
           return false;
         }
       });
-      //   const params = {};
-      //   params.fullUrl = this.formValue.fullUrl;
-      //   params.isFrozen = this.formValue.isFrozen;
-      //   try {
-      //     params.expirationTime = this.formValue.expirationTime.getTime() / 1000;
-      //   } catch (error) {
-      //     params.expirationTime = 0;
-      //   }
-      //   if (this.formValue.id === 0) {
-      //     console.log(params);
-      //     const requestData = await addShortChainValue(params);
-      //     if (requestData.code === 200) {
-      //       this.pageNum = 1;
-      //       this.$message({
-      //         type: "success",
-      //         message: `新增成功!`,
-      //       });
-      //       this.getTableData();
-      //     } else {
-      //       console.log("新增失败");
-      //     }
-      //   } else {
-      //     console.log(params, this.formValue.id);
-      //     const requestData = await changeShortChainValue(
-      //       params,
-      //       this.formValue.id
-      //     );
-      //     if (requestData.code === 200) {
-      //       this.$message({
-      //         type: "success",
-      //         message: `修改成功!`,
-      //       });
-      //       this.getTableData();
-      //     } else {
-      //       console.log("修改失败");
-      //     }
-      //   }
-      //   this.clearData();
     },
     clearData() {
       this.formValue = {

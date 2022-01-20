@@ -10,6 +10,15 @@ import (
 	"github.com/beego/beego/v2/core/config"
 )
 
+// 函数名称: Jump
+// 功能: 跳转
+// 输入参数:
+// 输出参数:
+// 返回: 返回请求结果
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2020/12/07 5:44 下午 #
+
 func (c *Controller) Jump() {
 
 	shortKey := c.Ctx.Input.Param(":jump")

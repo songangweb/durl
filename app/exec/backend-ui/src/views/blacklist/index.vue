@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="content" ref="content">
+    <div ref="content" class="content">
       <el-card>
         <el-form
           :inline="true"
@@ -12,22 +12,22 @@
               <el-form-item label="ip:">
                 <el-input
                   v-model="searchTermsValue.ip"
-                  placeholder="请输入"
                   clearable
+                  placeholder="请输入"
                 ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="时间区间:">
                 <el-date-picker
-                  style="width: 100%"
                   v-model="searchTermsValue.temporalInterval"
-                  type="datetimerange"
                   :picker-options="pickerOptions"
+                  align="right"
+                  end-placeholder="结束日期"
                   range-separator="至"
                   start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  align="right"
+                  style="width: 100%"
+                  type="datetimerange"
                 ></el-date-picker>
               </el-form-item>
             </el-col>
@@ -40,44 +40,44 @@
 
       <el-card class="grid-content">
         <div class="bg-purple">
-          <el-button type="primary" size="medium" @click="operation('新增')"
+          <el-button size="medium" type="primary" @click="operation('新增')"
             >新增</el-button
           >
           <div class="table-data">
             <el-table :data="tableData" border style="width: 100%">
               <el-table-column
-                prop="id"
                 label="id"
                 min-width="80"
+                prop="id"
               ></el-table-column>
               <el-table-column
-                prop="ip"
                 label="ip"
                 min-width="70"
+                prop="ip"
               ></el-table-column>
               <el-table-column
-                prop="createTime"
                 label="创建时间"
                 min-width="150"
+                prop="createTime"
               ></el-table-column>
 
               <el-table-column
-                prop="updateTime"
                 label="修改时间"
                 min-width="150"
+                prop="updateTime"
               ></el-table-column>
               <el-table-column fixed="right" label="操作" width="120">
                 <template slot-scope="scope">
                   <el-button
-                    type="text"
                     size="small"
+                    type="text"
                     @click="operation('编辑', scope.row)"
                     >编辑</el-button
                   >
                   <el-button
-                    @click="deleteValue(scope.row.id)"
-                    type="text"
                     size="small"
+                    type="text"
+                    @click="deleteValue(scope.row.id)"
                     >删除</el-button
                   >
                 </template>
@@ -91,14 +91,14 @@
             <div class="paging">
               <el-pagination
                 :current-page.sync="pageNum"
-                :page-sizes="[10, 20, 30, 40]"
                 :page-size.sync="pageSize"
+                :page-sizes="[10, 20, 30, 40]"
                 :total.sync="total"
-                layout="total, sizes, prev, pager, next, jumper"
                 background
+                class="table-pagination"
+                layout="total, sizes, prev, pager, next, jumper"
                 @current-change="onPageNumChange"
                 @size-change="onPageSizeChange"
-                class="table-pagination"
               ></el-pagination>
             </div>
           </div>
@@ -106,20 +106,20 @@
       </el-card>
 
       <el-dialog
-        :title="amendOrAdd"
-        width="520px"
-        class="dialog"
-        :visible.sync="theVisible"
         :before-close="clearData"
+        :title="amendOrAdd"
+        :visible.sync="theVisible"
+        class="dialog"
+        width="520px"
       >
         <el-form
-          :model="formValue"
           ref="formValue"
+          :model="formValue"
           :rules="formRules"
-          label-width="100px"
           class="demo-addunit"
+          label-width="100px"
         >
-          <el-form-item label="ip" class="demo-input" prop="ip">
+          <el-form-item class="demo-input" label="ip" prop="ip">
             <el-input v-model="formValue.ip"></el-input>
           </el-form-item>
         </el-form>
@@ -136,9 +136,9 @@
 <script>
 import {
   getBlackListArr,
-  addBlackValue,
-  changeBlackValue,
-  deleteBlackValue,
+  addBlacklist,
+  changeBlacklist,
+  deleteBlacklist,
 } from "@/api/request-data.js";
 import { dateFormat } from "@/utils/date-format.js";
 export default {
@@ -285,7 +285,7 @@ export default {
           const params = { ip: this.formValue.ip };
           if (this.formValue.id === 0) {
             console.log(params);
-            const requestData = await addBlackValue(params);
+            const requestData = await addBlacklist(params);
             if (requestData.code === 200) {
               this.pageNum = 1;
               this.$message({
@@ -298,7 +298,7 @@ export default {
             }
           } else {
             console.log(params, this.formValue.id);
-            const requestData = await changeBlackValue(
+            const requestData = await changeBlacklist(
               params,
               this.formValue.id
             );
@@ -325,7 +325,7 @@ export default {
         .then(async () => {
           let requestData;
           try {
-            requestData = await deleteBlackValue(id);
+            requestData = await deleteBlacklist(id);
             console.log(requestData.code);
             if (requestData.code === 200) {
               console.log(11);

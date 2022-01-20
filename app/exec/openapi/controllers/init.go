@@ -4,13 +4,12 @@ import (
 	"container/list"
 	"sync"
 
+	"durl/app/share/comm"
 	"durl/app/share/dao/db"
-
-	"github.com/beego/beego/v2/server/web"
 )
 
-type Controller struct {
-	web.Controller
+type OpenApiController struct {
+	comm.BaseController
 }
 
 type Pool struct {

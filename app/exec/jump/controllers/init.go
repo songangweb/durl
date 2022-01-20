@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"time"
 
 	"durl/app/share/dao/cache"
@@ -17,7 +16,6 @@ type Controller struct {
 func (c *Controller) Prepare() {
 	// 过滤黑名单
 	ip := c.Ctx.Input.IP()
-	fmt.Println("请求ip: ", ip)
 
 	cache.BlacklistConnLock.RLock()
 

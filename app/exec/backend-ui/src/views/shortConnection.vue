@@ -110,7 +110,7 @@
     </div>
 </template>
 <script>
-import { getShortChainArr, addShortChainValue, changeShortChainValue, batchFreezeArr, batchDeleteArr, deleteValue, freezeValue } from '@/api/request-data.js';
+import { getShortUrlList, addShortUrl, changeShortUrl, batchFreezeArr, batchDeleteArr, deleteUrl, freezeUrl } from '@/api/request-data.js';
 import { dateFormat, todDateFormat } from '@/utils/date-format.js';
 export default {
     data() {
@@ -223,7 +223,7 @@ export default {
             params.page = this.pageNum;
             this.loading = true;
             console.log(params);
-            const { data } = await getShortChainArr(params);
+            const { data } = await getShortUrlList(params);
             this.loading = false;
             if (data.len) {
                 this.total = data.len;
@@ -358,7 +358,7 @@ export default {
             }
             if (this.formValue.id === 0) {
                 console.log(params);
-                const requestData = await addShortChainValue(params);
+                const requestData = await addShortUrl(params);
                 if (requestData.code === 200) {
                     this.pageNum = 1;
                     this.$message({
@@ -371,7 +371,7 @@ export default {
                 }
             } else {
                 console.log(params, this.formValue.id);
-                const requestData = await changeShortChainValue(params, this.formValue.id);
+                const requestData = await changeShortUrl(params, this.formValue.id);
                 if (requestData.code === 200) {
                     this.$message({
                         type: 'success',
@@ -394,9 +394,9 @@ export default {
                     let requestData;
                     try {
                         if (operate === '删除') {
-                            requestData = await deleteValue(id);
+                            requestData = await deleteUrl(id);
                         } else if (operate === '冻结') {
-                            requestData = await freezeValue(id);
+                            requestData = await freezeUrl(id);
                         }
                         console.log(requestData.code);
                         if (requestData.code === 200) {

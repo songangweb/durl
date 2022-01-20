@@ -57,7 +57,7 @@
     </div>
 </template>
 <script>
-import { getBlackListArr, addBlackValue, changeBlackValue, deleteBlackValue } from '@/api/request-data.js';
+import { getBlackListArr, addBlacklist, changeBlacklist, deleteBlacklist } from '@/api/request-data.js';
 import { dateFormat } from '@/utils/date-format.js';
 export default {
     data() {
@@ -197,7 +197,7 @@ export default {
             const params = { ip: this.formValue.ip };
             if (this.formValue.id === 0) {
                 console.log(params);
-                const requestData = await addBlackValue(params);
+                const requestData = await addBlacklist(params);
                 if (requestData.code === 200) {
                     this.pageNum = 1;
                     this.$message({
@@ -210,7 +210,7 @@ export default {
                 }
             } else {
                 console.log(params, this.formValue.id);
-                const requestData = await changeBlackValue(params, this.formValue.id);
+                const requestData = await changeBlacklist(params, this.formValue.id);
                 if (requestData.code === 200) {
                     this.$message({
                         type: 'success',
@@ -232,7 +232,7 @@ export default {
                 .then(async () => {
                     let requestData;
                     try {
-                        requestData = await deleteBlackValue(id);
+                        requestData = await deleteBlacklist(id);
                         console.log(requestData.code);
                         if (requestData.code === 200) {
                             console.log(11);
