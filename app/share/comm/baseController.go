@@ -3,11 +3,11 @@ package comm
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/beego/beego/v2/core/logs"
-	"github.com/beego/beego/v2/core/validation"
 	"net/http"
 	"time"
 
+	"github.com/beego/beego/v2/core/logs"
+	"github.com/beego/beego/v2/core/validation"
 	"github.com/beego/beego/v2/server/web"
 	"github.com/json-iterator/go"
 )
@@ -27,7 +27,7 @@ type BaseResp struct {
 }
 
 type BaseListResp struct {
-	Len  int64       `json:"len"`
+	Len  int         `json:"len"`
 	List interface{} `json:"list"`
 }
 
@@ -125,6 +125,7 @@ func (b *BaseController) FormatInterfaceResp(httpCode, code int, message string,
 // 输入参数:
 //     httpCode: http状态码
 //     code: code返回值
+//     len: 数据总条数
 //     message: msg返回值
 //     i: 自定义内容data
 // 输出参数:
@@ -133,7 +134,7 @@ func (b *BaseController) FormatInterfaceResp(httpCode, code int, message string,
 // 注意事项:
 // 作者: # ang.song # 2021-11-17 15:15:42 #
 
-func (b *BaseController) FormatInterfaceListResp(httpCode, code int, len int64, message string, i interface{}) {
+func (b *BaseController) FormatInterfaceListResp(httpCode, code int, len int, message string, i interface{}) {
 	b.Ctx.Output.SetStatus(httpCode)
 
 	// 为空时转换为 []

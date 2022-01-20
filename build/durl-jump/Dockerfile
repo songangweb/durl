@@ -24,7 +24,7 @@ COPY --from=builder /go/src/durl-jump/app/exec/jump/jump.tar.gz .
 RUN tar -zxvf jump.tar.gz \
     && rm -f jump.tar.gz
 
-EXPOSE 8082
+EXPOSE [8082,9082]
 CMD ["./jump"]
 
 # 在根目录执行

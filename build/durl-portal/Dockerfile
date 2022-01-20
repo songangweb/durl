@@ -24,7 +24,7 @@ COPY --from=builder /go/src/durl-portal/app/exec/portal/portal.tar.gz .
 RUN tar -zxvf portal.tar.gz \
     && rm -f portal.tar.gz
 
-EXPOSE 8080
+EXPOSE [8080,9080]
 CMD ["/durl/durl-portal/portal"]
 
 ## 在根目录执行

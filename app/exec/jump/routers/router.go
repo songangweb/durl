@@ -1,11 +1,13 @@
 package routers
 
 import (
-	"durl/app/exec/jump/controllers"
-	"github.com/beego/beego/v2/core/config"
-	"github.com/beego/beego/v2/server/web"
 	"html/template"
 	"net/http"
+
+	"durl/app/exec/jump/controllers"
+
+	"github.com/beego/beego/v2/core/config"
+	"github.com/beego/beego/v2/server/web"
 )
 
 // RouterHandler 路由跳转

@@ -1,21 +1,19 @@
 package controllers
 
 import (
-	comm "durl/app/share/comm"
+	"durl/app/share/comm"
 	"durl/app/share/dao/db"
-	"reflect"
-	"strconv"
 )
 
 type BatchFrozenShortUrlReq struct {
-	Ids      []string `from:"ids" valid:"Required"`
-	IsFrozen int      `from:"isFrozen" valid:"Range(0,1)"`
+	Ids      []int `from:"ids" valid:"Required"`
+	IsFrozen int   `from:"isFrozen"`
 }
 
 type BatchFrozenShortUrlRes struct {
-	RequestCount int `json:"requestCount"`
-	UpdateCount  int `json:"updateCount"`
-	ErrIds       []string `json:"errIds"`
+	RequestCount int   `json:"requestCount"`
+	UpdateCount  int   `json:"updateCount"`
+	ErrIds       []int `json:"errIds"`
 }
 
 // 函数名称: BatchFrozenShortUrl
@@ -28,25 +26,23 @@ type BatchFrozenShortUrlRes struct {
 // 注意事项:
 // 作者: # leon # 2021/11/26 2:15 下午 #
 
-func (c *Controller) BatchFrozenShortUrl() {
+func (c *BackendController) BatchFrozenShortUrl() {
 
 	req := BatchFrozenShortUrlReq{}
 
 	c.BaseCheckParams(&req)
 
 	// 查询待操作Url信息
-	where := make(map[string][]interface{})
-	where["id"] = append(where["id"], "in", req.Ids)
-	where["is_del"] = append(where["is_del"], "=", 0)
-	data := db.GetAllShortUrl(where)
-
+	fields := map[string]interface{}{"id": req.Ids}
+	engine := db.NewDbService()
+	data := engine.GetAllShortUrl(fields)
 	if data == nil {
 		c.ErrorMessage(comm.ErrNotFound, comm.MsgParseFormErr)
 		return
 	}
 
-	var updateIds []string
-	var errIds []string
+	var updateIds []int
+	errIds := make([]int, 0)
 	var insertShortNum []int
 	// 提交id数量与查询出的数据量不一致
 	// 需要以数据库数据为准筛选出差集，准备进行错误返回
@@ -55,15 +51,9 @@ func (c *Controller) BatchFrozenShortUrl() {
 	if updateCount != requestCount {
 
 		// 将请求操作的id 提为key
-		mapData := make(map[string]interface{})
-		if vType := reflect.TypeOf(data[0].Id); vType.Name() == "int" {
-			for _, v := range data {
-				mapData[strconv.Itoa(v.Id.(int))] = v.ShortNum
-			}
-		} else {
-			for _, v := range data {
-				mapData[v.Id.(string)] = v.ShortNum
-			}
+		mapData := make(map[int]interface{})
+		for _, v := range data {
+			mapData[v.Id] = v.ShortNum
 		}
 
 		for _, v := range req.Ids {
@@ -85,11 +75,9 @@ func (c *Controller) BatchFrozenShortUrl() {
 	// 正确数据进行批量操作
 	// 批量冻结/解冻Url
 	updateData := map[string]interface{}{"is_frozen": req.IsFrozen}
+	updateWhere := map[string]interface{}{"id": updateIds}
 
-	updateWhere := make(map[string][]interface{})
-	updateWhere["id"] = append(updateWhere["id"], "in", updateIds)
-
-	_, err := db.BatchUpdateUrlByIds(updateWhere, insertShortNum, updateData)
+	_, err := engine.BatchUpdateUrlByIds(updateWhere, insertShortNum, updateData)
 	if err != nil {
 		c.FormatInterfaceResp(comm.OK, comm.OK, comm.MsgOk, &BatchFrozenShortUrlRes{
 			RequestCount: requestCount,

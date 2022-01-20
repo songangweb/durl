@@ -14,6 +14,7 @@
         })();
     </script>
     <meta name="_xsrf" content="{{.xsrf_token}}" />
+    <meta name="jumpUrl" content="{{.JumpUrl}}" />
 </head>
 <style>
     #home{
@@ -270,7 +271,7 @@
 
         $.ajax({
             type : "POST",
-            url : "/url",
+            url : "/shortUrl",
             contentType:"json/application",
             data : JSON.stringify({
                 url : urlStr,
@@ -281,7 +282,9 @@
             },
             success : function(successData) {
                 if(successData.code === 200) {
-                    $("#body_content4_flex_content").html("durl.fun/" + successData.data.key);
+                    var jumpUrl = $('meta[name=jumpUrl]').attr('content');
+
+                    $("#body_content4_flex_content").html(jumpUrl + "/" + successData.data.shortKey);
                 } else {
                     $("#body_content4_flex_content").html(successData.msg);
                 }
@@ -298,7 +301,7 @@
         input.value = text; // 修改文本框的内容
         input.select(); // 选中文本
         document.execCommand("copy"); // 执行浏览器复制命令
-        alert("复制成功");
+        // alert("复制成功");
     });
 
 </script>

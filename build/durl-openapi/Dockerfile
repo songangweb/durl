@@ -24,7 +24,7 @@ COPY --from=builder /go/src/durl-openapi/app/exec/openapi/openapi.tar.gz .
 RUN tar -zxvf openapi.tar.gz \
     && rm -f openapi.tar.gz
 
-EXPOSE 8081
+EXPOSE [8081,9091]
 CMD ["./openapi"]
 
 # 在根目录执行

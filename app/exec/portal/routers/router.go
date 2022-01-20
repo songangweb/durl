@@ -1,11 +1,13 @@
 package routers
 
 import (
-	"durl/app/exec/portal/controllers"
-	"github.com/beego/beego/v2/core/config"
-	"github.com/beego/beego/v2/server/web"
 	"html/template"
 	"net/http"
+
+	"durl/app/exec/portal/controllers"
+
+	"github.com/beego/beego/v2/core/config"
+	"github.com/beego/beego/v2/server/web"
 )
 
 // RouterHandler 路由跳转
@@ -21,7 +23,7 @@ func RouterHandler() {
 	web.Router("/xsrf-token", &controllers.Controller{}, "get:GetXsrfToken")
 
 	// 设置短链
-	web.Router("/url", &controllers.Controller{}, "post:SetShortUrl")
+	web.Router("/shortUrl", &controllers.Controller{}, "post:SetShortUrl")
 
 	web.ErrorHandler("404", pageNotFound)
 

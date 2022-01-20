@@ -10,9 +10,17 @@ func (c *Controller) Index() {
 	c.Data["xsrf_token"] = c.XSRFToken()
 
 	// 百度统计key
-	sConf, _ := config.String("Statistical_Baidu")
+	runmode, _ := config.String("runmode")
+	sConf, _ := config.String(runmode + "::Baidu")
 	if sConf != "" {
 		c.Data["Statistical_Baidu_Key"] = sConf
 	}
+
+	// jump服务域名
+	jumpUrlConf, _ := config.String("jumpUrl")
+	if jumpUrlConf != "" {
+		c.Data["JumpUrl"] = jumpUrlConf
+	}
+
 	c.TplName = "index.html"
 }

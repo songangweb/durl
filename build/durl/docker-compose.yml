@@ -3,22 +3,31 @@ services:
   durl-portal:
     image: songangweb/durl-portal:v1.0.1
     volumes:
-      - ./db.conf:/durl/durl-portal/conf/db.conf
+      - ./portal:/durl/durl-portal/conf
     ports:
-      - '9090:8080'
+      - '8080:8080'
+      - '9080:9080'
   durl-openapi:
     image: songangweb/durl-openapi:v1.0.0
     volumes:
-      - ./db.conf:/durl/durl-openapi/conf/db.conf
+      - ./openapi:/durl/durl-openapi/conf
     ports:
-      - '9091:8081'
+      - '8081:8081'
+      - '9081:9081'
   durl-jump:
     image: songangweb/durl-jump:v1.0.0
     volumes:
-      - ./db.conf:/durl/durl-jump/conf/db.conf
+      - ./jump:/durl/durl-jump/conf
     ports:
-      - '9092:8082'
-
+      - '8082:8082'
+      - '9082:9082'
+  durl-backend:
+    image: songangweb/durl-backend:v1.0.0
+    volumes:
+      - ./backend:/durl/durl-backend/conf
+    ports:
+      - '8083:8083'
+      - '9093:9083'
 
 ## ./db.conf 为替换配置文件，容器内程序配置使用默认数据库连接，需要在此选择挂载重新配置
 ## 可选择自己所需启动的容器、修改端口映射关系

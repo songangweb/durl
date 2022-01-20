@@ -1,26 +1,35 @@
 package controllers
 
 import (
-	comm "durl/app/share/comm"
-	"durl/app/share/dao/db"
-	"fmt"
-	"github.com/beego/beego/v2/server/web"
-	"github.com/songangweb/mcache"
 	"time"
+
+	"durl/app/share/dao/cache"
+	"durl/app/share/dao/db"
+
+	"github.com/beego/beego/v2/server/web"
 )
 
 type Controller struct {
 	web.Controller
 }
 
-type Pool struct {
-	step   int
-	keyMap []KeyMapOne
+func (c *Controller) Prepare() {
+	// 过滤黑名单
+	ip := c.Ctx.Input.IP()
+
+	cache.BlacklistConnLock.RLock()
+
+	if cache.Blacklist.Search(ip) {
+		cache.BlacklistConnLock.RUnlock()
+
+		reStatusNotFound(c)
+		return
+	}
 }
 
-type KeyMapOne struct {
-	num      int
-	shortKey string
+// 返回404页面
+func reStatusNotFound(c *Controller) {
+	c.Abort("404")
 }
 
 type UrlConf struct {
@@ -28,56 +37,72 @@ type UrlConf struct {
 	BedUrlLen  int
 }
 
-// GoodUrlCache url 内存缓存
-var GoodUrlCache *mcache.ARCCache
+func InitUrlCache(c cache.Conf) {
 
-// BedUrlCache bed url 缓存
-var BedUrlCache *mcache.LruCache
-
-func (c UrlConf) InitJump() {
-
-	var err error
+	// 初始化缓存
+	cache.InitUrlCache(c)
 
 	// 获取任务队列表里最新的一条数据id
-	queueId := db.QueueLastId()
-
-	// 初始化Cache数据池
-	GoodUrlCache, err = mcache.NewARC(c.GoodUrlLen)
-	if err != nil {
-		defer fmt.Println(comm.MsgInitializeCacheError)
-		panic(comm.MsgInitializeCacheError + ", err: " + err.Error())
-	}
+	engine := db.NewDbService()
+	queueId := engine.QueueLastId()
 
 	// 获取数据库中需要放到缓存的url
-	UrlList := db.GetCacheUrlAllByLimit(c.GoodUrlLen)
+	UrlList := engine.GetCacheUrlAllByLimit(c.GoodUrlLen)
 	// 添加数据到缓存中
 	for i := 0; i < len(UrlList); i++ {
-		GoodUrlCache.Add(UrlList[i].ShortNum, UrlList[i].FullUrl, int64(UrlList[i].ExpirationTime))
-	}
-
-	// 初始化错误urlCache
-	BedUrlCache, err = mcache.NewLRU(c.BedUrlLen)
-	if err != nil {
-		defer fmt.Println(comm.MsgInitializeCacheError)
-		panic(comm.MsgInitializeCacheError + ", err: " + err.Error())
+		cache.NewUrlListCache().Gadd(UrlList[i].ShortNum, UrlList[i].FullUrl, int64(UrlList[i].ExpirationTime))
 	}
 
 	// 开启定时任务获取需要处理的数据
 	go taskDisposalQueue(queueId)
 }
 
+// 循环获取queue表数据时间 s
+const taskQueueTime = 30
+
 // taskDisposalQueue 获取需要处理的数据
-func taskDisposalQueue(queueId interface{}) {
+func taskDisposalQueue(queueId int) {
+	engine := db.NewDbService()
 	for {
-		list := db.GetQueueListById(queueId)
+		list := engine.GetQueueListById(queueId)
 		count := len(list)
 		if count > 0 {
 			queueId = list[count-1].Id
 			for _, val := range list {
 				shortNum := val.ShortNum
-				GoodUrlCache.Remove(shortNum)
+				cache.NewUrlListCache().Gremove(shortNum)
 			}
 		}
-		time.Sleep(30 * time.Second)
+		time.Sleep(taskQueueTime * time.Second)
+	}
+}
+
+// InitBlacklist 初始化黑名单
+func InitBlacklist() {
+	// 开启定时任务获取黑名单列表
+	go taskBlacklist()
+}
+
+// 循环获取黑名单数据时间 s
+const taskBlacklistTime = 3
+
+// taskBlacklist 开启定时任务获取黑名单列表
+func taskBlacklist() {
+	engine := db.NewDbService()
+
+	// 初始化缓存
+	for {
+		blacklist := cache.InitBlacklist()
+		// 获取所有黑名单列表
+		list := engine.GetBlacklistAll()
+		for _, val := range list {
+			blacklist.Add(val.Ip)
+		}
+
+		cache.BlacklistConnLock.Lock()
+		cache.Blacklist = blacklist
+		cache.BlacklistConnLock.Unlock()
+
+		time.Sleep(taskBlacklistTime * time.Second)
 	}
 }

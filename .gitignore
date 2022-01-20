@@ -32,3 +32,5 @@ pom.xml.versionsBackup
 .gradle/
 .idea/
 Thumbs.db
+node_modules
+lastupdate.tmp

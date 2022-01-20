@@ -20,7 +20,7 @@ durl 是一个分布式的高性能短链服务,逻辑简单,部署方便.
 
 ## 特征:
 1. [beego](https://github.com/beego/beego) 为项目web框架.
-2. 使用了 [xorm](https://github.com/xormplus/xorm) 来实现持久数据存储, 项目已测试 mysql 与 mongo.
+2. 使用了 [xorm](https://github.com/xormplus/xorm) 来实现持久数据存储.
 3. 使用了 [mcache](https://github.com/songangweb/mcache) 来实现内存缓存.
 4. 因使用内存缓存作为缓存池,实际使用中,项目本身的性能瓶颈更多体现在数据库自身.(单机qps轻松上w)
 5. 项目内存消耗大多为缓存内存所用容量,可通过配置文件进行内存大小限制.

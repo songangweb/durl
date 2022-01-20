@@ -1,10 +1,12 @@
 package controllers
 
 import (
-	comm "durl/app/share/comm"
+	"encoding/json"
+
+	"durl/app/share/comm"
 	"durl/app/share/dao/db"
 	"durl/app/share/tool"
-	"encoding/json"
+
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/core/validation"
 )
@@ -15,8 +17,7 @@ type setShortUrlReq struct {
 }
 
 type setShortUrlDataResp struct {
-	Key            string `json:"key"`
-	Url            string `json:"url"`
+	ShortKey       string `json:"shortKey"`
 	ExpirationTime int    `json:"expirationTime"`
 }
 
@@ -57,7 +58,7 @@ func (c *Controller) setShortUrlParam(req *setShortUrlReq) {
 // 函数名称: SetShortUrl
 // 功能: 根据 单个url 设置短链
 // 输入参数:
-//		url: 原始url
+//		shortUrl: 原始url
 //		expirationTime: 过期时间
 // 输出参数:
 // 返回: 返回请求结果
@@ -82,7 +83,7 @@ func (c *Controller) SetShortUrl() {
 	UrlOne.ShortNum = shortNum
 	UrlOne.FullUrl = req.Url
 	UrlOne.ExpirationTime = req.ExpirationTime
-	err := db.InsertUrlOne(&UrlOne)
+	err := db.NewDbService().InsertUrlOne(&UrlOne)
 	if err != nil {
 		logs.Error("Action SetShortUrl, err: ", err.Error())
 		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)
@@ -93,8 +94,7 @@ func (c *Controller) SetShortUrl() {
 	shortKey := tool.Base62Encode(shortNum)
 
 	data := &setShortUrlDataResp{
-		Url:            req.Url,
-		Key:            shortKey,
+		ShortKey:       shortKey,
 		ExpirationTime: req.ExpirationTime,
 	}
 

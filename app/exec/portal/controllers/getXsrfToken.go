@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	comm "durl/app/share/comm"
+	"durl/app/share/comm"
 )
 
 type getXsrfTokenData struct {
