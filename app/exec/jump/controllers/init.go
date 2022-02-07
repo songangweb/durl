@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"time"
 
 	"durl/app/share/dao/cache"
@@ -18,10 +19,9 @@ func (c *Controller) Prepare() {
 	ip := c.Ctx.Input.IP()
 
 	cache.BlacklistConnLock.RLock()
+	defer cache.BlacklistConnLock.RUnlock()
 
 	if cache.Blacklist.Search(ip) {
-		cache.BlacklistConnLock.RUnlock()
-
 		reStatusNotFound(c)
 		return
 	}
@@ -50,7 +50,7 @@ func InitUrlCache(c cache.Conf) {
 	UrlList := engine.GetCacheUrlAllByLimit(c.GoodUrlLen)
 	// 添加数据到缓存中
 	for i := 0; i < len(UrlList); i++ {
-		cache.NewUrlListCache().Gadd(UrlList[i].ShortNum, UrlList[i].FullUrl, int64(UrlList[i].ExpirationTime))
+		cache.NewUrlListCache().Gadd(UrlList[i].ShortNum, UrlList[i].FullUrl, int64(UrlList[i].ExpirationTime*1000))
 	}
 
 	// 开启定时任务获取需要处理的数据
@@ -70,6 +70,7 @@ func taskDisposalQueue(queueId int) {
 			queueId = list[count-1].Id
 			for _, val := range list {
 				shortNum := val.ShortNum
+				fmt.Println("shortNum: ", shortNum)
 				cache.NewUrlListCache().Gremove(shortNum)
 			}
 		}

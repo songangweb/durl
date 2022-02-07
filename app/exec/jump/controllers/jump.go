@@ -20,7 +20,6 @@ import (
 // 作者: # ang.song # 2020/12/07 5:44 下午 #
 
 func (c *Controller) Jump() {
-
 	shortKey := c.Ctx.Input.Param(":jump")
 	shortNum := tool.Base62Decode(shortKey)
 
@@ -53,9 +52,9 @@ func (c *Controller) Jump() {
 	return
 }
 
-// 返回跳转页面
+//返回跳转页面
 func reStatusFound(c *Controller, fullUrl string) {
-	c.Data["shortUrl"] = fullUrl
+	c.Data["fullUrl"] = fullUrl
 
 	// 百度统计key
 	runmode, _ := config.String("runmode")

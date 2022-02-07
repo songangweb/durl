@@ -37,7 +37,7 @@ func (c *OpenApiController) FrozenShortUrl() {
 	}
 
 	updateData := make(map[string]interface{})
-	updateData["is_frozen"] = 0
+	updateData["is_frozen"] = 1
 	_, err := engine.UpdateUrlById(intId, urlInfo.ShortNum, updateData)
 	if err != nil {
 		c.ErrorMessage(comm.ErrSysDb, comm.MsgNotOk)

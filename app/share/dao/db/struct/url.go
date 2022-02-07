@@ -24,6 +24,11 @@ func (I *UrlStruct) TableName() string {
 const (
 	UrlIsDelYes = 1
 	UrlIsDelNo  = 0
+
+	UrlIsFrozenYes = 1
+	UrlIsFrozenNo  = 0
+
+	UrlExpirationTimePermanent = 0
 )
 
 // 函数名称: GetFullUrlByShortNum
@@ -41,8 +46,8 @@ func GetFullUrlByShortNum(engine *xorm.EngineGroup, shortNum int) (*UrlStruct, e
 	urlDetail := new(UrlStruct)
 
 	has, err := engine.
-		Where(" short_num = ? and is_del = ? and (expiration_time > ? or expiration_time = ?)",
-			shortNum, UrlIsDelNo, tool.TimeNowUnix(), UrlIsDelNo).Get(urlDetail)
+		Where(" short_num = ? and is_del = ? and is_frozen = ? and (expiration_time > ? or expiration_time = ?)",
+			shortNum, UrlIsDelNo, UrlIsFrozenNo, tool.TimeNowUnix(), UrlExpirationTimePermanent).Get(urlDetail)
 	if nil != err {
 		return nil, err
 	} else if !has {
@@ -66,8 +71,8 @@ func GetCacheUrlAllByLimit(engine *xorm.EngineGroup, limit int) (*[]UrlStruct, e
 	urlList := make([]UrlStruct, 0)
 
 	err := engine.
-		Where(" is_del = ? and (expiration_time > ? or expiration_time = ?) ",
-			UrlIsDelNo, tool.TimeNowUnix(), UrlIsDelNo).
+		Where(" is_del = ? and is_frozen = ? and (expiration_time > ? or expiration_time = ?) ",
+			UrlIsDelNo, UrlIsFrozenNo, tool.TimeNowUnix(), UrlExpirationTimePermanent).
 		Limit(limit, 0).
 		Find(&urlList)
 	return &urlList, err

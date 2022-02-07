@@ -29,6 +29,6 @@ EXPOSE 9091
 CMD ["/durl/durl-openapi/openapi"]
 
 ## 在根目录执行
-## docker build -f build/durl-openapi/Dockerfile  . -t durl-openapi:v1.0.2
+## docker build -f build/durl-openapi/Dockerfile  . -t durl-openapi:v1.0.3
 ## or 使用 buildx 构建多平台 Docker 镜像 https://blog.csdn.net/alex_yangchuansheng/article/details/103343697/
-## docker buildx build -t songangweb/durl-openapi:v1.0.2 --platform=linux/arm,linux/arm64,linux/amd64 -f build/durl-openapi/Dockerfile . --push
+## docker buildx build -t songangweb/durl-openapi:v1.0.3 --platform=linux/arm,linux/arm64,linux/amd64 -f build/durl-openapi/Dockerfile . --push
