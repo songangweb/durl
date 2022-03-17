@@ -75,7 +75,7 @@ durl 是根据JetBrains sro授予的免费JetBrains开源许可证与GoLand一�
 
 ## 微信 有问题也可以直接加我微信
 
-<img src="https://user-images.githubusercontent.com/44894211/158759545-1d6cfa83-2659-40c9-8905-a5e15f1b1de0.png" width="100px">
+<img src="https://user-images.githubusercontent.com/44894211/158759545-1d6cfa83-2659-40c9-8905-a5e15f1b1de0.png" width="300px">
 
 
 
