@@ -66,6 +66,8 @@ durl 是根据JetBrains sro授予的免费JetBrains开源许可证与GoLand一�
 
 [免费申请 jetbrains 全家桶](https://zhuanlan.zhihu.com/p/264139984?utm_source=wechat_session)
 
+## github start
+[![Stargazers over time](https://starchart.cc/songangweb/durl.svg)](https://starchart.cc/songangweb/durl)
 
 ## 交流
 #### 如果文档中未能覆盖的任何疑问,欢迎您发送邮件到<songangweb@foxmail.com>, 我会尽快答复。
