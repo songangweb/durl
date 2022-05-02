@@ -18,7 +18,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="时间区间:">
+              <el-form-item label="创建时间:">
                 <el-date-picker
                   v-model="searchTermsValue.temporalInterval"
                   :picker-options="pickerOptions"

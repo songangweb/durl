@@ -4,8 +4,8 @@
             <el-card>
                 <el-form
                     ref="form"
-                    :model="searchTermsValue"
                     :inline="true"
+                    :model="searchTermsValue"
                     class="demo-form-inline"
                 >
                     <el-row :gutter="20">
@@ -36,15 +36,15 @@
                                     style="width: 100%"
                                 >
                                     <el-option
-                                        value=""
                                         label="请选择"
+                                        value=""
                                     ></el-option>
                                     <el-option
                                         :value="1"
                                         label="是"
                                     ></el-option>
                                     <el-option
-                                        :value="0"
+                                        :value="-1"
                                         label="否"
                                     ></el-option>
                                 </el-select>
