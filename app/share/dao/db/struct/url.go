@@ -182,7 +182,7 @@ func DelUrlById(engine *xorm.EngineGroup, id int, shortNum int) (bool, error) {
 	return true, nil
 }
 
-//UpdateUrlByShortNum
+// UpdateUrlByShortNum
 // 函数名称: UpdateUrlByShortNum
 // 功能: 通过shortNum修改数据
 // 输入参数:

@@ -58,5 +58,5 @@ func InitMysql(m MysqlConf) {
 
 	Engine.SetMaxOpenConns(m.SetMaxOpen)
 	Engine.SetMaxIdleConns(m.SetMaxIdle)
-	//Engine.ShowSQL(true) // 打印ormSql
+	Engine.ShowSQL(true) // 打印ormSql
 }

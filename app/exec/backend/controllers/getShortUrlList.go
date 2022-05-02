@@ -52,10 +52,10 @@ func (c *BackendController) GetShortUrlList() {
 		fields["shortKey"] = req.ShortKey
 	}
 	if req.IsFrozen != 0 {
+		fields["isFrozen"] = req.IsFrozen
 		if req.IsFrozen == -1 {
 			fields["isFrozen"] = 0
 		}
-		fields["isFrozen"] = req.IsFrozen
 	}
 	if req.CreateTimeL != 0 {
 		fields["createTimeL"] = req.CreateTimeL

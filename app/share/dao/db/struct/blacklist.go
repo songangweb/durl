@@ -199,11 +199,11 @@ func GetBlacklistList(engine *xorm.EngineGroup, fields map[string]interface{}, p
 	}
 
 	if fields["createTimeL"] != nil {
-		q.And(builder.Lte{"create_time": fields["createTimeL"]})
+		q.And(builder.Gte{"create_time": fields["createTimeL"]})
 	}
 
 	if fields["createTimeR"] != nil {
-		q.And(builder.Gte{"create_time": fields["createTimeR"]})
+		q.And(builder.Lte{"create_time": fields["createTimeR"]})
 	}
 
 	err := q.Limit(size, (page-1)*size).Desc("create_time").Find(&BlacklistList)
@@ -235,11 +235,11 @@ func GetBlacklistListTotal(engine *xorm.EngineGroup, fields map[string]interface
 	}
 
 	if fields["createTimeL"] != nil {
-		q.And(builder.Lte{"create_time": fields["createTimeL"]})
+		q.And(builder.Gte{"create_time": fields["createTimeL"]})
 	}
 
 	if fields["createTimeR"] != nil {
-		q.And(builder.Gte{"create_time": fields["createTimeR"]})
+		q.And(builder.Lte{"create_time": fields["createTimeR"]})
 	}
 
 	total, err := q.Count(BlacklistCount)
