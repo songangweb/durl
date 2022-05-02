@@ -98,7 +98,7 @@ func initUrlCache(c cache.Conf) {
 	UrlList := engine.GetCacheUrlAllByLimit(c.GoodUrlLen)
 	// 添加数据到缓存中
 	for i := 0; i < len(UrlList); i++ {
-		cache.NewUrlListCache().Gadd(UrlList[i].ShortNum, UrlList[i].FullUrl, int64(UrlList[i].ExpirationTime))
+		cache.NewUrlListCache().Gadd(UrlList[i].ShortNum, UrlList[i].FullUrl, int64(UrlList[i].ExpirationTime*1000))
 	}
 }
 
