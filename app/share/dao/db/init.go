@@ -21,6 +21,7 @@ func InitXormDb(c XormConf) {
 	}
 }
 
+// CheckMysqlTable
 // 函数名称: CheckMysqlTable
 // 功能: 通过 检查Mysql表配置
 // 输入参数:
@@ -29,7 +30,6 @@ func InitXormDb(c XormConf) {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2020/12/07 20:44 下午 #
-
 func CheckMysqlTable() {
 	// 获取数据表信息
 	tables := make(map[string]interface{}, 4)

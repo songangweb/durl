@@ -17,6 +17,7 @@ type ShortUrlInfoRes struct {
 	UpdateTime     int    `json:"updateTime"`
 }
 
+// GetShortUrlInfo
 // 函数名称: GetShortUrlInfo
 // 功能: 获取url详情
 // 输入参数:
@@ -26,7 +27,6 @@ type ShortUrlInfoRes struct {
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/26 10:59 上午 #
-
 func (c *BackendController) GetShortUrlInfo() {
 	id := c.Ctx.Input.Param(":id")
 	intId, _ := strconv.Atoi(id)

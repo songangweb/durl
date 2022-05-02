@@ -16,6 +16,8 @@ func RouterHandler() {
 	// 链接跳转
 	web.ErrorHandler("404", pageNotFound)
 
+	web.Router("/cacheDetail", &controllers.Controller{}, "get:CacheDetail")
+
 	web.Router("/:jump([0-9a-zA-Z]+)", &controllers.Controller{}, "*:Jump")
 
 }

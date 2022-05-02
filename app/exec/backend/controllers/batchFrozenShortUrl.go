@@ -16,6 +16,7 @@ type BatchFrozenShortUrlRes struct {
 	ErrIds       []int `json:"errIds"`
 }
 
+// BatchFrozenShortUrl
 // 函数名称: BatchFrozenShortUrl
 // 功能: 批量冻结/解冻Url
 // 输入参数:
@@ -25,7 +26,6 @@ type BatchFrozenShortUrlRes struct {
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/26 2:15 下午 #
-
 func (c *BackendController) BatchFrozenShortUrl() {
 
 	req := BatchFrozenShortUrlReq{}

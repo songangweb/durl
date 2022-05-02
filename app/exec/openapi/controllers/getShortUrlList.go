@@ -26,6 +26,7 @@ type getShortUrlListDataResp struct {
 	UpdateTime     int    `json:"updateTime"`
 }
 
+// GetShortUrlList
 // 函数名称: GetShortUrlList
 // 功能: 分页获取url数据
 // 输入参数:
@@ -37,7 +38,6 @@ type getShortUrlListDataResp struct {
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/18 6:41 下午 #
-
 func (c *OpenApiController) GetShortUrlList() {
 	req := getShortUrlListReq{}
 	// 效验请求参数格式

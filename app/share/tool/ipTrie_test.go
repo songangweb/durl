@@ -9,19 +9,25 @@ import (
 	"time"
 )
 
-//func TestIpTrie(t *testing.T) {
-//	list := Constructor()
-//
-//	list.Add("127.0.0.1")
-//	list.Add("127.0.0.2")
-//
-//	fmt.Println(list.Search("127.0.0.1"))
-//	fmt.Println(list.Search("127.0.0.3"))
-//
-//	list = Constructor()
-//	fmt.Println(list.Search("127.0.0.1"))
-//}
-//
+func TestIpTrie(t *testing.T) {
+	list := Constructor()
+
+	list.Add("127.0.0.1")
+	list.Add("127.0.0.2")
+
+	fmt.Println(list.Search("127.0.0.1"))
+	fmt.Println(list.Search("127.0.0.3"))
+
+	list = Constructor()
+	list.Add("127.0.0.1")
+	fmt.Println(list.Search("127.0.0.1"))
+	list.Del("127.0.0.1")
+	fmt.Println(list.Search("127.0.0.1"))
+	list.Add("127.0.0.1")
+	fmt.Println(list.Search("127.0.0.1"))
+
+}
+
 //func TestIpTrie_performance(t *testing.T) {
 //	//runtime.GOMAXPROCS(runtime.NumCPU())
 //	runtime.GOMAXPROCS(1)

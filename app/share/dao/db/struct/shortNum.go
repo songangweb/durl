@@ -21,7 +21,7 @@ const (
 	ShortNumIsDelNo  = 0
 )
 
-// 函数名称: ReturnShortNumPeriod
+// ReturnShortNumPeriod
 // 功能: 获取号码段
 // 输入参数:
 //		id
@@ -32,7 +32,6 @@ const (
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2020/12/07 20:44 下午 #
-
 func ReturnShortNumPeriod(engine *xorm.EngineGroup) (int, int, error) {
 	var shortNumDetail ShortNumStruct
 
@@ -58,6 +57,7 @@ func ReturnShortNumPeriod(engine *xorm.EngineGroup) (int, int, error) {
 	return shortNumDetail.Step, shortNumDetail.MaxNum, nil
 }
 
+// InsertFirst
 // 函数名称: InsertFirst
 // 功能: 插入号码段第一条默认数据
 // 输入参数:
@@ -69,7 +69,6 @@ func ReturnShortNumPeriod(engine *xorm.EngineGroup) (int, int, error) {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2020/12/07 20:44 下午 #
-
 func InsertFirst(engine *xorm.EngineGroup) error {
 	var shortNumDetail ShortNumStruct
 	shortNumDetail.Id = 1

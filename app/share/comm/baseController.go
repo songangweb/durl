@@ -39,6 +39,7 @@ type ListData struct {
 	List     []interface{} `json:"list"`
 }
 
+// sendResponse
 // 函数名称: sendResponse
 // 功能: 回复应答消息
 // 输入参数:
@@ -65,6 +66,7 @@ func (b *BaseController) sendResponse(httpCode int, code int, message string) {
 	b.StopRun()
 }
 
+// FormatResp
 // 函数名称: FormatResp
 // 功能: 回复应答消息
 // 输入参数:
@@ -76,7 +78,6 @@ func (b *BaseController) sendResponse(httpCode int, code int, message string) {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021-11-17 15:15:42 #
-
 func (b *BaseController) FormatResp(httpCode, code int, message string) {
 	b.Ctx.Output.SetStatus(httpCode)
 
@@ -88,6 +89,7 @@ func (b *BaseController) FormatResp(httpCode, code int, message string) {
 	b.ServeJSON()
 }
 
+// FormatInterfaceResp
 // 函数名称: FormatInterfaceResp
 // 功能: 回复应答消息
 // 输入参数:
@@ -100,7 +102,6 @@ func (b *BaseController) FormatResp(httpCode, code int, message string) {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021-11-17 15:15:42 #
-
 func (b *BaseController) FormatInterfaceResp(httpCode, code int, message string, i interface{}) {
 	curNow := time.Now()
 	defer func() {
@@ -120,6 +121,7 @@ func (b *BaseController) FormatInterfaceResp(httpCode, code int, message string,
 	b.ServeJSON()
 }
 
+// FormatInterfaceListResp
 // 函数名称: FormatInterfaceListResp
 // 功能: 回复列表消息
 // 输入参数:
@@ -133,7 +135,6 @@ func (b *BaseController) FormatInterfaceResp(httpCode, code int, message string,
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021-11-17 15:15:42 #
-
 func (b *BaseController) FormatInterfaceListResp(httpCode, code int, len int, message string, i interface{}) {
 	b.Ctx.Output.SetStatus(httpCode)
 
@@ -157,6 +158,7 @@ func (b *BaseController) FormatInterfaceListResp(httpCode, code int, len int, me
 	b.ServeJSON()
 }
 
+// ErrorMessage
 // 函数名称: ErrorMessage
 // 功能: 回复错误消息
 // 输入参数:
@@ -167,7 +169,6 @@ func (b *BaseController) FormatInterfaceListResp(httpCode, code int, len int, me
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021-11-17 15:15:42 #
-
 func (b *BaseController) ErrorMessage(code int, message string) {
 
 	if code >= ErrBadReq && code < ErrAuth {
@@ -205,108 +206,109 @@ func (b *BaseController) ErrorMessage(code int, message string) {
 	return
 }
 
+// InternalServerError
 // 1.服务端错误
 // 1.1 Internal server error
 //  @状态码: 500
 //  @状态含义: Internal server error
 //  @状态原因: 客户端请求有效, 服务器处理时发生了意外!
 //  @错误码
-
 func (b *BaseController) InternalServerError(code int, message string) {
 	b.sendResponse(http.StatusInternalServerError, code, message)
 }
 
+// BadRequest
 // 2.客户端错误
 // 2.1 Bad request
 //  @状态码: 400
 //  @状态含义: Bad request
 //  @状态原因: 服务器不理解客户端的请求, 未做任何处理!
 //  @错误码
-
 func (b *BaseController) BadRequest(code int, message string) {
 	b.sendResponse(http.StatusBadRequest, code, message)
 }
 
+// Unauthorized
 // 2.2 Unauthorized
 //  @状态码: 401
 //  @状态含义: Unauthorized
 //  @状态原因: 用户未提供身份验证凭据, 或者没有通过身份验证!
 //  @错误码
-
 func (b *BaseController) Unauthorized(code int, message string) {
 	b.sendResponse(http.StatusUnauthorized, code, message)
 }
 
+// Forbidden
 // 2.3 Forbidden
 //  @状态码: 403
 //  @状态含义: Forbidden
 //  @状态原因: 用户通过了身份验证, 但是不具有访问资源所需的权限!
 //  @错误码
-
 func (b *BaseController) Forbidden(code int, message string) {
 	b.sendResponse(http.StatusForbidden, code, message)
 }
 
+// NotFound
 // 2.4 Not found
 //  @状态码: 404
 //  @状态含义: Not found
 //  @状态原因: 所请求的资源不存在, 或不可用!
 //  @错误码
-
 func (b *BaseController) NotFound(code int, message string) {
 	b.sendResponse(http.StatusNotFound, code, message)
 }
 
+// MethodNotAllowed
 // 2.5 Method not allowed
 //  @状态码: 405
 //  @状态含义: Method not allowed
 //  @状态原因: 用户已经通过身份验证, 但是所用的HTTP方法不在他的权限之内!
 //  @错误码
-
 func (b *BaseController) MethodNotAllowed(code int, message string) {
 	b.sendResponse(http.StatusMethodNotAllowed, code, message)
 }
 
+// Gone
 // 2.6 Gone
 //  @状态码: 410
 //  @状态含义: Gone
 //  @状态原因: 所请求的资源已从这个地址转移, 不再可用!
 //  @错误码
-
 func (b *BaseController) Gone(code int, message string) {
 	b.sendResponse(http.StatusGone, code, message)
 }
 
+// UnsupportedMediaType
 // 2.7 Unsupported media type
 //  @状态码: 415
 //  @状态含义: Unsupported media type
 //  @状态原因: 客户端要求的返回格式不支持. 比如: API只能返回JSON格式, 但是客户端要求返回XML格式!
 //  @错误码
-
 func (b *BaseController) UnsupportedMediaType(code int, message string) {
 	b.sendResponse(http.StatusUnsupportedMediaType, code, message)
 }
 
+// UnprocessableEntity
 // 2.8 Unprocessable entity
 //  @状态码: 422
 //  @状态含义: Unprocessable entity
 //  @状态原因: 客户端上传的附件无法处理, 导致请求失败!
 //  @错误码
-
 func (b *BaseController) UnprocessableEntity(code int, message string) {
 	b.sendResponse(http.StatusUnprocessableEntity, code, message)
 }
 
+// TooManyRequests
 // 2.9 Too many requests
 //  @状态码: 429
 //  @状态含义: Too many requests
 //  @状态原因: 客户端的请求次数超过限额!
 //  @错误码
-
 func (b *BaseController) TooManyRequests(code int, message string) {
 	b.sendResponse(http.StatusTooManyRequests, code, message)
 }
 
+// BaseCheckParams
 // 函数名称: BaseCheckParams
 // 功能: 接口参数基础校验
 // 输入参数:
@@ -315,7 +317,6 @@ func (b *BaseController) TooManyRequests(code int, message string) {
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/18 5:31 下午 #
-
 func (b *BaseController) BaseCheckParams(req interface{}) {
 	_, actionName := b.GetControllerAndAction()
 	method := b.Ctx.Request.Method

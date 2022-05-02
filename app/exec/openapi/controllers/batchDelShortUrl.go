@@ -16,6 +16,7 @@ type BatchDelShortUrlRes struct {
 	ErrIds       []int `json:"errIds"`
 }
 
+// BatchDelShortUrl
 // 函数名称: BatchDelShortUrl
 // 功能: 批量删除ShortUrl
 // 输入参数:
@@ -26,7 +27,6 @@ type BatchDelShortUrlRes struct {
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/12/1 1:41 下午 #
-
 func (c *OpenApiController) BatchDelShortUrl() {
 
 	req := BatchDelShortUrlReq{}

@@ -8,6 +8,15 @@ import (
 	"github.com/beego/beego/v2/core/config"
 )
 
+// Init
+// 函数名称: Init
+// 功能: 项目初始化
+// 输入参数:
+// 输出参数:
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2020/12/07 5:44 下午 #
 func Init() {
 	// 获取配置
 	AppConf := initConf()
@@ -21,6 +30,15 @@ type Conf struct {
 	Log log.Conf
 }
 
+// initConf
+// 函数名称: initConf
+// 功能: 配置初始化
+// 输入参数:
+// 输出参数:
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2020/12/07 5:44 下午 #
 func initConf() (AppConf *Conf) {
 
 	AppConf = new(Conf)
@@ -42,6 +60,15 @@ func initConf() (AppConf *Conf) {
 	return AppConf
 }
 
+// initApp
+// 函数名称: initApp
+// 功能: 组件初始化
+// 输入参数:
+// 输出参数:
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2020/12/07 5:44 下午 #
 func initApp(c *Conf) {
 
 	// 初始化日志服务
@@ -52,5 +79,4 @@ func initApp(c *Conf) {
 
 	// 初始化路由组
 	routers.RouterHandler()
-
 }

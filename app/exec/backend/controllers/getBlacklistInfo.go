@@ -13,6 +13,7 @@ type BlacklistInfoRes struct {
 	UpdateTime int    `json:"updateTime"`
 }
 
+// GetBlacklistInfo
 // 函数名称: GetBlacklistInfo
 // 功能: 获取url详情
 // 输入参数:
@@ -22,7 +23,6 @@ type BlacklistInfoRes struct {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
-
 func (c *BackendController) GetBlacklistInfo() {
 	id := c.Ctx.Input.Param(":id")
 	intId, _ := strconv.Atoi(id)

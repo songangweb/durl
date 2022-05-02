@@ -20,6 +20,7 @@ type setShortUrlDataResp struct {
 	ExpirationTime int    `json:"expirationTime"`
 }
 
+// SetShortUrl
 // 函数名称: SetShortUrl
 // 功能: 根据 单个fullUrl设置短链
 // 输入参数:
@@ -30,7 +31,6 @@ type setShortUrlDataResp struct {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021-11-17 15:15:42 #
-
 func (c *BackendController) SetShortUrl() {
 	req := setShortUrlReq{}
 	// 效验请求参数格式

@@ -12,6 +12,7 @@ type updateShortUrlReq struct {
 	ExpirationTime int    `form:"expirationTime"`
 }
 
+// UpdateShortUrl
 // 函数名称: UpdateShortUrl
 // 功能: 根据短链修改短链接信息
 // 输入参数:
@@ -23,7 +24,6 @@ type updateShortUrlReq struct {
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/18 5:46 下午 #
-
 func (c *OpenApiController) UpdateShortUrl() {
 
 	req := updateShortUrlReq{}

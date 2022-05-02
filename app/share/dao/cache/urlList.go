@@ -37,6 +37,15 @@ type Conf struct {
 	BedUrlLen  int
 }
 
+// InitUrlCache
+// 函数名称: InitUrlCache
+// 功能: 初始化缓存
+// 输入参数:
+// 输出参数:
+// 返回: 返回请求结果
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021-11-17 15:15:42 #
 func InitUrlCache(c Conf) {
 
 	// 初始化Cache数据池

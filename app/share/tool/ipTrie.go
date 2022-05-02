@@ -29,6 +29,24 @@ func (t *Trie) Add(ip string) error {
 	return nil
 }
 
+func (t *Trie) Del(ip string) error {
+	byteList, err := ipv4ToByte(ip)
+	if err != nil {
+		return err
+	}
+	cur := t
+	for i, c := range byteList {
+		if i == len(byteList)-1 {
+			cur.children[c] = nil
+		}
+		if cur.children[c] == nil {
+			return nil
+		}
+		cur = cur.children[c]
+	}
+	return nil
+}
+
 func (t *Trie) Search(ip string) bool {
 	byteList, err := ipv4ToByte(ip)
 	if err != nil {

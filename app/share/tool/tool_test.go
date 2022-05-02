@@ -104,7 +104,7 @@ func ExampleReverseString() {
 // 作者: # leon # 2021/12/31 11:41 上午 #
 func TestBase62Encode(t *testing.T) {
 	type args struct {
-		number uint32
+		number int
 	}
 	tests := []struct {
 		name string
@@ -152,7 +152,7 @@ func BenchmarkBase62Encode(b *testing.B) {
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/12/31 10:30 上午 #
-func benchmarkBase62Encode(b *testing.B, n uint32) {
+func benchmarkBase62Encode(b *testing.B, n int) {
 	for i := 0; i < b.N; i++ {
 		Base62Encode(n)
 	}
@@ -479,7 +479,7 @@ func TestTimeNowUnix(t *testing.T) {
 // 作者: # leon # 2022/1/5 11:18 上午 #
 func TestBase62Encode2Decode(t *testing.T) {
 	type args struct {
-		number uint32
+		number int
 	}
 	tests := []struct {
 		name string

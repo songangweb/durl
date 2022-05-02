@@ -20,6 +20,15 @@ type Pool struct {
 
 var KeyPool *Pool
 
+// InitCon
+// 函数名称: InitCon
+// 功能: 初始化号码段
+// 输入参数:
+// 输出参数:
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2020/12/07 5:44 下午 #
 func InitCon() {
 	KeyPool = &Pool{
 		step:    0,
@@ -28,7 +37,15 @@ func InitCon() {
 	KeyPool.ProducerKey()
 }
 
-// ProducerKey 申请号码段 放入缓存里
+// ProducerKey
+// 函数名称: ProducerKey
+// 功能: 申请号码段 放入缓存里
+// 输入参数:
+// 输出参数:
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2020/12/07 5:44 下午 #
 func (p *Pool) ProducerKey() {
 	// 申请号码段
 	Step, MaxNum, _ := db.NewDbService().ReturnShortNumPeriod()
@@ -44,7 +61,15 @@ func (p *Pool) ProducerKey() {
 	}
 }
 
-// ReturnShortNumOne 获取单个short_num
+// ReturnShortNumOne
+// 函数名称: ReturnShortNumOne
+// 功能: 获取单个short_num
+// 输入参数:
+// 输出参数:
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2020/12/07 5:44 下午 #
 func ReturnShortNumOne() (ShortNum int) {
 
 	KeyPool.lock.Lock()

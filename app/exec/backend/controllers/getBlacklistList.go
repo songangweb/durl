@@ -13,6 +13,7 @@ type getBlacklistListReq struct {
 	CreateTimeR int    `form:"createTimeR"`
 }
 
+// GetBlacklistList
 // 函数名称: GetBlacklistList
 // 功能: 分页获取url数据
 // 输入参数:
@@ -24,7 +25,6 @@ type getBlacklistListReq struct {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
-
 func (c *BackendController) GetBlacklistList() {
 	req := getBlacklistListReq{}
 	// 效验请求参数格式

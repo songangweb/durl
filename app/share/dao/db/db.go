@@ -120,7 +120,7 @@ func (s *dbService) GetQueueListById(id int) []*GetQueueListByIdRe {
 		for _, queueStruct := range list {
 			var One GetQueueListByIdRe
 			One.Id = queueStruct.Id
-			One.ShortNum = queueStruct.ShortNum
+			One.Data = queueStruct.Data
 			returnList = append(returnList, &One)
 		}
 	}
@@ -129,8 +129,9 @@ func (s *dbService) GetQueueListById(id int) []*GetQueueListByIdRe {
 }
 
 type GetQueueListByIdRe struct {
-	Id       int `json:"id"`
-	ShortNum int `json:"shortNum"`
+	Id        int    `json:"id"`
+	QueueType int    `json:"queueType"`
+	Data      string `json:"data"`
 }
 
 type GetCacheUrlAllByLimitRe struct {

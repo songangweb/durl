@@ -11,6 +11,7 @@ type setBlacklistReq struct {
 	Ip string `form:"ip" valid:"IP"`
 }
 
+// SetBlacklist
 // 函数名称: SetBlacklist
 // 功能: 根据 单个fullUrl设置短链
 // 输入参数:
@@ -20,7 +21,6 @@ type setBlacklistReq struct {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
-
 func (c *OpenApiController) SetBlacklist() {
 	req := setBlacklistReq{}
 	// 效验请求参数格式

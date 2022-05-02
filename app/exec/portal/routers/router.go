@@ -29,7 +29,15 @@ func RouterHandler() {
 
 }
 
-// 定义404页面
+// pageNotFound
+// 函数名称: pageNotFound
+// 功能: 定义404页面
+// 输入参数:
+// 输出参数:
+// 返回: 返回请求结果
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2021-11-17 15:15:42 #
 func pageNotFound(rw http.ResponseWriter, r *http.Request) {
 	t, _ := template.New("404.html").ParseFiles(web.BConfig.WebConfig.ViewsPath + "/404.html")
 	data := make(map[string]interface{})

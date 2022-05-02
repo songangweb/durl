@@ -6,6 +6,7 @@ import (
 	"strconv"
 )
 
+// FrozenShortUrl
 // 函数名称: FrozenShortUrl
 // 功能: 冻结ShortUrl
 // 输入参数:
@@ -15,7 +16,6 @@ import (
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/26 1:56 下午 #
-
 func (c *BackendController) FrozenShortUrl() {
 
 	id := c.Ctx.Input.Param(":id")

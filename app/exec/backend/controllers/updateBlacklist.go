@@ -10,6 +10,7 @@ type updateBlacklistReq struct {
 	Ip string `valid:"IP"`
 }
 
+// UpdateBlacklist
 // 函数名称: UpdateBlacklist
 // 功能: 根据短链修改短链接信息
 // 输入参数:
@@ -21,7 +22,6 @@ type updateBlacklistReq struct {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
-
 func (c *BackendController) UpdateBlacklist() {
 
 	req := updateBlacklistReq{}

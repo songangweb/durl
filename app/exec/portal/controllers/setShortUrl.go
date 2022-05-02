@@ -21,6 +21,7 @@ type setShortUrlDataResp struct {
 	ExpirationTime int    `json:"expirationTime"`
 }
 
+// setShortUrlParam
 // 函数名称: setShortUrlParam
 // 功能: 效验SetShortUrl接口请求参数
 // 输入参数:
@@ -29,7 +30,6 @@ type setShortUrlDataResp struct {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021-11-17 15:15:42 #
-
 func (c *Controller) setShortUrlParam(req *setShortUrlReq) {
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, req); err != nil {
 		logs.Info("Action setShortUrlParam, err: ", err.Error())
@@ -55,6 +55,7 @@ func (c *Controller) setShortUrlParam(req *setShortUrlReq) {
 	}
 }
 
+// SetShortUrl
 // 函数名称: SetShortUrl
 // 功能: 根据 单个url 设置短链
 // 输入参数:
@@ -65,7 +66,6 @@ func (c *Controller) setShortUrlParam(req *setShortUrlReq) {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021-11-17 15:15:42 #
-
 func (c *Controller) SetShortUrl() {
 
 	req := setShortUrlReq{}

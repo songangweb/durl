@@ -8,6 +8,7 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 )
 
+// DelShortUrl
 // 函数名称: DelShortUrl
 // 功能: 根据单个短链删除短链接
 // 输入参数:
@@ -17,7 +18,6 @@ import (
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/18 5:44 下午 #
-
 func (c *BackendController) DelShortUrl() {
 
 	id := c.Ctx.Input.Param(":id")

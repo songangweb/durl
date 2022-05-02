@@ -18,10 +18,13 @@ func (I *BlacklistStruct) TableName() string {
 }
 
 const (
-	BlacklistIsDelYes = 1
-	BlacklistIsDelNo  = 0
+	BlacklistIsDelYes     = 1
+	BlacklistIsDelNo      = 0
+	QueueTypeBlacklistAdd = 2
+	QueueTypeBlacklistDel = 3
 )
 
+// InsertBlacklistOne
 // 函数名称: InsertBlacklistOne
 // 功能: 插入一条数据
 // 输入参数:
@@ -31,14 +34,38 @@ const (
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/11/07 20:44 下午 #
-
 func InsertBlacklistOne(engine *xorm.EngineGroup, urlStructReq *BlacklistStruct) (int, error) {
+	session := engine.NewSession()
+	defer session.Close()
+
+	err := session.Begin()
 	url := new(BlacklistStruct)
 	url.Ip = urlStructReq.Ip
 	affected, err := engine.Insert(url)
-	return int(affected), err
+	if err != nil {
+		_ = session.Rollback()
+		return 0, err
+	}
+
+	// 添加消息
+	var QueueOne QueueStruct
+	QueueOne.QueueType = QueueTypeBlacklistAdd
+	QueueOne.Data = urlStructReq.Ip
+	_, err = session.Insert(QueueOne)
+	if err != nil {
+		_ = session.Rollback()
+		return 0, err
+	}
+
+	err = session.Commit()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(affected), nil
 }
 
+// DelBlacklistById
 // 函数名称: DelBlacklistById
 // 功能: 通过id删除数据
 // 输入参数:
@@ -48,7 +75,6 @@ func InsertBlacklistOne(engine *xorm.EngineGroup, urlStructReq *BlacklistStruct)
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/11/07 20:44 下午 #
-
 func DelBlacklistById(engine *xorm.EngineGroup, id int) (bool, error) {
 
 	session := engine.NewSession()
@@ -65,6 +91,20 @@ func DelBlacklistById(engine *xorm.EngineGroup, id int) (bool, error) {
 		return false, err
 	}
 
+	// 查询ip
+	blacklistDetail := new(BlacklistStruct)
+	q := engine.Where(" id = ? ", id)
+	_, err = q.Get(blacklistDetail)
+	// 添加消息
+	var QueueOne QueueStruct
+	QueueOne.QueueType = QueueTypeShortNumDel
+	QueueOne.Data = blacklistDetail.Ip
+	_, err = session.Insert(QueueOne)
+	if err != nil {
+		_ = session.Rollback()
+		return false, err
+	}
+
 	err = session.Commit()
 	if err != nil {
 		return false, err
@@ -73,6 +113,7 @@ func DelBlacklistById(engine *xorm.EngineGroup, id int) (bool, error) {
 	return true, nil
 }
 
+// UpdateBlacklistById
 // 函数名称: UpdateBlacklistById
 // 功能: 通过Id修改数据
 // 输入参数:
@@ -85,7 +126,6 @@ func DelBlacklistById(engine *xorm.EngineGroup, id int) (bool, error) {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/11/07 20:44 下午 #
-
 func UpdateBlacklistById(engine *xorm.EngineGroup, id int, data *map[string]interface{}) (bool, error) {
 
 	session := engine.NewSession()
@@ -100,6 +140,32 @@ func UpdateBlacklistById(engine *xorm.EngineGroup, id int, data *map[string]inte
 		return false, err
 	}
 
+	// 查询ip
+	blacklistDetail := new(BlacklistStruct)
+	q := engine.Where(" id = ? ", id)
+	_, err = q.Get(blacklistDetail)
+
+	datac := *data
+	ip := datac["ip"]
+	if blacklistDetail.Ip != ip {
+		// 添加消息
+		var QueueOne QueueStruct
+		QueueOne.QueueType = QueueTypeBlacklistAdd
+		QueueOne.Data = ip.(string)
+		_, err = session.Insert(QueueOne)
+		if err != nil {
+			_ = session.Rollback()
+			return false, err
+		}
+		QueueOne.QueueType = QueueTypeBlacklistDel
+		QueueOne.Data = blacklistDetail.Ip
+		_, err = session.Insert(QueueOne)
+		if err != nil {
+			_ = session.Rollback()
+			return false, err
+		}
+	}
+
 	err = session.Commit()
 	if err != nil {
 		return false, err
@@ -108,6 +174,7 @@ func UpdateBlacklistById(engine *xorm.EngineGroup, id int, data *map[string]inte
 	return true, nil
 }
 
+// GetBlacklistList
 // 函数名称: GetBlacklistList
 // 功能: 查询出符合条件黑名单列表信息
 // 输入参数:
@@ -122,7 +189,6 @@ func UpdateBlacklistById(engine *xorm.EngineGroup, id int, data *map[string]inte
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/11/07 20:44 下午 #
-
 func GetBlacklistList(engine *xorm.EngineGroup, fields map[string]interface{}, page, size int) (*[]BlacklistStruct, error) {
 	BlacklistList := make([]BlacklistStruct, 0)
 
@@ -144,6 +210,7 @@ func GetBlacklistList(engine *xorm.EngineGroup, fields map[string]interface{}, p
 	return &BlacklistList, err
 }
 
+// GetBlacklistListTotal
 // 函数名称: GetBlacklistListTotal
 // 功能:  查询出符合条件黑名单列表信息条数
 // 输入参数:
@@ -158,7 +225,6 @@ func GetBlacklistList(engine *xorm.EngineGroup, fields map[string]interface{}, p
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/11/07 20:44 下午 #
-
 func GetBlacklistListTotal(engine *xorm.EngineGroup, fields map[string]interface{}) (int, error) {
 	BlacklistCount := new(BlacklistStruct)
 
@@ -180,6 +246,7 @@ func GetBlacklistListTotal(engine *xorm.EngineGroup, fields map[string]interface
 	return int(total), err
 }
 
+// GetBlacklistInfo
 // 函数名称: GetBlacklistInfo
 // 功能: 获取单条黑名单详情
 // 输入参数:
@@ -191,7 +258,6 @@ func GetBlacklistListTotal(engine *xorm.EngineGroup, fields map[string]interface
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/11/07 20:44 下午 #
-
 func GetBlacklistInfo(engine *xorm.EngineGroup, fields map[string]interface{}) (*BlacklistStruct, error) {
 	blacklistDetail := new(BlacklistStruct)
 
@@ -205,6 +271,7 @@ func GetBlacklistInfo(engine *xorm.EngineGroup, fields map[string]interface{}) (
 	return blacklistDetail, err
 }
 
+// GetBlacklistAll
 // 函数名称: GetBlacklistAll
 // 功能: 查询出符合条件的黑名单列表
 // 输入参数:
@@ -215,7 +282,6 @@ func GetBlacklistInfo(engine *xorm.EngineGroup, fields map[string]interface{}) (
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/11/07 20:44 下午 #
-
 func GetBlacklistAll(engine *xorm.EngineGroup) (*[]BlacklistStruct, error) {
 	blacklistList := make([]BlacklistStruct, 0)
 	err := engine.

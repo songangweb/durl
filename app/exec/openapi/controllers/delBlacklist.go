@@ -8,6 +8,7 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 )
 
+// DelBlacklist
 // 函数名称: DelBlacklist
 // 功能: 删除黑名单
 // 输入参数:
@@ -17,7 +18,6 @@ import (
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
-
 func (c *OpenApiController) DelBlacklist() {
 
 	id := c.Ctx.Input.Param(":id")

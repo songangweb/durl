@@ -19,17 +19,30 @@ func Init() {
 }
 
 type Conf struct {
+	MsgType     string
 	Db          db.DBConf
 	Log         log.Conf
 	MemoryCache cache.Conf
 }
 
+// initConf
+// 函数名称: initConf
+// 功能: 初始化配置
+// 输入参数:
+// 输出参数:
+// 返回:
+// 实现描述:
+// 注意事项:
+// 作者: # ang.song # 2020/12/07 5:44 下午 #
 func initConf() (AppConf *Conf) {
 
 	AppConf = new(Conf)
 
 	// 获取环境
 	runmode, _ := config.String("runmode")
+
+	// 获取消息通信方式
+	AppConf.MsgType, _ = config.String("MsgType")
 
 	// db
 	AppConf.Db.Type, _ = config.String(runmode + "::Db_Type")
@@ -60,10 +73,10 @@ func initApp(c *Conf) {
 	// 初始化路由组
 	routers.RouterHandler()
 
-	// 初始化url缓存
-	controllers.InitUrlCache(c.MemoryCache)
+	// 初始化缓存
+	controllers.InitCache(c.MemoryCache)
 
-	// 初始化黑名单
-	controllers.InitBlacklist()
+	// 初始化消息队列
+	go controllers.InitMsg(c.MsgType)
 
 }

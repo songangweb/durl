@@ -16,6 +16,9 @@ const (
 
 	MsgInitDbMysqlTable = "数据表创建失败!!"
 	MsgInitDbMysqlData  = "初始化数据创建失败!!"
+
+	MsgMsgTypeError = "数据库类型错误"
+	MsgCheckMsgType = "请检查消息类型"
 )
 
 const (

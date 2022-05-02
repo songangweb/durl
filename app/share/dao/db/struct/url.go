@@ -4,6 +4,7 @@ import (
 	"durl/app/share/tool"
 	"github.com/xormplus/builder"
 	"github.com/xormplus/xorm"
+	"strconv"
 )
 
 type UrlStruct struct {
@@ -22,10 +23,12 @@ func (I *UrlStruct) TableName() string {
 }
 
 const (
-	UrlIsDelYes = 1
-	UrlIsDelNo  = 0
+	UrlIsDelYes          = 1
+	UrlIsDelNo           = 0
+	QueueTypeShortNumDel = 1
 )
 
+// GetFullUrlByShortNum
 // 函数名称: GetFullUrlByShortNum
 // 功能: 通过 ShortNum 获取 完整连接
 // 输入参数:
@@ -36,7 +39,6 @@ const (
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2020/12/07 20:44 下午 #
-
 func GetFullUrlByShortNum(engine *xorm.EngineGroup, shortNum int) (*UrlStruct, error) {
 	urlDetail := new(UrlStruct)
 
@@ -51,6 +53,7 @@ func GetFullUrlByShortNum(engine *xorm.EngineGroup, shortNum int) (*UrlStruct, e
 	return urlDetail, nil
 }
 
+// GetCacheUrlAllByLimit
 // 函数名称: GetCacheUrlAllByLimit
 // 功能: 查询出符合条件的limit条url
 // 输入参数:
@@ -61,7 +64,6 @@ func GetFullUrlByShortNum(engine *xorm.EngineGroup, shortNum int) (*UrlStruct, e
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2020/12/07 20:44 下午 #
-
 func GetCacheUrlAllByLimit(engine *xorm.EngineGroup, limit int) (*[]UrlStruct, error) {
 	urlList := make([]UrlStruct, 0)
 
@@ -73,7 +75,7 @@ func GetCacheUrlAllByLimit(engine *xorm.EngineGroup, limit int) (*[]UrlStruct, e
 	return &urlList, err
 }
 
-// 函数名称: InsertUrlOne
+//InsertUrlOne
 // 功能: 插入一条数据
 // 输入参数:
 //		urlStructReq: UrlStruct
@@ -83,7 +85,6 @@ func GetCacheUrlAllByLimit(engine *xorm.EngineGroup, limit int) (*[]UrlStruct, e
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2020/12/07 20:44 下午 #
-
 func InsertUrlOne(engine *xorm.EngineGroup, urlStructReq UrlStruct) (int, error) {
 	url := new(UrlStruct)
 	url.FullUrl = urlStructReq.FullUrl
@@ -93,6 +94,7 @@ func InsertUrlOne(engine *xorm.EngineGroup, urlStructReq UrlStruct) (int, error)
 	return int(affected), err
 }
 
+// DelUrlByShortNum
 // 函数名称: DelUrlByShortNum
 // 功能: 通过shortNum删除数据
 // 输入参数:
@@ -102,7 +104,6 @@ func InsertUrlOne(engine *xorm.EngineGroup, urlStructReq UrlStruct) (int, error)
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2020/12/07 20:44 下午 #
-
 func DelUrlByShortNum(engine *xorm.EngineGroup, shortNum int) (bool, error) {
 
 	session := engine.NewSession()
@@ -120,7 +121,8 @@ func DelUrlByShortNum(engine *xorm.EngineGroup, shortNum int) (bool, error) {
 	}
 
 	var QueueOne QueueStruct
-	QueueOne.ShortNum = shortNum
+	QueueOne.QueueType = QueueTypeShortNumDel
+	QueueOne.Data = strconv.Itoa(shortNum)
 	_, err = session.Insert(QueueOne)
 	if err != nil {
 		_ = session.Rollback()
@@ -135,6 +137,7 @@ func DelUrlByShortNum(engine *xorm.EngineGroup, shortNum int) (bool, error) {
 	return true, nil
 }
 
+// DelUrlById
 // 函数名称: DelUrlById
 // 功能: 通过id删除数据
 // 输入参数:
@@ -145,7 +148,6 @@ func DelUrlByShortNum(engine *xorm.EngineGroup, shortNum int) (bool, error) {
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/24 5:14 下午 #
-
 func DelUrlById(engine *xorm.EngineGroup, id int, shortNum int) (bool, error) {
 
 	session := engine.NewSession()
@@ -164,7 +166,8 @@ func DelUrlById(engine *xorm.EngineGroup, id int, shortNum int) (bool, error) {
 
 	// 删除的短链推送到处理列表
 	var QueueOne QueueStruct
-	QueueOne.ShortNum = shortNum
+	QueueOne.QueueType = QueueTypeShortNumDel
+	QueueOne.Data = strconv.Itoa(shortNum)
 	_, err = session.Insert(QueueOne)
 	if err != nil {
 		_ = session.Rollback()
@@ -179,6 +182,7 @@ func DelUrlById(engine *xorm.EngineGroup, id int, shortNum int) (bool, error) {
 	return true, nil
 }
 
+//UpdateUrlByShortNum
 // 函数名称: UpdateUrlByShortNum
 // 功能: 通过shortNum修改数据
 // 输入参数:
@@ -189,7 +193,6 @@ func DelUrlById(engine *xorm.EngineGroup, id int, shortNum int) (bool, error) {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2020/12/07 20:44 下午 #
-
 func UpdateUrlByShortNum(engine *xorm.EngineGroup, shortNum int, data *map[string]interface{}) (bool, error) {
 
 	session := engine.NewSession()
@@ -222,7 +225,9 @@ func UpdateUrlByShortNum(engine *xorm.EngineGroup, shortNum int, data *map[strin
 	}
 
 	var QueueOne QueueStruct
-	QueueOne.ShortNum = shortNum
+	QueueOne.QueueType = QueueTypeShortNumDel
+	QueueOne.Data = strconv.Itoa(shortNum)
+
 	_, err = session.Insert(QueueOne)
 	if err != nil {
 		_ = session.Rollback()
@@ -237,6 +242,7 @@ func UpdateUrlByShortNum(engine *xorm.EngineGroup, shortNum int, data *map[strin
 	return true, nil
 }
 
+// UpdateUrlById
 // 函数名称: UpdateUrlById
 // 功能: 通过Id修改数据
 // 输入参数:
@@ -247,7 +253,6 @@ func UpdateUrlByShortNum(engine *xorm.EngineGroup, shortNum int, data *map[strin
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2020/12/07 20:44 下午 #
-
 func UpdateUrlById(engine *xorm.EngineGroup, id int, shortNum int, data *map[string]interface{}) (bool, error) {
 	session := engine.NewSession()
 	defer session.Close()
@@ -262,7 +267,9 @@ func UpdateUrlById(engine *xorm.EngineGroup, id int, shortNum int, data *map[str
 	}
 
 	var QueueOne QueueStruct
-	QueueOne.ShortNum = shortNum
+	QueueOne.QueueType = QueueTypeShortNumDel
+	QueueOne.Data = strconv.Itoa(shortNum)
+
 	_, err = session.Insert(QueueOne)
 	if err != nil {
 		_ = session.Rollback()
@@ -277,6 +284,7 @@ func UpdateUrlById(engine *xorm.EngineGroup, id int, shortNum int, data *map[str
 	return true, nil
 }
 
+// GetShortUrlList
 // 函数名称: GetShortUrlList
 // 功能: 查询出符合条件url列表信息
 // 输入参数:
@@ -288,7 +296,6 @@ func UpdateUrlById(engine *xorm.EngineGroup, id int, shortNum int, data *map[str
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/22 11:25 上午 #
-
 func GetShortUrlList(engine *xorm.EngineGroup, fields map[string]interface{}, page, size int) (*[]UrlStruct, error) {
 	urlList := make([]UrlStruct, 0)
 
@@ -315,6 +322,7 @@ func GetShortUrlList(engine *xorm.EngineGroup, fields map[string]interface{}, pa
 	return &urlList, err
 }
 
+// GetShortUrlListTotal
 // 函数名称: GetShortUrlListTotal
 // 功能:  查询出符合条件url列表信息条数
 // 输入参数:
@@ -326,7 +334,6 @@ func GetShortUrlList(engine *xorm.EngineGroup, fields map[string]interface{}, pa
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/22 11:27 上午 #
-
 func GetShortUrlListTotal(engine *xorm.EngineGroup, fields map[string]interface{}) (int, error) {
 	urlCount := new(UrlStruct)
 
@@ -357,6 +364,7 @@ func GetShortUrlListTotal(engine *xorm.EngineGroup, fields map[string]interface{
 	return int(total), err
 }
 
+// GetShortUrlInfo
 // 函数名称: GetShortUrlInfo
 // 功能: 获取单条ShortUrl详情
 // 输入参数:
@@ -368,7 +376,6 @@ func GetShortUrlListTotal(engine *xorm.EngineGroup, fields map[string]interface{
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/24 5:10 下午 #
-
 func GetShortUrlInfo(engine *xorm.EngineGroup, fields map[string]interface{}) (*UrlStruct, error) {
 	urlDetail := new(UrlStruct)
 
@@ -380,6 +387,7 @@ func GetShortUrlInfo(engine *xorm.EngineGroup, fields map[string]interface{}) (*
 	return urlDetail, err
 }
 
+// GetAllShortUrl
 // 函数名称: GetAllShortUrl
 // 功能: 获取检索Url信息无条数限制
 // 输入参数:
@@ -389,7 +397,6 @@ func GetShortUrlInfo(engine *xorm.EngineGroup, fields map[string]interface{}) (*
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/30 6:13 下午 #
-
 func GetAllShortUrl(engine *xorm.EngineGroup, fields map[string]interface{}) (*[]UrlStruct, error) {
 	urlList := make([]UrlStruct, 0)
 
@@ -401,6 +408,7 @@ func GetAllShortUrl(engine *xorm.EngineGroup, fields map[string]interface{}) (*[
 	return &urlList, err
 }
 
+// BatchUpdateUrlByIds
 // 函数名称: BatchUpdateUrlByIds
 // 功能: 根据UrlId 修改Url信息
 // 输入参数:
@@ -412,7 +420,6 @@ func GetAllShortUrl(engine *xorm.EngineGroup, fields map[string]interface{}) (*[
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/30 6:19 下午 #
-
 func BatchUpdateUrlByIds(engine *xorm.EngineGroup, updateWhere map[string]interface{}, insertShortNum []int, updateData *map[string]interface{}) (bool, error) {
 
 	session := engine.NewSession()
@@ -433,7 +440,8 @@ func BatchUpdateUrlByIds(engine *xorm.EngineGroup, updateWhere map[string]interf
 
 	queue := make([]QueueStruct, len(insertShortNum))
 	for k, v := range insertShortNum {
-		queue[k].ShortNum = v
+		queue[k].QueueType = QueueTypeShortNumDel
+		queue[k].Data = strconv.Itoa(v)
 	}
 	_, err = session.Insert(&queue)
 	if err != nil {
