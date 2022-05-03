@@ -7,7 +7,7 @@
 #
 # Host: 8.140.113.142 (MySQL 5.6.50-log)
 # Database: durl
-# Generation Time: 2022-01-21 04:45:07 +0000
+# Generation Time: 2022-05-03 02:13:43 +0000
 # ************************************************************
 
 
@@ -34,15 +34,6 @@ CREATE TABLE `durl_blacklist` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='黑名单';
 
-LOCK TABLES `durl_blacklist` WRITE;
-/*!40000 ALTER TABLE `durl_blacklist` DISABLE KEYS */;
-
-INSERT INTO `durl_blacklist` (`id`, `ip`, `is_del`, `create_time`, `update_time`)
-VALUES
-	(29,'222.222.222.222',1,1641466053,1641466056);
-
-/*!40000 ALTER TABLE `durl_blacklist` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table durl_queue
@@ -52,8 +43,8 @@ DROP TABLE IF EXISTS `durl_queue`;
 
 CREATE TABLE `durl_queue` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `short_num` int(11) unsigned NOT NULL COMMENT '短链num',
-  `is_del` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0 正常 1 删除',
+  `queue_type` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '消息类型: 1.短链删除 2.黑名单ip增加 3.黑名单ip减少',
+  `data` varchar(255) NOT NULL DEFAULT '' COMMENT '消息类型为1时,此字段传 短链接num 消息类型为2时 此字段为黑名单ip',
   `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
   PRIMARY KEY (`id`)
@@ -80,7 +71,7 @@ LOCK TABLES `durl_short_num` WRITE;
 
 INSERT INTO `durl_short_num` (`id`, `max_num`, `step`, `version`, `update_time`)
 VALUES
-	(1,1,1000,1,1642665668);
+	(1,57001,1000,58,1651505842);
 
 /*!40000 ALTER TABLE `durl_short_num` ENABLE KEYS */;
 UNLOCK TABLES;
