@@ -283,7 +283,7 @@ export default {
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
           const params = { ip: this.formValue.ip };
-          if (this.formValue.id === 0) {
+          if (this.formValue.id === 0 || this.formValue.id === undefined) {
             console.log(params);
             const requestData = await addBlacklist(params);
             if (requestData.code === 200) {
