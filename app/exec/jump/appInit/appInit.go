@@ -6,7 +6,6 @@ import (
 	"durl/app/share/dao/cache"
 	"durl/app/share/dao/db"
 	"durl/app/share/log"
-
 	"github.com/beego/beego/v2/core/config"
 )
 
@@ -42,10 +41,11 @@ func initConf() (AppConf *Conf) {
 	runmode, _ := config.String("runmode")
 
 	// 获取消息通信方式
-	AppConf.MsgType, _ = config.String("MsgType")
+	AppConf.MsgType, _ = config.String(runmode + "::MsgType")
 
 	// db
 	AppConf.Db.Type, _ = config.String(runmode + "::Db_Type")
+
 	// mysql
 	AppConf.Db.Xorm.Mysql.Master, _ = config.String(runmode + "::Db_Mysql_Master")
 	AppConf.Db.Xorm.Mysql.Slave1, _ = config.String(runmode + "::Db_Mysql_Slave1")

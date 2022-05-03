@@ -23,11 +23,6 @@ func (I *UrlStruct) TableName() string {
 }
 
 const (
-<<<<<<< HEAD
-	UrlIsDelYes          = 1
-	UrlIsDelNo           = 0
-	QueueTypeShortNumDel = 1
-=======
 	UrlIsDelYes = 1
 	UrlIsDelNo  = 0
 
@@ -35,7 +30,6 @@ const (
 	UrlIsFrozenNo  = 0
 
 	UrlExpirationTimePermanent = 0
->>>>>>> d682e689bcbdda5d12dc2402012119c51afb344c
 )
 
 // GetFullUrlByShortNum
@@ -237,7 +231,6 @@ func UpdateUrlByShortNum(engine *xorm.EngineGroup, shortNum int, data *map[strin
 	var QueueOne QueueStruct
 	QueueOne.QueueType = QueueTypeShortNumDel
 	QueueOne.Data = strconv.Itoa(shortNum)
-
 	_, err = session.Insert(QueueOne)
 	if err != nil {
 		_ = session.Rollback()
@@ -279,7 +272,6 @@ func UpdateUrlById(engine *xorm.EngineGroup, id int, shortNum int, data *map[str
 	var QueueOne QueueStruct
 	QueueOne.QueueType = QueueTypeShortNumDel
 	QueueOne.Data = strconv.Itoa(shortNum)
-
 	_, err = session.Insert(QueueOne)
 	if err != nil {
 		_ = session.Rollback()

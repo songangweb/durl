@@ -4,7 +4,6 @@ import (
 	"durl/app/exec/portal/routers"
 	"durl/app/share/dao/db"
 	"durl/app/share/log"
-
 	"github.com/beego/beego/v2/core/config"
 )
 

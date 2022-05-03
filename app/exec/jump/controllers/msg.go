@@ -33,6 +33,7 @@ type MSGConf struct {
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
 func (c MSGConf) InitMsg() {
+	fmt.Println("c.Type: ", c.Type)
 	switch c.Type {
 	case "mysql":
 		InitMysqlMsg()
@@ -61,6 +62,7 @@ func InitMysqlMsg() {
 		if count > 0 {
 			queueId = list[count-1].Id
 			for _, val := range list {
+				fmt.Println("val: ", val)
 				// 有状态更新时，通知所有观察者
 				for _, oper := range PurchaseOperFuncArr {
 					res, err := oper(val.QueueType, val.Data)
@@ -133,6 +135,7 @@ func shortNumDel(queueType int, data string) (res bool, err error) {
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
 func blacklistAdd(queueType int, data string) (res bool, err error) {
+	fmt.Println("blacklistAdd: ", blacklistAdd)
 	if queueType == queueTypeBlacklistAdd {
 		cache.BlacklistConnLock.Lock()
 		err = cache.Blacklist.Add(data)

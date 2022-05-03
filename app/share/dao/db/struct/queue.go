@@ -16,6 +16,12 @@ func (I *QueueStruct) TableName() string {
 	return "durl_queue"
 }
 
+const (
+	QueueTypeShortNumDel  = 1
+	QueueTypeBlacklistAdd = 2
+	QueueTypeBlacklistDel = 3
+)
+
 // InsertQueueOne
 // 函数名称: InsertQueueOne
 // 功能: 插入一条数据

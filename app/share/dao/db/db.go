@@ -93,6 +93,7 @@ func (c DBConf) InitDb() {
 	}
 }
 
+// QueueLastId
 // 函数名称: QueueLastId
 // 功能:  获取任务最新一条数据的id
 // 输入参数:
@@ -102,7 +103,6 @@ func (c DBConf) InitDb() {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2020/12/07 20:44 下午 #
-
 // QueueLastId 获取任务最新一条数据的id
 func (s *dbService) QueueLastId() (id int) {
 	id, _ = dbstruct.ReturnQueueLastId(s.EngineGroup)
@@ -120,6 +120,7 @@ func (s *dbService) GetQueueListById(id int) []*GetQueueListByIdRe {
 		for _, queueStruct := range list {
 			var One GetQueueListByIdRe
 			One.Id = queueStruct.Id
+			One.QueueType = queueStruct.QueueType
 			One.Data = queueStruct.Data
 			returnList = append(returnList, &One)
 		}
@@ -140,6 +141,7 @@ type GetCacheUrlAllByLimitRe struct {
 	ExpirationTime int    `json:"expirationTime"`
 }
 
+// GetCacheUrlAllByLimit
 // 函数名称: GetCacheUrlAllByLimit
 // 功能:  查询出符合条件的全部url
 // 输入参数:
@@ -149,7 +151,6 @@ type GetCacheUrlAllByLimitRe struct {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2020/12/07 20:44 下午 #
-
 func (s *dbService) GetCacheUrlAllByLimit(limit int) []*GetCacheUrlAllByLimitRe {
 
 	var returnList []*GetCacheUrlAllByLimitRe
@@ -170,6 +171,7 @@ func (s *dbService) GetCacheUrlAllByLimit(limit int) []*GetCacheUrlAllByLimitRe 
 	return returnList
 }
 
+// ReturnShortNumPeriod
 // 函数名称: ReturnShortNumPeriod
 // 功能: 获取号码段
 // 输入参数:
@@ -180,7 +182,6 @@ func (s *dbService) GetCacheUrlAllByLimit(limit int) []*GetCacheUrlAllByLimitRe 
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2020/12/07 20:44 下午 #
-
 func (s *dbService) ReturnShortNumPeriod() (Step int, MaxNum int, err error) {
 
 	var i int
@@ -206,6 +207,7 @@ type InsertUrlOneReq struct {
 	ExpirationTime int    `json:"expirationTime"`
 }
 
+// InsertUrlOne
 // 函数名称: InsertUrlOne
 // 功能: 插入一条数据
 // 输入参数:
@@ -216,7 +218,6 @@ type InsertUrlOneReq struct {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2020/12/07 20:44 下午 #
-
 func (s *dbService) InsertUrlOne(urlStructReq *InsertUrlOneReq) (err error) {
 
 	var reqOne dbstruct.UrlStruct
@@ -231,6 +232,7 @@ func (s *dbService) InsertUrlOne(urlStructReq *InsertUrlOneReq) (err error) {
 	return err
 }
 
+// DelUrlByShortNum
 // 函数名称: DelUrlByShortNum
 // 功能: 通过shortNum删除数据
 // 输入参数:
@@ -240,7 +242,6 @@ func (s *dbService) InsertUrlOne(urlStructReq *InsertUrlOneReq) (err error) {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2020/12/07 20:44 下午 #
-
 func (s *dbService) DelUrlByShortNum(shortNum int) (reBool bool, err error) {
 
 	reBool, err = dbstruct.DelUrlByShortNum(s.EngineGroup, shortNum)
@@ -251,6 +252,7 @@ func (s *dbService) DelUrlByShortNum(shortNum int) (reBool bool, err error) {
 	return reBool, err
 }
 
+// DelUrlById
 // 函数名称: DelUrlById
 // 功能: 通过id删除url数据
 // 输入参数:
@@ -263,7 +265,6 @@ func (s *dbService) DelUrlByShortNum(shortNum int) (reBool bool, err error) {
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/24 5:13 下午 #
-
 func (s *dbService) DelUrlById(id int, shortNum int) (reBool bool, err error) {
 
 	reBool, err = dbstruct.DelUrlById(s.EngineGroup, id, shortNum)
@@ -274,6 +275,7 @@ func (s *dbService) DelUrlById(id int, shortNum int) (reBool bool, err error) {
 	return reBool, err
 }
 
+// UpdateUrlByShortNum
 // 函数名称: UpdateUrlByShortNum
 // 功能: 通过shortNum修改数据
 // 输入参数:
@@ -284,7 +286,6 @@ func (s *dbService) DelUrlById(id int, shortNum int) (reBool bool, err error) {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2020/12/07 20:44 下午 #
-
 func (s *dbService) UpdateUrlByShortNum(shortNum int, data *map[string]interface{}) (reBool bool, err error) {
 
 	reBool, err = dbstruct.UpdateUrlByShortNum(s.EngineGroup, shortNum, data)
@@ -294,6 +295,7 @@ func (s *dbService) UpdateUrlByShortNum(shortNum int, data *map[string]interface
 	return reBool, err
 }
 
+// UpdateUrlById
 // 函数名称: UpdateUrlById
 // 功能: 根据id修改url信息
 // 输入参数:
@@ -305,7 +307,6 @@ func (s *dbService) UpdateUrlByShortNum(shortNum int, data *map[string]interface
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/25 4:53 下午 #
-
 func (s *dbService) UpdateUrlById(id int, shortNum int, data map[string]interface{}) (reBool bool, err error) {
 	reBool, err = dbstruct.UpdateUrlById(s.EngineGroup, id, shortNum, &data)
 	if err != nil {
@@ -320,6 +321,7 @@ type getFullUrlByShortNumReq struct {
 	ExpirationTime int    `json:"expirationTime"`
 }
 
+// GetFullUrlByShortNum
 // 函数名称: GetFullUrlByShortNum
 // 功能: 通过 ShortNum 获取 完整连接
 // 输入参数:
@@ -330,7 +332,6 @@ type getFullUrlByShortNumReq struct {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2020/12/07 20:44 下午 #
-
 func (s *dbService) GetFullUrlByShortNum(shortNum int) *getFullUrlByShortNumReq {
 
 	var One getFullUrlByShortNumReq
@@ -359,6 +360,7 @@ type GetShortUrlListRes struct {
 	UpdateTime     int    `json:"updateTime"`
 }
 
+// GetShortUrlList
 // 函数名称: GetShortUrlList
 // 功能: 查询url列表数据
 // 输入参数:
@@ -370,7 +372,6 @@ type GetShortUrlListRes struct {
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/19 3:27 下午 #
-
 func (s *dbService) GetShortUrlList(fields map[string]interface{}, page, size int) []*GetShortUrlListRes {
 
 	var returnList []*GetShortUrlListRes
@@ -395,6 +396,7 @@ func (s *dbService) GetShortUrlList(fields map[string]interface{}, page, size in
 	return returnList
 }
 
+// GetShortUrlListTotal
 // 函数名称: GetShortUrlListTotal
 // 功能: 查询url列表数据条数
 // 输入参数:
@@ -404,7 +406,6 @@ func (s *dbService) GetShortUrlList(fields map[string]interface{}, page, size in
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/23 6:21 下午 #
-
 func (s *dbService) GetShortUrlListTotal(fields map[string]interface{}) int {
 
 	total, err := dbstruct.GetShortUrlListTotal(s.EngineGroup, fields)
@@ -414,6 +415,7 @@ func (s *dbService) GetShortUrlListTotal(fields map[string]interface{}) int {
 	return total
 }
 
+// GetShortUrlInfo
 // 函数名称: GetShortUrlInfo
 // 功能: 获取ShortUrl详情
 // 输入参数:
@@ -423,7 +425,6 @@ func (s *dbService) GetShortUrlListTotal(fields map[string]interface{}) int {
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/24 5:09 下午 #
-
 func (s *dbService) GetShortUrlInfo(fields map[string]interface{}) *GetShortUrlListRes {
 
 	var returnRes GetShortUrlListRes
@@ -443,6 +444,7 @@ func (s *dbService) GetShortUrlInfo(fields map[string]interface{}) *GetShortUrlL
 	return &returnRes
 }
 
+// GetAllShortUrl
 // 函数名称: GetAllShortUrl
 // 功能: 根据条件获取所有Url信息不带分页
 // 输入参数:
@@ -452,7 +454,6 @@ func (s *dbService) GetShortUrlInfo(fields map[string]interface{}) *GetShortUrlL
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/30 6:12 下午 #
-
 func (s *dbService) GetAllShortUrl(fields map[string]interface{}) []*GetShortUrlListRes {
 
 	var returnRes []*GetShortUrlListRes
@@ -475,6 +476,7 @@ func (s *dbService) GetAllShortUrl(fields map[string]interface{}) []*GetShortUrl
 	return returnRes
 }
 
+// BatchUpdateUrlByIds
 // 函数名称: BatchUpdateUrlByIds
 // 功能: 根据UrlId 修改Url信息
 // 输入参数:
@@ -486,7 +488,6 @@ func (s *dbService) GetAllShortUrl(fields map[string]interface{}) []*GetShortUrl
 // 实现描述:
 // 注意事项:
 // 作者: # leon # 2021/11/30 6:19 下午 #
-
 func (s *dbService) BatchUpdateUrlByIds(updateWhere map[string]interface{}, insertShortNum []int, updateData map[string]interface{}) (reBool bool, err error) {
 
 	reBool, err = dbstruct.BatchUpdateUrlByIds(s.EngineGroup, updateWhere, insertShortNum, &updateData)
@@ -500,6 +501,7 @@ type InsertBlacklistOneReq struct {
 	Ip string `json:"ip"`
 }
 
+// InsertBlacklistOne
 // 函数名称: InsertBlacklistOne
 // 功能: 添加黑名单数据
 // 输入参数:
@@ -507,7 +509,6 @@ type InsertBlacklistOneReq struct {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
-
 func (s *dbService) InsertBlacklistOne(urlStructReq *InsertBlacklistOneReq) (err error) {
 
 	var reqOne dbstruct.BlacklistStruct
@@ -520,7 +521,7 @@ func (s *dbService) InsertBlacklistOne(urlStructReq *InsertBlacklistOneReq) (err
 	return err
 }
 
-// 黑名单列表结构体
+// GetBlacklistListRes 黑名单列表结构体
 type GetBlacklistListRes struct {
 	Id         int    `json:"id"`
 	Ip         string `json:"ip"`
@@ -528,6 +529,7 @@ type GetBlacklistListRes struct {
 	UpdateTime int    `json:"updateTime"`
 }
 
+// GetBlacklistInfo
 // 函数名称: GetBlacklistInfo
 // 功能: 获取黑名单详情
 // 输入参数:
@@ -537,7 +539,6 @@ type GetBlacklistListRes struct {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
-
 func (s *dbService) GetBlacklistInfo(fields map[string]interface{}) *GetBlacklistListRes {
 
 	var returnRes GetBlacklistListRes
@@ -554,6 +555,7 @@ func (s *dbService) GetBlacklistInfo(fields map[string]interface{}) *GetBlacklis
 	return &returnRes
 }
 
+// UpdateBlacklistById
 // 函数名称: UpdateBlacklistById
 // 功能: 根据id修改黑名单信息
 // 输入参数:
@@ -563,7 +565,6 @@ func (s *dbService) GetBlacklistInfo(fields map[string]interface{}) *GetBlacklis
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
-
 func (s *dbService) UpdateBlacklistById(id int, data map[string]interface{}) (reBool bool, err error) {
 
 	reBool, err = dbstruct.UpdateBlacklistById(s.EngineGroup, id, &data)
@@ -573,6 +574,7 @@ func (s *dbService) UpdateBlacklistById(id int, data map[string]interface{}) (re
 	return reBool, err
 }
 
+// GetBlacklistList
 // 函数名称: GetBlacklistList
 // 功能: 查询黑名单列表数据
 // 输入参数:
@@ -584,7 +586,6 @@ func (s *dbService) UpdateBlacklistById(id int, data map[string]interface{}) (re
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
-
 func (s *dbService) GetBlacklistList(fields map[string]interface{}, page, size int) []*GetBlacklistListRes {
 
 	var returnRes []*GetBlacklistListRes
@@ -605,6 +606,7 @@ func (s *dbService) GetBlacklistList(fields map[string]interface{}, page, size i
 	return returnRes
 }
 
+// GetBlacklistListTotal
 // 函数名称: GetBlacklistListTotal
 // 功能: 查询黑名单列表数据条数
 // 输入参数:
@@ -614,7 +616,6 @@ func (s *dbService) GetBlacklistList(fields map[string]interface{}, page, size i
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
-
 func (s *dbService) GetBlacklistListTotal(fields map[string]interface{}) int {
 
 	total, err := dbstruct.GetBlacklistListTotal(s.EngineGroup, fields)
@@ -624,7 +625,7 @@ func (s *dbService) GetBlacklistListTotal(fields map[string]interface{}) int {
 	return total
 }
 
-// 函数名称: DelBlacklistById
+// DelBlacklistById
 // 功能: 通过id删除黑名单数据
 // 输入参数:
 //     id: 数据id
@@ -635,7 +636,6 @@ func (s *dbService) GetBlacklistListTotal(fields map[string]interface{}) int {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/12/07 5:44 下午 #
-
 func (s *dbService) DelBlacklistById(id int) (reBool bool, err error) {
 
 	reBool, err = dbstruct.DelBlacklistById(s.EngineGroup, id)
@@ -646,6 +646,7 @@ func (s *dbService) DelBlacklistById(id int) (reBool bool, err error) {
 	return reBool, err
 }
 
+// GetBlacklistAll
 // 函数名称: GetBlacklistAll
 // 功能: 获取符合条件的所有黑名单数据
 // 输入参数:
@@ -654,7 +655,6 @@ func (s *dbService) DelBlacklistById(id int) (reBool bool, err error) {
 // 实现描述:
 // 注意事项:
 // 作者: # ang.song # 2021/12/12 5:44 下午 #
-
 func (s *dbService) GetBlacklistAll() []*GetBlacklistListRes {
 
 	var returnList []*GetBlacklistListRes

@@ -18,10 +18,8 @@ func (I *BlacklistStruct) TableName() string {
 }
 
 const (
-	BlacklistIsDelYes     = 1
-	BlacklistIsDelNo      = 0
-	QueueTypeBlacklistAdd = 2
-	QueueTypeBlacklistDel = 3
+	BlacklistIsDelYes = 1
+	BlacklistIsDelNo  = 0
 )
 
 // InsertBlacklistOne
@@ -95,9 +93,10 @@ func DelBlacklistById(engine *xorm.EngineGroup, id int) (bool, error) {
 	blacklistDetail := new(BlacklistStruct)
 	q := engine.Where(" id = ? ", id)
 	_, err = q.Get(blacklistDetail)
+
 	// 添加消息
 	var QueueOne QueueStruct
-	QueueOne.QueueType = QueueTypeShortNumDel
+	QueueOne.QueueType = QueueTypeBlacklistDel
 	QueueOne.Data = blacklistDetail.Ip
 	_, err = session.Insert(QueueOne)
 	if err != nil {
@@ -133,13 +132,6 @@ func UpdateBlacklistById(engine *xorm.EngineGroup, id int, data *map[string]inte
 
 	err := session.Begin()
 
-	// 修改数据
-	_, err = session.Table(new(BlacklistStruct)).Where("id = ?", id).Update(data)
-	if err != nil {
-		_ = session.Rollback()
-		return false, err
-	}
-
 	// 查询ip
 	blacklistDetail := new(BlacklistStruct)
 	q := engine.Where(" id = ? ", id)
@@ -164,6 +156,13 @@ func UpdateBlacklistById(engine *xorm.EngineGroup, id int, data *map[string]inte
 			_ = session.Rollback()
 			return false, err
 		}
+	}
+
+	// 修改数据
+	_, err = session.Table(new(BlacklistStruct)).Where("id = ?", id).Update(data)
+	if err != nil {
+		_ = session.Rollback()
+		return false, err
 	}
 
 	err = session.Commit()
