@@ -7,6 +7,7 @@ import (
 	"durl/app/share/tool"
 	"fmt"
 	"github.com/beego/beego/v2/core/config"
+	"net/http"
 )
 
 // Jump
@@ -77,8 +78,8 @@ func reStatusFound(c *Controller, fullUrl string) {
 		_ = c.Render()
 	}
 
-	// 直接跳转
-	c.Redirect(fullUrl, 301)
+	// 直接跳转 临时重定向
+	c.Redirect(fullUrl, http.StatusFound)
 }
 
 type cacheDetailResp struct {

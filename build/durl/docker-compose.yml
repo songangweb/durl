@@ -1,28 +1,28 @@
 version: '2'
 services:
   durl-portal:
-    image: songangweb/durl-portal:v1.0.3
+    image: songangweb/durl-portal:v1.0.4
     volumes:
       - ./portal:/durl/durl-portal/conf
     ports:
       - '8080:8080'
       - '9080:9080'
   durl-openapi:
-    image: songangweb/durl-openapi:v1.0.3
+    image: songangweb/durl-openapi:v1.0.4
     volumes:
       - ./openapi:/durl/durl-openapi/conf
     ports:
       - '8081:8081'
       - '9081:9081'
   durl-jump:
-    image: songangweb/durl-jump:v1.0.3
+    image: songangweb/durl-jump:v1.0.4
     volumes:
       - ./jump:/durl/durl-jump/conf
     ports:
       - '8082:8082'
       - '9082:9082'
   durl-backend:
-    image: songangweb/durl-backend:v1.0.3
+    image: songangweb/durl-backend:v1.0.4
     volumes:
       - ./backend:/durl/durl-backend/conf
     ports:

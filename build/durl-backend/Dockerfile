@@ -29,6 +29,6 @@ EXPOSE 9083
 CMD ["/durl/durl-backend/backend"]
 
 ## 在根目录执行
-## docker build -f build/durl-backend/Dockerfile  . -t songangweb/durl-backend:v1.0.3
+## docker build -f build/durl-backend/Dockerfile  . -t songangweb/durl-backend:v1.0.4
 ## or 使用 buildx 构建多平台 Docker 镜像 https://blog.csdn.net/alex_yangchuansheng/article/details/103343697/
-## docker buildx build -t songangweb/durl-backend:v1.0.3 --platform=linux/arm,linux/arm64,linux/amd64 -f build/durl-backend/Dockerfile . --push
+## docker buildx build -t songangweb/durl-backend:v1.0.4 --platform=linux/arm,linux/arm64,linux/amd64 -f build/durl-backend/Dockerfile . --push
