@@ -43,7 +43,7 @@ func CheckMysqlTable() {
 	tables[NewUrl.TableName()] = NewUrl
 
 	NewBlacklist := dbstruct.BlacklistStruct{}
-	tables[NewUrl.TableName()] = NewBlacklist
+	tables[NewBlacklist.TableName()] = NewBlacklist
 
 	for tableName, tableStruct := range tables {
 		// 判断表是否已经存在, 如果已经存在则不自动创建
