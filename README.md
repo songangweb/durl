@@ -75,10 +75,6 @@ backend: 为后台管理页面,可管理短链接与黑名单. 可作为公司�
 ## 接口文档
 [接口文档](https://github.com/songangweb/durl/wiki/Api)
 
-
-## github Stargazers over time
-[![Stargazers over time](https://starchart.cc/songangweb/durl.svg)](https://starchart.cc/songangweb/durl)
-
 ## 交流
 #### 如果文档中未能覆盖的任何疑问,欢迎您发送邮件到<songangweb@foxmail.com>, 我会尽快答复。
 #### 您可以在提出使用中需要改进的地方,我会考虑合理性并尽快修改。
