@@ -75,11 +75,6 @@ backend: 为后台管理页面,可管理短链接与黑名单. 可作为公司�
 ## 接口文档
 [接口文档](https://github.com/songangweb/durl/wiki/Api)
 
-## JetBrains操作系统许可证
-
-durl 是根据JetBrains sro授予的免费JetBrains开源许可证与GoLand一起开发的，因此在此我要表示感谢。
-
-[免费申请 jetbrains 全家桶](https://zhuanlan.zhihu.com/p/264139984?utm_source=wechat_session)
 
 ## github Stargazers over time
 [![Stargazers over time](https://starchart.cc/songangweb/durl.svg)](https://starchart.cc/songangweb/durl)
